@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spiral-pulse-v1';
+const CACHE_NAME = 'spiral-pulse-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -28,7 +28,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // Network-first for HTML so GitHub updates load cleanly, fallback to cache offline
   if (event.request.mode === 'navigate' || event.request.url.endsWith('.html')) {
     event.respondWith(
       fetch(event.request)
@@ -42,7 +41,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first with background refresh for static assets
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const networkFetch = fetch(event.request)
