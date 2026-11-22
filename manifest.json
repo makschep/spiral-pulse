@@ -1,7 +1,7 @@
 {
   "name": ".Spiral Pulse",
   "short_name": ".Spiral Pulse",
-  "description": "3D Radial Survival Arcade",
+  "description": "3D радиальная аркада на реакцию",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
@@ -10,8 +10,8 @@
     "standalone"
   ],
   "orientation": "landscape",
-  "background_color": "#001417",
-  "theme_color": "#001417",
+  "background_color": "#051016",
+  "theme_color": "#051016",
   "icons": [
     {
       "src": "./icon-192.png",

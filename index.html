@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>.Spiral Pulse</title>
-  <meta name="description" content=".Spiral Pulse — 3D Radial Survival Arcade" />
-  <meta name="theme-color" content="#001417" />
+  <meta name="description" content=".Spiral Pulse — 3D радиальная аркада на реакцию" />
+  <meta name="theme-color" content="#051016" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,10 +13,14 @@
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #002024;
-      --accent: #00ffff;
+      --accent: #00f5ff;
+      --font: 'Montserrat', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
     }
     * {
       box-sizing: border-box;
@@ -31,8 +35,8 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #000e10;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      background: #040d12;
+      font-family: var(--font);
       touch-action: none;
     }
     #stage {
@@ -50,54 +54,69 @@
       width: 100%;
       height: 100%;
     }
+
+    /* Chamfered geometric HUD boxes inspired by classic .Spiral Pulse reference */
     #timerBox {
       position: absolute;
       top: 0;
       right: 0;
-      background: rgba(0, 0, 0, 0.9);
-      border-left: 3px solid var(--accent);
+      background: rgba(0, 0, 0, 0.92);
       border-bottom: 3px solid var(--accent);
-      padding: 6px 15px 7px 17px;
-      color: var(--accent);
+      padding: 7px 18px 8px 26px;
+      color: #ffffff;
       font-weight: 900;
-      font-size: 26px;
-      letter-spacing: 1px;
+      font-size: 25px;
+      letter-spacing: 0.8px;
       font-variant-numeric: tabular-nums;
       z-index: 20;
       pointer-events: none;
       display: none;
+      clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 58%);
       box-shadow: -4px 4px 18px rgba(0, 0, 0, 0.5);
     }
     #hudTopLeft {
       position: absolute;
-      top: 10px;
-      left: 12px;
+      top: 0;
+      left: 0;
       display: none;
       align-items: center;
       gap: 8px;
       z-index: 20;
     }
+    #bestHud {
+      background: rgba(0, 0, 0, 0.92);
+      border-bottom: 3px solid var(--accent);
+      padding: 8px 22px 8px 14px;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 0.6px;
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    }
     .pillBtn {
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0, 0, 0, 0.74);
       color: var(--accent);
       border: 2px solid var(--accent);
-      padding: 5px 11px;
-      font-size: 12px;
+      padding: 6px 12px;
+      font-family: var(--font);
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       cursor: pointer;
       text-transform: uppercase;
-      transition: transform 0.12s ease, background 0.15s ease;
+      transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease;
     }
     .pillBtn:active { transform: scale(0.94); }
     #coinHud {
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0, 0, 0, 0.74);
       color: #ffd800;
       border: 2px solid #ffd800;
       padding: 5px 10px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 900;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       pointer-events: none;
     }
     #eventBanner {
@@ -105,13 +124,13 @@
       top: 14px;
       left: 50%;
       transform: translateX(-50%) scale(0.9);
-      padding: 5px 16px;
-      background: rgba(0, 0, 0, 0.84);
+      padding: 6px 18px;
+      background: rgba(0, 0, 0, 0.86);
       border: 2px solid var(--accent);
-      color: var(--accent);
+      color: #ffffff;
       font-weight: 900;
-      font-size: 13px;
-      letter-spacing: 2.5px;
+      font-size: 12px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0;
       pointer-events: none;
@@ -123,6 +142,8 @@
       opacity: 1;
       transform: translateX(-50%) scale(1);
     }
+
+    /* Overlays */
     .overlay {
       position: absolute;
       inset: 0;
@@ -144,10 +165,21 @@
       justify-content: space-between;
       gap: 10px;
     }
+    .brandWrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brandIcon {
+      width: 28px;
+      height: 28px;
+      display: block;
+      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 60%, transparent));
+    }
     .brand {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
-      letter-spacing: 2px;
+      letter-spacing: 1.6px;
       color: var(--accent);
       text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
     }
@@ -155,17 +187,19 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .levelsGrid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
       width: 100%;
-      max-width: 840px;
+      max-width: 860px;
       margin: auto;
     }
     .lvlCard {
-      background: rgba(0, 0, 0, 0.76);
+      background: rgba(0, 0, 0, 0.78);
       border: 2px solid rgba(255, 255, 255, 0.18);
       padding: 12px 12px 11px;
       cursor: pointer;
@@ -197,25 +231,26 @@
     .lvlNum {
       font-size: 11px;
       font-weight: 900;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.4px;
       color: var(--c);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .lvlName {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.4px;
       color: #fff;
-      line-height: 1.15;
+      line-height: 1.2;
     }
     .lvlTag {
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
-      letter-spacing: 0.7px;
-      color: rgba(255, 255, 255, 0.62);
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.64);
       text-transform: uppercase;
+      margin-top: 3px;
     }
     .lvlFoot {
       display: flex;
@@ -223,7 +258,7 @@
       align-items: center;
       padding-top: 6px;
       border-top: 1px solid rgba(255, 255, 255, 0.12);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
       color: var(--c);
       font-variant-numeric: tabular-nums;
@@ -247,25 +282,27 @@
     }
     .ctrlHints {
       display: flex;
-      gap: 10px;
-      font-size: 11px;
+      gap: 8px;
+      font-size: 10.5px;
       font-weight: 800;
-      letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.68);
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.72);
+      flex-wrap: wrap;
     }
     .ctrlHints span {
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.24);
       padding: 4px 8px;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.56);
     }
     #playBtn {
       background: var(--accent);
       color: #000;
       border: none;
-      padding: 11px 40px;
-      font-size: 16px;
+      padding: 11px 38px;
+      font-family: var(--font);
+      font-size: 15px;
       font-weight: 900;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       cursor: pointer;
       text-transform: uppercase;
       box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 55%, transparent);
@@ -273,13 +310,14 @@
     }
     #playBtn:active { transform: scale(0.95); }
 
-    #shopModal {
+    /* Modals (Shop & Settings) */
+    #shopModal, #settingsModal {
       justify-content: center;
       align-items: center;
       background: rgba(0, 8, 12, 0.92);
       z-index: 40;
     }
-    .shopPanel {
+    .modalPanel {
       width: 100%;
       max-width: 720px;
       background: #060d12;
@@ -287,18 +325,22 @@
       padding: 16px 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 13px;
     }
-    .shopHead {
+    .settingsPanel {
+      max-width: 460px;
+    }
+    .modalHead {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .shopTitle {
-      font-size: 18px;
+    .modalTitle {
+      font-size: 17px;
       font-weight: 900;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       color: var(--accent);
+      text-transform: uppercase;
     }
     .shopRow {
       display: grid;
@@ -308,9 +350,10 @@
     .shopLabel {
       font-size: 10px;
       font-weight: 900;
-      letter-spacing: 2px;
+      letter-spacing: 1.8px;
       color: rgba(255, 255, 255, 0.55);
-      margin-bottom: -6px;
+      margin-bottom: -5px;
+      text-transform: uppercase;
     }
     .shopItem {
       background: rgba(255, 255, 255, 0.04);
@@ -325,7 +368,7 @@
       transition: border-color 0.15s ease, transform 0.12s ease;
     }
     .shopItem:active { transform: scale(0.96); }
-    .shopItem.owned { border-color: rgba(0, 255, 255, 0.45); }
+    .shopItem.owned { border-color: rgba(0, 245, 255, 0.45); }
     .shopItem.active {
       border-color: #ffd800;
       background: rgba(255, 216, 0, 0.12);
@@ -337,22 +380,64 @@
       line-height: 1;
     }
     .perkName {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 900;
-      letter-spacing: 1px;
+      letter-spacing: 0.6px;
+      text-align: center;
     }
     .perkSub {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.6);
+      font-size: 9.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.65);
       text-align: center;
     }
     .priceTag {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 900;
       color: #ffd800;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
     }
 
+    /* Settings rows */
+    .setRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .setLabel {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    .segGroup {
+      display: flex;
+      gap: 6px;
+    }
+    .segBtn {
+      background: rgba(0, 0, 0, 0.6);
+      color: rgba(255, 255, 255, 0.65);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .segBtn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* Game Over */
     #overOverlay {
       justify-content: center;
       align-items: center;
@@ -369,13 +454,13 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      min-width: 310px;
+      min-width: 320px;
     }
     .overTime {
       font-size: 44px;
       font-weight: 900;
       color: var(--accent);
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
@@ -384,8 +469,8 @@
       gap: 18px;
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: 1.2px;
-      color: rgba(255, 255, 255, 0.78);
+      letter-spacing: 0.8px;
+      color: rgba(255, 255, 255, 0.8);
     }
     .overBtns {
       display: flex;
@@ -396,11 +481,13 @@
       background: var(--accent);
       color: #000;
       border: none;
-      padding: 10px 28px;
-      font-size: 14px;
+      padding: 10px 26px;
+      font-family: var(--font);
+      font-size: 13px;
       font-weight: 900;
-      letter-spacing: 2px;
+      letter-spacing: 1.4px;
       cursor: pointer;
+      text-transform: uppercase;
     }
     #installBtn {
       display: none;
@@ -409,11 +496,11 @@
     }
     @media (max-height: 410px) {
       .overlay { padding: 10px 14px; }
-      .brand { font-size: 19px; }
+      .brand { font-size: 18px; }
       .lvlCard { padding: 8px 9px; gap: 5px; }
-      .lvlName { font-size: 13px; }
-      #playBtn { padding: 8px 26px; font-size: 14px; }
-      .shopPanel { padding: 10px 14px; gap: 8px; }
+      .lvlName { font-size: 12.5px; }
+      #playBtn { padding: 8px 26px; font-size: 13px; }
+      .modalPanel { padding: 10px 14px; gap: 8px; }
       .skinGlyph { font-size: 20px; }
     }
   </style>
@@ -424,20 +511,27 @@
 
     <div id="timerBox">0:00</div>
     <div id="hudTopLeft">
-      <button class="pillBtn" id="pauseBackBtn">MENU</button>
+      <div id="bestHud">РЕКОРД: 0:00</div>
+      <button class="pillBtn" id="pauseBackBtn">МЕНЮ</button>
       <div id="coinHud">◈ 0</div>
     </div>
-    <div id="eventBanner">3D HYPER-TUNNEL</div>
+    <div id="eventBanner">ГРАДИЕНТ-ПОТОК</div>
 
     <!-- MAIN MENU -->
     <div id="menuOverlay" class="overlay">
       <div class="topBar">
-        <div class="brand">.SPIRAL PULSE</div>
+        <div class="brandWrap">
+          <svg class="brandIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <polygon points="12,84 12,16 32,16 50,48 68,16 88,16 88,84 70,84 70,44 50,76 30,44 30,84" fill="currentColor" style="color:var(--accent)"/>
+            <polygon points="50,10 56,19 50,28 44,19" fill="#ffd800"/>
+          </svg>
+          <div class="brand">.SPIRAL PULSE</div>
+        </div>
         <div class="topRight">
           <div id="menuCoins" class="pillBtn" style="border-color:#ffd800;color:#ffd800;cursor:default;">◈ 0</div>
-          <button id="installBtn" class="pillBtn">INSTALL</button>
-          <button id="soundBtn" class="pillBtn">SFX: ON</button>
-          <button id="shopOpenBtn" class="pillBtn">SHOP</button>
+          <button id="installBtn" class="pillBtn">УСТАНОВИТЬ</button>
+          <button id="shopOpenBtn" class="pillBtn">МАГАЗИН</button>
+          <button id="settingsOpenBtn" class="pillBtn">НАСТРОЙКИ</button>
         </div>
       </div>
 
@@ -445,44 +539,78 @@
 
       <div class="bottomBar">
         <div class="ctrlHints">
-          <span>HOLD L / R: TURN</span>
-          <span>HOLD L + R: PHASE</span>
+          <span id="hintTurn">УДЕРЖ. Л / П: ПОВОРОТ</span>
+          <span id="hintPhase">Л + П: ФАЗОВЫЙ ЩИТ</span>
         </div>
-        <button id="playBtn">PLAY</button>
+        <button id="playBtn">ИГРАТЬ</button>
       </div>
     </div>
 
     <!-- SHOP MODAL -->
     <div id="shopModal" class="overlay hidden">
-      <div class="shopPanel">
-        <div class="shopHead">
-          <div class="shopTitle">SHOP</div>
+      <div class="modalPanel">
+        <div class="modalHead">
+          <div class="modalTitle" id="shopTitle">МАГАЗИН</div>
           <div style="display:flex;gap:8px;align-items:center;">
             <div id="shopCoins" class="pillBtn" style="border-color:#ffd800;color:#ffd800;cursor:default;">◈ 0</div>
-            <button id="shopCloseBtn" class="pillBtn">CLOSE</button>
+            <button id="shopCloseBtn" class="pillBtn">ЗАКРЫТЬ</button>
           </div>
         </div>
 
-        <div class="shopLabel">SKINS</div>
+        <div class="shopLabel" id="skinsLabel">СКИНЫ</div>
         <div class="shopRow" id="skinsRow"></div>
 
-        <div class="shopLabel">PERKS</div>
+        <div class="shopLabel" id="perksLabel">УЛУЧШЕНИЯ</div>
         <div class="shopRow" id="perksRow"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="overlay hidden">
+      <div class="modalPanel settingsPanel">
+        <div class="modalHead">
+          <div class="modalTitle" id="settingsTitle">НАСТРОЙКИ</div>
+          <button id="settingsCloseBtn" class="pillBtn">ЗАКРЫТЬ</button>
+        </div>
+
+        <div class="setRow">
+          <div class="setLabel" id="setLangLabel">ЯЗЫК / LANGUAGE</div>
+          <div class="segGroup">
+            <button id="langRuBtn" class="segBtn">РУССКИЙ</button>
+            <button id="langEnBtn" class="segBtn">ENGLISH</button>
+          </div>
+        </div>
+
+        <div class="setRow">
+          <div class="setLabel" id="setSoundLabel">ЗВУК И МУЗЫКА</div>
+          <div class="segGroup">
+            <button id="soundOnBtn" class="segBtn">ВКЛ</button>
+            <button id="soundOffBtn" class="segBtn">ВЫКЛ</button>
+          </div>
+        </div>
+
+        <div class="setRow">
+          <div class="setLabel" id="setVibeLabel">ВИБРАЦИЯ</div>
+          <div class="segGroup">
+            <button id="vibeOnBtn" class="segBtn">ВКЛ</button>
+            <button id="vibeOffBtn" class="segBtn">ВЫКЛ</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- GAME OVER -->
     <div id="overOverlay" class="overlay hidden">
       <div class="overBox">
-        <div id="overLevel" style="font-size:11px;font-weight:900;letter-spacing:2px;color:rgba(255,255,255,0.6);">01 · CYAN PULSE</div>
+        <div id="overLevel" style="font-size:11px;font-weight:900;letter-spacing:1.4px;color:rgba(255,255,255,0.62);">01 · ЦИАН-ПУЛЬС</div>
         <div class="overTime" id="overTime">0:00</div>
         <div class="overMeta">
-          <span id="overBest">BEST 0:00</span>
+          <span id="overBest">РЕКОРД 0:00</span>
           <span id="overRunCoins" style="color:#ffd800;">+0 ◈</span>
         </div>
         <div class="overBtns">
-          <button id="retryBtn">RETRY</button>
-          <button id="overMenuBtn" class="pillBtn">MENU</button>
+          <button id="retryBtn">ЗАНОВО</button>
+          <button id="overMenuBtn" class="pillBtn">МЕНЮ</button>
         </div>
       </div>
     </div>
@@ -516,6 +644,76 @@
     installBtn.style.display = 'none';
   });
 
+  // ===== LOCALIZATION (RUSSIAN DEFAULT + ENGLISH IN SETTINGS) =====
+  const I18N = {
+    ru: {
+      play: 'ИГРАТЬ',
+      menu: 'МЕНЮ',
+      retry: 'ЗАНОВО',
+      shop: 'МАГАЗИН',
+      settings: 'НАСТРОЙКИ',
+      close: 'ЗАКРЫТЬ',
+      install: 'УСТАНОВИТЬ',
+      best: 'РЕКОРД',
+      skins: 'СКИНЫ',
+      perks: 'УЛУЧШЕНИЯ',
+      equipped: 'ВЫБРАН',
+      equip: 'ВЫБРАТЬ',
+      active: 'АКТИВНО',
+      on: 'ВКЛ',
+      off: 'ВЫКЛ',
+      hintTurn: 'УДЕРЖ. Л / П: ПОВОРОТ',
+      hintPhase: 'Л + П: ФАЗОВЫЙ ЩИТ',
+      setLang: 'ЯЗЫК / LANGUAGE',
+      setSound: 'ЗВУК И МУЗЫКА',
+      setVibe: 'ВИБРАЦИЯ',
+      banner3D: '3D-РЕЖИМ · УСКОРЕНИЕ',
+      bannerChroma: 'ГРАДИЕНТ-ПОТОК',
+      bannerOverdrive: 'ФОРСАЖ',
+      bannerSpeed: (p) => `СКОРОСТЬ +${p}%`,
+      bannerDual: 'ДВОЙНОЙ КЛОН',
+      bannerCloneLost: 'КЛОН РАЗБИТ · 9 СЕК',
+      perksMeta: {
+        magnet: { name: 'МАГНИТ', sub: 'ПРИТЯГИВАЕТ МОНЕТЫ' },
+        phasePlus: { name: 'ФАЗА+', sub: 'ЩИТ НА 4.0 СЕК' },
+        stabilizer: { name: 'СТАБИЛИЗАТОР', sub: 'РОСТ ДО 1.55X' }
+      }
+    },
+    en: {
+      play: 'PLAY',
+      menu: 'MENU',
+      retry: 'RETRY',
+      shop: 'SHOP',
+      settings: 'SETTINGS',
+      close: 'CLOSE',
+      install: 'INSTALL',
+      best: 'BEST',
+      skins: 'SKINS',
+      perks: 'PERKS',
+      equipped: 'EQUIPPED',
+      equip: 'EQUIP',
+      active: 'ACTIVE',
+      on: 'ON',
+      off: 'OFF',
+      hintTurn: 'HOLD L / R: TURN',
+      hintPhase: 'HOLD L + R: PHASE SHIELD',
+      setLang: 'LANGUAGE / ЯЗЫК',
+      setSound: 'SOUND & MUSIC',
+      setVibe: 'VIBRATION',
+      banner3D: '3D PHASE · SPEED UP',
+      bannerChroma: 'CHROMA FLOW',
+      bannerOverdrive: 'OVERDRIVE',
+      bannerSpeed: (p) => `SPEED +${p}%`,
+      bannerDual: 'DUAL CLONE ACTIVE',
+      bannerCloneLost: 'CLONE LOST · 9S',
+      perksMeta: {
+        magnet: { name: 'MAGNET', sub: 'PULLS COINS' },
+        phasePlus: { name: 'PHASE+', sub: '4.0S SHIELD' },
+        stabilizer: { name: 'STABILIZER', sub: 'MAX 1.55X SIZE' }
+      }
+    }
+  };
+
   // ===== STORAGE & STATE =====
   const SAVE_KEY = 'spiral_pulse_pwa_v1';
   const defaultSave = {
@@ -525,6 +723,8 @@
     perks: { magnet: false, phasePlus: false, stabilizer: false },
     best: [0, 0, 0, 0],
     sound: true,
+    vibe: true,
+    lang: 'ru',
     selectedLevel: 0
   };
   let save;
@@ -535,7 +735,9 @@
       ...raw,
       perks: { ...defaultSave.perks, ...(raw.perks || {}) },
       ownedSkins: Array.isArray(raw.ownedSkins) ? raw.ownedSkins : ['M'],
-      best: Array.isArray(raw.best) && raw.best.length === 4 ? raw.best : [0, 0, 0, 0]
+      best: Array.isArray(raw.best) && raw.best.length === 4 ? raw.best : [0, 0, 0, 0],
+      lang: raw.lang === 'en' ? 'en' : 'ru',
+      vibe: raw.vibe !== undefined ? !!raw.vibe : true
     };
   } catch (_) {
     save = JSON.parse(JSON.stringify(defaultSave));
@@ -543,23 +745,24 @@
   function persist() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (_) {}
   }
+  function tr() { return I18N[save.lang] || I18N.ru; }
 
-  // ===== 4 VISUALLY & MECHANICALLY DISTINCT LEVELS (BALANCED VIRTUAL SPEEDS) =====
-  // All coordinates & speeds are in normalized virtual arena units (Virtual Height = 520)
-  // so gameplay feels identically smooth & fair on phones, tablets, and desktops!
+  // ===== 4 UNIQUE LEVELS WITH HARMONIC BASE HUES FOR GRADIENT FLOW =====
   const LEVELS = [
     {
       id: 0,
       num: '01',
-      name: 'CYAN PULSE',
-      tag: 'SONAR · SPIRALS',
+      name: { ru: 'ЦИАН-ПУЛЬС', en: 'CYAN PULSE' },
+      tag: { ru: 'БАСТИОНЫ · СПИРАЛИ', en: 'BASTIONS · SPIRALS' },
+      baseHue: 186,
+      hueSwing: 36,     // Flows gracefully: Aquamarine <-> Cyan <-> Electric Azure
+      huePartner: 34,   // Companion gradient lobe offset
       bg: '#002228',
       bgMid: '#00171c',
       bgDeep: '#000c0f',
       accent: '#00f5ff',
-      rim: '#c8ffff',
+      rim: '#d4ffff',
       sideShade: '#007480',
-      gridCol: 'rgba(0, 245, 255, 0.08)',
       bpm: 122,
       baseSpeed: 120,
       baseSpin: 0.34,
@@ -570,18 +773,20 @@
     {
       id: 1,
       num: '02',
-      name: 'CRIMSON PHANTOM',
-      tag: 'RADAR · MIRAGE',
+      name: { ru: 'АЛЫЙ МИРАЖ', en: 'CRIMSON PHANTOM' },
+      tag: { ru: 'РАДАР · СКРЫТЫЕ ПЛИТЫ', en: 'RADAR · DISGUISED WALLS' },
+      baseHue: 352,
+      hueSwing: 32,     // Flows gracefully: Rose-Magenta <-> Crimson <-> Warm Coral-Amber
+      huePartner: -28,
       bg: '#240208',
       bgMid: '#160004',
       bgDeep: '#0b0002',
       accent: '#ff1e3c',
-      rim: '#ffb8c4',
+      rim: '#ffc2cc',
       sideShade: '#7d0a1c',
-      gridCol: 'rgba(255, 30, 60, 0.09)',
       bpm: 128,
-      baseSpeed: 128,
-      baseSpin: -0.40,
+      baseSpeed: 126,
+      baseSpin: -0.38,
       camProfile: 'bank',
       notes: [51.91, 51.91, 61.74, 69.3, 77.78, 69.3, 61.74, 58.27],
       lead: [207.65, 246.94, 311.13, 369.99, 415.3, 369.99, 311.13, 277.18]
@@ -589,18 +794,20 @@
     {
       id: 2,
       num: '03',
-      name: 'GOLD ECLIPSE',
-      tag: 'CLOCKWORK · LASERS',
+      name: { ru: 'ЗОЛОТОЙ МЕХАНИЗМ', en: 'GOLD ECLIPSE' },
+      tag: { ru: 'ШЕСТЕРНИ · ЛАЗЕРЫ', en: 'GEARS · LASERS' },
+      baseHue: 48,
+      hueSwing: 30,     // Flows gracefully: Warm Amber <-> Solar Gold <-> Luminous Lime-Gold
+      huePartner: -24,
       bg: '#201900',
       bgMid: '#140f00',
       bgDeep: '#0a0700',
       accent: '#ffd400',
-      rim: '#fff6be',
+      rim: '#fff6c4',
       sideShade: '#856900',
-      gridCol: 'rgba(255, 212, 0, 0.08)',
       bpm: 132,
-      baseSpeed: 134,
-      baseSpin: 0.44,
+      baseSpeed: 132,
+      baseSpin: 0.42,
       camProfile: 'iso',
       notes: [58.27, 58.27, 69.3, 77.78, 87.31, 77.78, 69.3, 65.41],
       lead: [233.08, 277.18, 349.23, 415.3, 466.16, 415.3, 349.23, 311.13]
@@ -608,18 +815,20 @@
     {
       id: 3,
       num: '04',
-      name: 'VIOLET DUALITY',
-      tag: 'TWIN CLONE · 180°',
+      name: { ru: 'ДВОЙНАЯ ПРИЗМА', en: 'VIOLET DUALITY' },
+      tag: { ru: 'КЛОН 180° · КРЫЛЬЯ', en: 'TWIN 180° · WINGS' },
+      baseHue: 278,
+      hueSwing: 40,     // Flows gracefully: Royal Indigo <-> Violet <-> Orchid-Rose
+      huePartner: -42,
       bg: '#19052e',
       bgMid: '#10021f',
       bgDeep: '#070110',
       accent: '#ca4eff',
-      rim: '#f0ccff',
+      rim: '#f2d4ff',
       sideShade: '#621a8c',
-      gridCol: 'rgba(202, 78, 255, 0.09)',
       bpm: 130,
-      baseSpeed: 124,
-      baseSpin: 0.38,
+      baseSpeed: 122,
+      baseSpin: 0.36,
       camProfile: 'wave',
       notes: [49, 58.27, 65.41, 73.42, 87.31, 73.42, 65.41, 58.27],
       lead: [196, 233.08, 293.66, 349.23, 392, 349.23, 293.66, 261.63]
@@ -632,10 +841,41 @@
     { id: 'X', price: 50 }
   ];
   const PERKS = [
-    { id: 'magnet', name: 'MAGNET', sub: 'PULLS COINS', price: 30 },
-    { id: 'phasePlus', name: 'PHASE+', sub: '4.0S SHIELD', price: 45 },
-    { id: 'stabilizer', name: 'STABILIZER', sub: 'MAX 1.55X SIZE', price: 60 }
+    { id: 'magnet', price: 30 },
+    { id: 'phasePlus', price: 45 },
+    { id: 'stabilizer', price: 60 }
   ];
+
+  // ===== DYNAMIC HSL PALETTE ENGINE (SMOOTH GRADIENT IRIDESCENCE AROUND BASE HUE) =====
+  function hsl(h, s, l, a = 1) {
+    h = ((h % 360) + 360) % 360;
+    return a >= 0.999 ? `hsl(${h.toFixed(1)}, ${s}%, ${l}%)` : `hsla(${h.toFixed(1)}, ${s}%, ${l}%, ${a.toFixed(3)})`;
+  }
+
+  function getDynamicPalette() {
+    const h0 = curLvl.baseHue;
+    const c = chromaAmt; // 0..1 smooth envelope during 20-30s (and harmonic recurrences)
+    const drift1 = Math.sin(chromaPhase * 0.95) * curLvl.hueSwing * c;
+    const drift2 = Math.cos(chromaPhase * 0.65) * (curLvl.hueSwing * 0.85) * c;
+    const hA = h0 + drift1;
+    const hB = h0 + curLvl.huePartner * (0.25 + 0.75 * c) + drift2;
+    const hC = h0 - curLvl.huePartner * 0.65 * c + Math.sin(chromaPhase * 0.5) * 18 * c;
+
+    return {
+      hA, hB, hC,
+      accentA: c < 0.01 ? curLvl.accent : hsl(hA, 98, 56),
+      accentB: c < 0.01 ? curLvl.accent : hsl(hB, 96, 60),
+      sideA: c < 0.01 ? curLvl.sideShade : hsl(hA, 85, 27),
+      sideB: c < 0.01 ? curLvl.sideShade : hsl(hB, 80, 24),
+      rim: c < 0.01 ? curLvl.rim : hsl((hA + hB) * 0.5, 100, 88),
+      bgInner: c < 0.01 ? curLvl.bg : hsl(hA, 78, 12),
+      bgMid: c < 0.01 ? curLvl.bgMid : hsl(hB, 72, 7),
+      bgDeep: c < 0.01 ? curLvl.bgDeep : hsl(hC, 75, 4),
+      lobe1: hsl(hA, 95, 52, 0.24 * c),
+      lobe2: hsl(hB, 95, 55, 0.22 * c),
+      lobe3: hsl(hC, 90, 50, 0.16 * c)
+    };
+  }
 
   // ===== DOM & STAGE (STRICT LANDSCAPE + NORMALIZED VIRTUAL ARENA) =====
   const stage = document.getElementById('stage');
@@ -643,10 +883,12 @@
   const ctx = canvas.getContext('2d', { alpha: false });
   const timerBox = document.getElementById('timerBox');
   const hudTopLeft = document.getElementById('hudTopLeft');
+  const bestHud = document.getElementById('bestHud');
   const coinHud = document.getElementById('coinHud');
   const eventBanner = document.getElementById('eventBanner');
   const menuOverlay = document.getElementById('menuOverlay');
   const shopModal = document.getElementById('shopModal');
+  const settingsModal = document.getElementById('settingsModal');
   const overOverlay = document.getElementById('overOverlay');
 
   const VIRTUAL_H = 520;
@@ -715,9 +957,9 @@
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(strong ? 160 : 130, now);
+    osc.frequency.setValueAtTime(strong ? 156 : 128, now);
     osc.frequency.exponentialRampToValueAtTime(36, now + 0.13);
-    g.gain.setValueAtTime(strong ? 0.62 : 0.42, now);
+    g.gain.setValueAtTime(strong ? 0.6 : 0.42, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
     osc.connect(g);
     g.connect(masterGain);
@@ -725,18 +967,18 @@
     osc.stop(now + 0.17);
   }
 
-  function playBass(freq, dur, hyper) {
+  function playBass(freq, dur, lush) {
     if (!audioCtx || !save.sound) return;
     const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const filt = audioCtx.createBiquadFilter();
     const g = audioCtx.createGain();
-    osc.type = hyper ? 'sawtooth' : 'triangle';
+    osc.type = lush ? 'sawtooth' : 'triangle';
     osc.frequency.setValueAtTime(freq, now);
     filt.type = 'lowpass';
-    filt.frequency.setValueAtTime(hyper ? 1500 : 600, now);
-    filt.frequency.exponentialRampToValueAtTime(210, now + dur);
-    g.gain.setValueAtTime(hyper ? 0.2 : 0.26, now);
+    filt.frequency.setValueAtTime(lush ? 1150 : 600, now);
+    filt.frequency.exponentialRampToValueAtTime(220, now + dur);
+    g.gain.setValueAtTime(lush ? 0.18 : 0.26, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + dur);
     osc.connect(filt);
     filt.connect(g);
@@ -745,14 +987,30 @@
     osc.stop(now + dur + 0.02);
   }
 
+  function playShimmerPad(freq, dur) {
+    if (!audioCtx || !save.sound) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq * 2, now);
+    g.gain.setValueAtTime(0.001, now);
+    g.gain.linearRampToValueAtTime(0.085, now + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur * 1.4);
+    osc.connect(g);
+    g.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + dur * 1.5);
+  }
+
   function playLead(freq, dur) {
     if (!audioCtx || !save.sound) return;
     const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
-    osc.type = 'square';
+    osc.type = 'triangle';
     osc.frequency.setValueAtTime(freq, now);
-    g.gain.setValueAtTime(0.08, now);
+    g.gain.setValueAtTime(0.1, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + dur);
     osc.connect(g);
     g.connect(masterGain);
@@ -803,6 +1061,12 @@
       osc.frequency.setValueAtTime(190 + Math.random() * 70, now);
       g.gain.setValueAtTime(0.05, now);
       g.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    } else if (type === 'vanish') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(540, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.14);
+      g.gain.setValueAtTime(0.09, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
     } else if (type === 'tick') {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(980, now);
@@ -836,7 +1100,7 @@
   }
 
   function vibe(ms) {
-    if (navigator.vibrate) {
+    if (save.vibe && navigator.vibrate) {
       try { navigator.vibrate(ms); } catch (_) {}
     }
   }
@@ -864,14 +1128,70 @@
     return d >= 0 && d <= span;
   }
 
-  // ===== GAME STATE (ALL IN VIRTUAL ARENA UNITS) =====
+  // ===== ARCHITECTURAL SHAPE PROFILE ENGINE (100% SYNCED RENDER + COLLISION!) =====
+  // Given a wall and normalized angular position f in [0..1], returns { rIn, rOut }
+  function getWallRadialProfile(w, f) {
+    let rIn = w.r + w.vibeOff;
+    let rOut = rIn + w.thick;
+
+    if (w.profile === 'bastion') {
+      // Iconic stepped monolith / turret directly inspired by reference image_b492a4.png!
+      // Solid broad base + towering protruding central turret + crisp shoulder steps
+      if (f > 0.24 && f < 0.76) {
+        rOut += w.turretH || 46;
+      } else if (f > 0.14 && f < 0.86) {
+        rOut += (w.turretH || 46) * 0.38;
+      }
+    } else if (w.profile === 'fortress') {
+      // Stepped battlement wall (outer ring of reference image_b492a4.png): crisp alternating blocks
+      const tier = Math.floor(f * 5);
+      const bump = (tier === 1 || tier === 3) ? (w.turretH || 28) : (tier === 2 ? 12 : 0);
+      rOut += bump;
+      if (tier === 2) rIn -= 6;
+    } else if (w.profile === 'blade') {
+      // Swept aerodynamic turbine fin / wedge (narrow tip -> thick curved anvil)
+      const t = w.flip ? (1 - f) : f;
+      const extra = Math.pow(t, 1.35) * (w.turretH || 44);
+      rOut += extra;
+      rIn += (1 - t) * 10;
+    } else if (w.profile === 'chevron') {
+      // Faceted crystalline spearhead / diamond ridge
+      const peak = 1 - Math.abs(f * 2 - 1);
+      rOut += peak * (w.turretH || 34);
+      rIn -= peak * 9;
+    } else if (w.profile === 'notch') {
+      // Armored shield with carved inner pocket / alcove
+      if (f > 0.30 && f < 0.70) {
+        rIn += Math.min(w.thick * 0.48, 22);
+        rOut += 14;
+      }
+    } else if (w.profile === 'wing') {
+      // Sculptural swept wing for Level 4 Dual Clone (tapers elegantly at both ends, swells in center)
+      const bell = Math.sin(f * Math.PI);
+      rOut += bell * (w.turretH || 30);
+      rIn += (1 - bell) * 8;
+    } else if (w.profile === 'piston') {
+      // Level 3 clockwork radial hammer that rhythmically pumps outward & inward in sync with beat
+      const pump = (0.5 + 0.5 * Math.sin(runTime * 3.0 + w.phase)) * 18;
+      if (f > 0.22 && f < 0.78) {
+        rOut += pump + 16;
+      }
+    }
+
+    return {
+      rIn: Math.max(CORE_R * 0.86, rIn),
+      rOut: Math.max(CORE_R * 0.86 + 3, rOut)
+    };
+  }
+
+  // ===== GAME STATE (NORMALIZED VIRTUAL ARENA UNITS) =====
   const CORE_R = 36;
   const ORBIT_R = 60;
   const PLAYER_BASE_H = 11.5;
   const PLAYER_BASE_W = 10.5;
   const TURN_SPEED = 6.25;
 
-  let mode = 'menu'; // 'menu' | 'play' | 'dying' | 'over'
+  let mode = 'menu';
   let curLvl = LEVELS[save.selectedLevel] || LEVELS[0];
   let runTime = 0;
   let runCoins = 0;
@@ -884,9 +1204,10 @@
   let lastSpeedTier = 0;
   let scrapeCooldown = 0;
 
-  // 3D Camera & Ambient FX state
+  // 3D Camera & Chroma Gradient Flow state (replaces 3D Hyper-Tunnel!)
   let depth3D = 0;
-  let hyperAmt = 0;
+  let chromaAmt = 0;    // 0..1 smooth iridescence during 20-30s (and 50-60s, etc.)
+  let chromaPhase = 0;
   let camTiltX = 0;
   let camTiltY = 0;
   let camZoom = 1;
@@ -897,14 +1218,10 @@
     bgParticles.push({
       ang: Math.random() * TAU,
       r: 50 + Math.random() * 440,
-      spd: 14 + Math.random() * 34,
+      spd: 14 + Math.random() * 32,
       sz: 1.2 + Math.random() * 2.2,
       alpha: 0.2 + Math.random() * 0.55
     });
-  }
-  let warpStreaks = [];
-  for (let i = 0; i < 40; i++) {
-    warpStreaks.push({ ang: Math.random() * TAU, r: Math.random(), spd: 0.55 + Math.random() * 1.0 });
   }
 
   let player = {
@@ -937,7 +1254,7 @@
   let lastSafeGapAng = -Math.PI / 2;
   let nextRequiredClearance = 0;
 
-  // ===== INPUT (HOLD L / R + MULTITOUCH + KEYBOARD) =====
+  // ===== INPUT =====
   let keyL = false, keyR = false;
   const activeTouches = new Map();
   let mouseSide = null;
@@ -993,7 +1310,7 @@
   });
   window.addEventListener('mouseup', () => { mouseSide = null; });
 
-  // ===== UI RENDERING =====
+  // ===== UI & LOCALIZATION =====
   function formatTime(t) {
     const secs = Math.floor(t);
     const cs = Math.floor((t - secs) * 100);
@@ -1006,16 +1323,56 @@
     return '';
   }
 
-  function applyTheme(lvl) {
+  function applyTheme(lvl, accentOverride = null) {
+    const acc = accentOverride || lvl.accent;
     document.documentElement.style.setProperty('--bg', lvl.bg);
-    document.documentElement.style.setProperty('--accent', lvl.accent);
+    document.documentElement.style.setProperty('--accent', acc);
     const metaTheme = document.querySelector('meta[name="theme-color"]');
     if (metaTheme) metaTheme.setAttribute('content', lvl.bgDeep);
   }
 
+  function applyLanguageUI() {
+    const t = tr();
+    document.documentElement.lang = save.lang;
+    document.getElementById('playBtn').textContent = t.play;
+    document.getElementById('pauseBackBtn').textContent = t.menu;
+    document.getElementById('overMenuBtn').textContent = t.menu;
+    document.getElementById('retryBtn').textContent = t.retry;
+    document.getElementById('shopOpenBtn').textContent = t.shop;
+    document.getElementById('settingsOpenBtn').textContent = t.settings;
+    document.getElementById('installBtn').textContent = t.install;
+    document.getElementById('shopTitle').textContent = t.shop;
+    document.getElementById('shopCloseBtn').textContent = t.close;
+    document.getElementById('skinsLabel').textContent = t.skins;
+    document.getElementById('perksLabel').textContent = t.perks;
+    document.getElementById('settingsTitle').textContent = t.settings;
+    document.getElementById('settingsCloseBtn').textContent = t.close;
+    document.getElementById('setLangLabel').textContent = t.setLang;
+    document.getElementById('setSoundLabel').textContent = t.setSound;
+    document.getElementById('setVibeLabel').textContent = t.setVibe;
+    document.getElementById('soundOnBtn').textContent = t.on;
+    document.getElementById('soundOffBtn').textContent = t.off;
+    document.getElementById('vibeOnBtn').textContent = t.on;
+    document.getElementById('vibeOffBtn').textContent = t.off;
+    document.getElementById('hintTurn').textContent = t.hintTurn;
+    document.getElementById('hintPhase').textContent = t.hintPhase;
+    renderSettingsButtons();
+    renderMenu();
+    renderShop();
+  }
+
+  function renderSettingsButtons() {
+    document.getElementById('langRuBtn').classList.toggle('active', save.lang === 'ru');
+    document.getElementById('langEnBtn').classList.toggle('active', save.lang === 'en');
+    document.getElementById('soundOnBtn').classList.toggle('active', !!save.sound);
+    document.getElementById('soundOffBtn').classList.toggle('active', !save.sound);
+    document.getElementById('vibeOnBtn').classList.toggle('active', !!save.vibe);
+    document.getElementById('vibeOffBtn').classList.toggle('active', !save.vibe);
+  }
+
   function renderMenu() {
+    const t = tr();
     document.getElementById('menuCoins').textContent = `◈ ${save.coins}`;
-    document.getElementById('soundBtn').textContent = save.sound ? 'SFX: ON' : 'SFX: OFF';
     const grid = document.getElementById('levelsGrid');
     grid.innerHTML = '';
     LEVELS.forEach((lvl, idx) => {
@@ -1027,11 +1384,11 @@
       card.innerHTML = `
         <div class="lvlNum"><span>${lvl.num}</span><span class="medal ${med}"></span></div>
         <div>
-          <div class="lvlName">${lvl.name}</div>
-          <div class="lvlTag">${lvl.tag}</div>
+          <div class="lvlName">${lvl.name[save.lang]}</div>
+          <div class="lvlTag">${lvl.tag[save.lang]}</div>
         </div>
         <div class="lvlFoot">
-          <span>BEST</span>
+          <span>${t.best}</span>
           <span>${formatTime(best)}</span>
         </div>
       `;
@@ -1048,6 +1405,7 @@
   }
 
   function renderShop() {
+    const t = tr();
     document.getElementById('shopCoins').textContent = `◈ ${save.coins}`;
     const sRow = document.getElementById('skinsRow');
     sRow.innerHTML = '';
@@ -1058,7 +1416,7 @@
       el.className = 'shopItem' + (owned ? ' owned' : '') + (active ? ' active' : '');
       el.innerHTML = `
         <div class="skinGlyph">${s.id}</div>
-        <div class="priceTag">${active ? 'EQUIPPED' : owned ? 'EQUIP' : `◈ ${s.price}`}</div>
+        <div class="priceTag">${active ? t.equipped : owned ? t.equip : `◈ ${s.price}`}</div>
       `;
       el.onclick = () => {
         ensureAudio();
@@ -1084,12 +1442,13 @@
     pRow.innerHTML = '';
     PERKS.forEach((p) => {
       const owned = !!save.perks[p.id];
+      const meta = t.perksMeta[p.id];
       const el = document.createElement('div');
       el.className = 'shopItem' + (owned ? ' active' : '');
       el.innerHTML = `
-        <div class="perkName">${p.name}</div>
-        <div class="perkSub">${p.sub}</div>
-        <div class="priceTag">${owned ? 'ACTIVE' : `◈ ${p.price}`}</div>
+        <div class="perkName">${meta.name}</div>
+        <div class="perkSub">${meta.sub}</div>
+        <div class="priceTag">${owned ? t.active : `◈ ${p.price}`}</div>
       `;
       el.onclick = () => {
         ensureAudio();
@@ -1116,6 +1475,8 @@
 
   function openMenu() {
     mode = 'menu';
+    chromaAmt = 0;
+    applyTheme(curLvl);
     activeTouches.clear();
     mouseSide = null;
     keyL = false;
@@ -1124,27 +1485,28 @@
     hudTopLeft.style.display = 'none';
     overOverlay.classList.add('hidden');
     shopModal.classList.add('hidden');
+    settingsModal.classList.add('hidden');
     menuOverlay.classList.remove('hidden');
     eventBanner.classList.remove('show');
     renderMenu();
   }
 
+  // Button bindings
   document.getElementById('playBtn').onclick = () => { ensureAudio(); startRun(save.selectedLevel); };
   document.getElementById('retryBtn').onclick = () => { ensureAudio(); startRun(curLvl.id); };
   document.getElementById('overMenuBtn').onclick = () => openMenu();
   document.getElementById('pauseBackBtn').onclick = () => openMenu();
-  document.getElementById('shopOpenBtn').onclick = () => {
-    ensureAudio();
-    renderShop();
-    shopModal.classList.remove('hidden');
-  };
+  document.getElementById('shopOpenBtn').onclick = () => { ensureAudio(); renderShop(); shopModal.classList.remove('hidden'); };
   document.getElementById('shopCloseBtn').onclick = () => shopModal.classList.add('hidden');
-  document.getElementById('soundBtn').onclick = () => {
-    save.sound = !save.sound;
-    if (save.sound) ensureAudio();
-    persist();
-    renderMenu();
-  };
+  document.getElementById('settingsOpenBtn').onclick = () => { ensureAudio(); renderSettingsButtons(); settingsModal.classList.remove('hidden'); };
+  document.getElementById('settingsCloseBtn').onclick = () => settingsModal.classList.add('hidden');
+
+  document.getElementById('langRuBtn').onclick = () => { save.lang = 'ru'; persist(); applyLanguageUI(); };
+  document.getElementById('langEnBtn').onclick = () => { save.lang = 'en'; persist(); applyLanguageUI(); };
+  document.getElementById('soundOnBtn').onclick = () => { save.sound = true; ensureAudio(); persist(); renderSettingsButtons(); };
+  document.getElementById('soundOffBtn').onclick = () => { save.sound = false; persist(); renderSettingsButtons(); };
+  document.getElementById('vibeOnBtn').onclick = () => { save.vibe = true; vibe(15); persist(); renderSettingsButtons(); };
+  document.getElementById('vibeOffBtn').onclick = () => { save.vibe = false; persist(); renderSettingsButtons(); };
 
   // ===== START RUN =====
   function startRun(lvlIdx) {
@@ -1160,7 +1522,8 @@
     deathTimer = 0;
     lastSpeedTier = 0;
     depth3D = 0;
-    hyperAmt = 0;
+    chromaAmt = 0;
+    chromaPhase = 0;
     camTiltX = 0;
     camTiltY = 0;
     camZoom = 1;
@@ -1200,24 +1563,28 @@
     mouseSide = null;
     menuOverlay.classList.add('hidden');
     shopModal.classList.add('hidden');
+    settingsModal.classList.add('hidden');
     overOverlay.classList.add('hidden');
     timerBox.style.display = 'block';
     hudTopLeft.style.display = 'flex';
+    bestHud.textContent = `${tr().best}: ${formatTime(save.best[curLvl.id] || 0)}`;
     coinHud.textContent = `◈ ${save.coins}`;
-    showBanner(`${curLvl.num} · ${curLvl.name}`, 1.6);
+    showBanner(`${curLvl.num} · ${curLvl.name[save.lang]}`, 1.6);
   }
 
-  // ===== MATHEMATICALLY GUARANTEED FAIR SPATIAL WAVE SPAWNER =====
+  // ===== ARCHITECTURAL FAIR SPATIAL WAVE GENERATOR =====
   function getSpawnRadius() {
     const vW = W / arenaScale;
     const vH = H / arenaScale;
-    return Math.hypot(vW, vH) * 0.54 + 34;
+    return Math.hypot(vW, vH) * 0.54 + 42;
   }
 
   function getOutermostWallOuterR() {
     let maxR = 0;
     for (let i = 0; i < walls.length; i++) {
-      const outer = walls[i].r + walls[i].thick;
+      const w = walls[i];
+      const extra = w.turretH || 0;
+      const outer = w.r + w.thick + extra;
       if (outer > maxR) maxR = outer;
     }
     return maxR;
@@ -1230,18 +1597,21 @@
       start: normAng(opts.start),
       span: clamp(opts.span, 0.14, TAU - 0.14),
       rotSpd: opts.rotSpd || 0,
-      kind: opts.kind || 'arc',        // 'arc' | 'gear' | 'phantom' | 'split' | 'breathe'
+      kind: opts.kind || 'arc',          // 'arc' | 'gear' | 'phantom' | 'split' | 'breathe'
+      profile: opts.profile || 'arc',    // 'arc' | 'bastion' | 'fortress' | 'blade' | 'chevron' | 'notch' | 'wing' | 'piston'
+      turretH: opts.turretH || 0,
+      flip: !!opts.flip,
       baseStart: normAng(opts.start),
       baseSpan: clamp(opts.span, 0.14, TAU - 0.14),
-      oscAmp: opts.oscAmp || 0.16,
+      oscAmp: opts.oscAmp || 0.15,
       phase: opts.phase || 0,
-      phantomTriggerR: opts.phantomTriggerR || 285,
       phantomAlpha: 1,
+      vanishSfxDone: false,
       vanished: false,
       hitFlash: 0,
       vibeOff: 0,
       nearAwarded: false,
-      height3D: opts.height3D || 32
+      height3D: opts.height3D || 34
     });
   }
 
@@ -1249,14 +1619,12 @@
     coins.push({ r, ang: normAng(ang), taken: false, pulse: Math.random() * TAU });
   }
 
-  // Helper: creates a single ring with a guaranteed gap centered at `gapCenter` of width `gapWidth`
   function addRingWithGap(r, thick, gapCenter, gapWidth, extra = {}) {
     const start = normAng(gapCenter + gapWidth * 0.5);
     const span = TAU - gapWidth;
     addWall({ r, thick, start, span, ...extra });
   }
 
-  // Helper: creates a 180°-symmetric pair of walls with TWO gaps centered at `gapCenter` and `gapCenter + PI`
   function addSymmetricPair(r, thick, gapCenter, gapWidth, extra = {}) {
     const startA = normAng(gapCenter + gapWidth * 0.5);
     const span = Math.PI - gapWidth;
@@ -1267,10 +1635,9 @@
   function spawnFairWave(wallSpd) {
     const R0 = getSpawnRadius();
     const t = runTime;
-    const ease = clamp(1 - t / 42, 0, 1); // Gentle difficulty ramp over 42s
+    const ease = clamp(1 - t / 44, 0, 1);
     patternCount++;
 
-    // Choose a reachable next gap center relative to lastSafeGapAng (never forcing impossible snaps!)
     const isDualLvl = (curLvl.id === 3);
     const maxDelta = isDualLvl ? 0.92 : 1.38;
     const minDelta = 0.42;
@@ -1278,214 +1645,195 @@
     const delta = dir * (minDelta + Math.random() * (maxDelta - minDelta));
     const gapAng = normAng(lastSafeGapAng + delta);
 
-    // Guaranteed generous gap width (always >= 2.6x enlarged 2x player width!)
     const stdGap = lerp(1.18, 1.62, ease);
     const dualGap = lerp(1.06, 1.34, ease);
 
     let exitGapAng = gapAng;
     let extraClearance = 0;
 
-    // --- 3D HYPER-TUNNEL (20.0 - 30.0s): Wide, rhythmic, exhilarating warp corridors ---
-    if (t >= 19.0 && t <= 29.4) {
-      if (isDualLvl) {
-        const g = 1.24;
-        const step = dir * 0.36;
-        for (let k = 0; k < 3; k++) {
-          const a = normAng(gapAng + k * step);
-          const r = R0 + k * 108;
-          addSymmetricPair(r, 24, a, g, { height3D: 54 });
-          if (k === 1) {
-            addCoin(r + 12, a);
-            addCoin(r + 12, a + Math.PI);
-          }
-          exitGapAng = a;
-        }
-        extraClearance = 40;
-      } else {
-        const g = 1.50;
-        const step = dir * 0.44;
-        for (let k = 0; k < 3; k++) {
-          const a = normAng(gapAng + k * step);
-          const r = R0 + k * 104;
-          addRingWithGap(r, 24, a, g, { height3D: 56 });
-          if (k === 1) addCoin(r + 12, a);
-          exitGapAng = a;
-        }
-        extraClearance = 40;
-      }
-    }
-
-    // --- LEVEL 04: VIOLET DUALITY (Always 100% 180°-symmetric so solo & dual clone are always fair!) ---
-    else if (curLvl.id === 3) {
-      const pick = patternCount % 4;
+    // --- LEVEL 01: ЦИАН-ПУЛЬС (Reference-inspired Stepped Bastion Monoliths, Fortress Rings, Turbine Blades, Chevron Crystals) ---
+    if (curLvl.id === 0) {
+      const pick = patternCount % 5;
       if (pick === 0) {
-        // Twin Breathing Gates (oscAmp capped so narrowest opening is STILL >= 0.96 rad!)
-        const safeBaseGap = Math.max(1.22, dualGap);
-        addSymmetricPair(R0, 26, gapAng, safeBaseGap, { kind: 'breathe', oscAmp: 0.12, phase: 0, height3D: 38 });
-        if (Math.random() < 0.6) {
-          addCoin(R0 + 13, gapAng);
-          addCoin(R0 + 13, gapAng + Math.PI);
-        }
-        exitGapAng = gapAng;
+        // Signature Stepped Bastion Monolith (just like image_b492a4.png!) + Outer Stepped Fortress Ring
+        const monSpan = lerp(2.65, 2.35, ease);
+        const monStart = normAng(gapAng + stdGap * 0.55);
+        addWall({ r: R0, thick: 72, start: monStart, span: monSpan, profile: 'bastion', turretH: 48, height3D: 48 });
+        // Companion stepped outer fortress arc framing it
+        addRingWithGap(R0 + 138, 34, normAng(gapAng + dir * 0.72), stdGap + 0.14, { profile: 'fortress', turretH: 30, height3D: 36 });
+        if (Math.random() < 0.65) addCoin(R0 + 36, gapAng);
+        exitGapAng = normAng(gapAng + dir * 0.72);
+        extraClearance = 38;
       } else if (pick === 1) {
-        // Flowing Twin Staircase (gentle 0.42 rad steps, generous 112u radial spacing)
-        const step = dir * 0.42;
-        for (let k = 0; k < 3; k++) {
-          const a = normAng(gapAng + k * step);
-          const r = R0 + k * 112;
-          addSymmetricPair(r, 22, a, dualGap + 0.08, { height3D: 34 + k * 4 });
-          if (k === 1) addCoin(r + 11, a);
-          exitGapAng = a;
-        }
-        extraClearance = 35;
+        // Twin Swept Turbine Blades (asymmetric tapered wedges)
+        const bladeGap = lerp(1.08, 1.36, ease);
+        addSymmetricPair(R0, 22, gapAng, bladeGap, { profile: 'blade', turretH: 48, flip: dir > 0, height3D: 42 });
+        if (Math.random() < 0.55) addCoin(R0 + 28, gapAng);
+        exitGapAng = gapAng;
+        extraClearance = 24;
       } else if (pick === 2) {
-        // Symmetric 4-Way Prism Cross (four 0.72+ rad openings, gentle slow rotation)
-        const open = lerp(0.72, 0.86, ease);
-        const span = Math.PI * 0.5 - open;
-        const rot = dir * 0.24;
-        for (let k = 0; k < 4; k++) {
-          addWall({ r: R0, thick: 26, start: gapAng + open * 0.5 + k * Math.PI * 0.5, span, rotSpd: rot, height3D: 36 });
+        // Stepped Fortress Battlement Ring (alternating thick/thin castle blocks)
+        addRingWithGap(R0, 28, gapAng, stdGap, { profile: 'fortress', turretH: 32, height3D: 40 });
+        if (Math.random() < 0.5) addCoin(R0 + 18, gapAng);
+        exitGapAng = gapAng;
+      } else if (pick === 3) {
+        // Crystalline Chevron Cloverleaf (3 pointed diamond spearheads) + notched follow-up
+        const open = lerp(0.80, 0.96, ease);
+        const span = TAU / 3 - open;
+        for (let k = 0; k < 3; k++) {
+          addWall({ r: R0, thick: 28, start: gapAng + open * 0.5 + k * (TAU / 3), span, profile: 'chevron', turretH: 30, height3D: 38 });
         }
-        exitGapAng = gapAng;
+        const a2 = normAng(gapAng + dir * 0.68);
+        addRingWithGap(R0 + 136, 36, a2, stdGap + 0.12, { profile: 'notch', height3D: 36 });
+        exitGapAng = a2;
+        extraClearance = 32;
       } else {
-        // Twin Stepped-Thickness Prism Anvils
-        const span = Math.PI - dualGap;
-        const sA = normAng(gapAng + dualGap * 0.5);
-        addWall({ r: R0, thick: 40, start: sA, span: span * 0.5, height3D: 44 });
-        addWall({ r: R0 + 10, thick: 22, start: sA + span * 0.5, span: span * 0.5, height3D: 28 });
-        addWall({ r: R0, thick: 40, start: sA + Math.PI, span: span * 0.5, height3D: 44 });
-        addWall({ r: R0 + 10, thick: 22, start: sA + Math.PI + span * 0.5, span: span * 0.5, height3D: 28 });
-        exitGapAng = gapAng;
-      }
-    }
-
-    // --- LEVEL 01: CYAN PULSE (Classic Stepped Snails, Cloverleaf, Stepped Anvils) ---
-    else if (curLvl.id === 0) {
-      const pick = patternCount % 4;
-      if (pick === 0) {
-        // Authentic Stepped Snail Spiral (steps along arc around a wide safe gap)
+        // Classic Stepped Snail Spiral with bold architectural depth
         const steps = 4;
         const arcTotal = TAU - stdGap;
         const segSpan = arcTotal / steps;
         const s0 = normAng(gapAng + stdGap * 0.5);
         for (let k = 0; k < steps; k++) {
           const idx = dir > 0 ? k : (steps - 1 - k);
-          addWall({ r: R0 + idx * 18, thick: 24 + (k % 2) * 6, start: s0 + k * segSpan, span: segSpan + 0.02, height3D: 30 + idx * 4 });
+          addWall({ r: R0 + idx * 20, thick: 26 + (k % 2) * 14, start: s0 + k * segSpan, span: segSpan + 0.02, height3D: 32 + idx * 5 });
         }
-        if (Math.random() < 0.6) addCoin(R0 + 26, gapAng);
+        addCoin(R0 + 30, gapAng);
         exitGapAng = gapAng;
+      }
+    }
+
+    // --- LEVEL 02: АЛЫЙ МИРАЖ (Disguised Solid-Looking Phantom Tiles that Vanish RIGHT in Front of Player + Massive Bastions!) ---
+    else if (curLvl.id === 1) {
+      const pick = patternCount % 4;
+      if (pick === 0) {
+        // Disguised Mirage Fortress Ring: looks like a SOLID fortress ring with a disguised mirage gate that dissolves right before impact!
+        const mirageGap = lerp(1.36, 1.70, ease);
+        addRingWithGap(R0, 32, gapAng, mirageGap, { profile: 'fortress', turretH: 26, height3D: 38 });
+        // Disguised phantom door matches thickness & solid crimson color until close to player!
+        addWall({
+          r: R0, thick: 32,
+          start: normAng(gapAng - mirageGap * 0.5 + 0.03),
+          span: mirageGap - 0.06,
+          kind: 'phantom',
+          profile: 'arc',
+          height3D: 38
+        });
+        addCoin(R0 + 16, gapAng);
+        exitGapAng = gapAng;
+        extraClearance = 32;
       } else if (pick === 1) {
-        // 3-Way Cloverleaf + Follow-Up Wide Ring (spaced 128u apart!)
-        const open = lerp(0.76, 0.94, ease);
-        const span = TAU / 3 - open;
-        for (let k = 0; k < 3; k++) {
-          addWall({ r: R0, thick: 26, start: gapAng + open * 0.5 + k * (TAU / 3), span, height3D: 34 });
-        }
-        const nextA = normAng(gapAng + dir * 0.65);
-        addRingWithGap(R0 + 128, 24, nextA, stdGap + 0.1, { height3D: 30 });
-        if (Math.random() < 0.55) addCoin(R0 + 140, nextA);
-        exitGapAng = nextA;
+        // Dual Massive Bastion Wedges + Disguised Mirage Seal across the corridor!
+        const wedgeSpan = lerp(1.12, 0.96, ease);
+        const laneHalf = (Math.PI - wedgeSpan) * 0.5;
+        addWall({ r: R0, thick: 74, start: gapAng + laneHalf, span: wedgeSpan, profile: 'bastion', turretH: 40, height3D: 48 });
+        addWall({ r: R0, thick: 74, start: gapAng + laneHalf + Math.PI, span: wedgeSpan, profile: 'bastion', turretH: 40, height3D: 48 });
+        // Disguised bar blocking the gap, dissolves dramatically right in front of the player
+        addWall({ r: R0 + 16, thick: 28, start: gapAng - laneHalf + 0.04, span: laneHalf * 2 - 0.08, kind: 'phantom', height3D: 36 });
+        addCoin(R0 + 38, gapAng);
+        exitGapAng = gapAng;
+        extraClearance = 44;
+      } else if (pick === 2) {
+        // Splitting / Rejoining Armored Blades + Disguised Decoy
+        const baseGap = lerp(1.14, 1.40, ease);
+        addSymmetricPair(R0, 26, gapAng, baseGap, { kind: 'split', profile: 'blade', turretH: 32, oscAmp: 0.14, flip: dir > 0, height3D: 38 });
+        exitGapAng = gapAng;
+        extraClearance = 24;
+      } else {
+        // Notched Bastion + Disguised Inner Phantom Plug
+        const mirageW = lerp(1.30, 1.56, ease);
+        addRingWithGap(R0, 42, gapAng, mirageW, { profile: 'notch', height3D: 42 });
+        addWall({ r: R0 + 6, thick: 30, start: normAng(gapAng - mirageW * 0.5 + 0.04), span: mirageW - 0.08, kind: 'phantom', height3D: 40 });
+        exitGapAng = gapAng;
+        extraClearance = 30;
+      }
+    }
+
+    // --- LEVEL 03: ЗОЛОТОЙ МЕХАНИЗМ (Clockwork Gears, Pumping Radial Pistons, Chevron Blades + Core Lasers) ---
+    else if (curLvl.id === 2) {
+      const pick = patternCount % 4;
+      if (pick === 0) {
+        // Rotating Clockwork Gear Crown
+        const g = lerp(1.28, 1.62, ease);
+        const rot = dir * 0.26;
+        addRingWithGap(R0, 30, gapAng, g, { kind: 'gear', rotSpd: rot, height3D: 42 });
+        if (Math.random() < 0.6) addCoin(R0 + 15, gapAng);
+        exitGapAng = normAng(gapAng + rot * 1.4);
+      } else if (pick === 1) {
+        // Pumping Clockwork Pistons (rhythmic radial hammers!)
+        const pGap = lerp(1.12, 1.38, ease);
+        addSymmetricPair(R0, 28, gapAng, pGap, { profile: 'piston', turretH: 34, phase: 0, rotSpd: dir * 0.18, height3D: 44 });
+        addCoin(R0 + 18, gapAng);
+        exitGapAng = gapAng;
         extraClearance = 30;
       } else if (pick === 2) {
-        // Classic Stepped-Thickness Anvil Ring
-        const total = TAU - stdGap;
-        const s0 = normAng(gapAng + stdGap * 0.5);
-        addWall({ r: R0, thick: 44, start: s0, span: total * 0.46, height3D: 44 });
-        addWall({ r: R0 + 10, thick: 22, start: s0 + total * 0.46, span: total * 0.54, height3D: 28 });
-        exitGapAng = gapAng;
-      } else {
-        // Flowing 2-Step Neon Corridor
-        const a2 = normAng(gapAng + dir * 0.85);
-        addRingWithGap(R0, 24, gapAng, stdGap + 0.08, { height3D: 32 });
-        addRingWithGap(R0 + 122, 24, a2, stdGap + 0.08, { height3D: 32 });
+        // Massive Golden Bastion Turret + Counter-Rotating Outer Gear
+        const monSpan = lerp(2.45, 2.2, ease);
+        addWall({ r: R0, thick: 64, start: normAng(gapAng + stdGap * 0.55), span: monSpan, profile: 'bastion', turretH: 42, rotSpd: 0.16, height3D: 48 });
+        const a2 = normAng(gapAng + dir * 0.72);
+        addRingWithGap(R0 + 144, 26, a2, stdGap + 0.14, { kind: 'gear', rotSpd: -0.22, height3D: 36 });
         exitGapAng = a2;
+        extraClearance = 40;
+      } else {
+        // Triple Swept Golden Turbine Blades
+        const open = lerp(0.84, 1.0, ease);
+        const span = TAU / 3 - open;
+        const rot = -dir * 0.22;
+        for (let k = 0; k < 3; k++) {
+          addWall({ r: R0, thick: 24, start: gapAng + open * 0.5 + k * (TAU / 3), span, profile: 'blade', turretH: 38, rotSpd: rot, flip: dir < 0, height3D: 40 });
+        }
+        if (Math.random() < 0.55) addCoin(R0 + 16, gapAng);
+        exitGapAng = gapAng;
         extraClearance = 28;
       }
     }
 
-    // --- LEVEL 02: CRIMSON PHANTOM (Tactical Radar Wedges, Splitting Gates & Clear Holographic Mirages) ---
-    else if (curLvl.id === 1) {
+    // --- LEVEL 04: ДВОЙНАЯ ПРИЗМА (100% 180°-Symmetric Sculptural Wings, Twin Bastions, Twin Chevrons & Breathing Gates) ---
+    else {
       const pick = patternCount % 4;
       if (pick === 0) {
-        // Radar Wedges with WIDE clear corridors (2 opposite safe lanes!)
-        const wedgeSpan = lerp(1.05, 0.92, ease);
-        const laneCenter = gapAng;
-        const laneHalf = (Math.PI - wedgeSpan) * 0.5;
-        addWall({ r: R0, thick: 72, start: laneCenter + laneHalf, span: wedgeSpan, height3D: 46 });
-        addWall({ r: R0, thick: 72, start: laneCenter + laneHalf + Math.PI, span: wedgeSpan, height3D: 46 });
-        // Place a clearly glowing mirage bar across one lane that dissolves early!
-        addWall({ r: R0 + 18, thick: 22, start: laneCenter - laneHalf + 0.06, span: laneHalf * 2 - 0.12, kind: 'phantom', phantomTriggerR: 295, height3D: 28 });
-        if (Math.random() < 0.65) addCoin(R0 + 36, laneCenter);
-        exitGapAng = laneCenter;
-        extraClearance = 38;
-      } else if (pick === 1) {
-        // Full Mirage Ring: solid crimson wall + wide holographic mirage door that dissolves at r=295 -> gone by r=180!
-        const mirageGap = lerp(1.32, 1.68, ease);
-        addRingWithGap(R0, 26, gapAng, mirageGap, { height3D: 34 });
-        addWall({
-          r: R0, thick: 26,
-          start: normAng(gapAng - mirageGap * 0.5 + 0.04),
-          span: mirageGap - 0.08,
-          kind: 'phantom',
-          phantomTriggerR: 295,
-          height3D: 34
-        });
-        addCoin(R0 + 13, gapAng);
+        // Twin Sculptural Prism Wings (breathing gently, guaranteed wide safe opening!)
+        const safeBaseGap = Math.max(1.22, dualGap);
+        addSymmetricPair(R0, 26, gapAng, safeBaseGap, { kind: 'breathe', profile: 'wing', turretH: 34, oscAmp: 0.12, phase: 0, height3D: 42 });
+        if (Math.random() < 0.65) {
+          addCoin(R0 + 15, gapAng);
+          addCoin(R0 + 15, gapAng + Math.PI);
+        }
         exitGapAng = gapAng;
+        extraClearance = 24;
+      } else if (pick === 1) {
+        // Twin Stepped Bastion Monoliths (massive architectural pair at 180°!)
+        const bGap = lerp(1.16, 1.40, ease);
+        addSymmetricPair(R0, 52, gapAng, bGap, { profile: 'bastion', turretH: 36, height3D: 48 });
+        addCoin(R0 + 26, gapAng);
+        exitGapAng = gapAng;
+        extraClearance = 42;
       } else if (pick === 2) {
-        // Dynamic Splitting/Rejoining Dual Arcs (always leaves >= 1.05 rad safe corridors)
-        const baseGap = lerp(1.12, 1.38, ease);
-        addSymmetricPair(R0, 24, gapAng, baseGap, { kind: 'split', oscAmp: 0.14, phase: 0, height3D: 34 });
-        exitGapAng = gapAng;
-      } else {
-        // Crimson Stepped Snail
-        const steps = 4;
-        const seg = (TAU - stdGap) / steps;
-        const s0 = normAng(gapAng + stdGap * 0.5);
-        for (let k = 0; k < steps; k++) {
-          addWall({ r: R0 + k * 18, thick: 26, start: s0 + k * seg, span: seg + 0.02, height3D: 36 });
-        }
-        exitGapAng = gapAng;
-      }
-    }
-
-    // --- LEVEL 03: GOLD ECLIPSE (Clockwork Gears, Rotating Saw Sectors + Telegraphed Core Lasers) ---
-    else {
-      const pick = patternCount % 3;
-      if (pick === 0) {
-        // Smooth Rotating Clockwork Gear Ring
-        const g = lerp(1.28, 1.62, ease);
-        const rot = dir * 0.28;
-        addRingWithGap(R0, 28, gapAng, g, { kind: 'gear', rotSpd: rot, height3D: 40 });
-        if (Math.random() < 0.6) addCoin(R0 + 14, gapAng);
-        exitGapAng = normAng(gapAng + rot * 1.4);
-      } else if (pick === 1) {
-        // Counter-Rotating Twin Gear Pair + Spaced Outer Gear
-        const g1 = lerp(1.10, 1.36, ease);
-        addSymmetricPair(R0, 26, gapAng, g1, { kind: 'gear', rotSpd: 0.24, height3D: 38 });
-        const a2 = normAng(gapAng + dir * 0.72);
-        addRingWithGap(R0 + 126, 26, a2, stdGap + 0.12, { kind: 'gear', rotSpd: -0.22, height3D: 34 });
-        exitGapAng = a2;
-        extraClearance = 34;
-      } else {
-        // Triple Clockwork Saw Blades (3 wide openings)
-        const open = lerp(0.82, 0.98, ease);
-        const span = TAU / 3 - open;
-        const rot = -dir * 0.22;
+        // Flowing Twin Chevron Staircase (3 crystalline pairs)
+        const step = dir * 0.42;
         for (let k = 0; k < 3; k++) {
-          addWall({ r: R0, thick: 28, start: gapAng + open * 0.5 + k * (TAU / 3), span, kind: 'gear', rotSpd: rot, height3D: 42 });
+          const a = normAng(gapAng + k * step);
+          const r = R0 + k * 116;
+          addSymmetricPair(r, 22, a, dualGap + 0.08, { profile: 'chevron', turretH: 24, height3D: 34 + k * 4 });
+          if (k === 1) addCoin(r + 12, a);
+          exitGapAng = a;
         }
-        if (Math.random() < 0.55) addCoin(R0 + 14, gapAng);
+        extraClearance = 36;
+      } else {
+        // Symmetric 4-Way Swept Turbine Blades (still 100% 180°-symmetric!)
+        const open = lerp(0.74, 0.88, ease);
+        const span = Math.PI * 0.5 - open;
+        const rot = dir * 0.24;
+        for (let k = 0; k < 4; k++) {
+          addWall({ r: R0, thick: 22, start: gapAng + open * 0.5 + k * Math.PI * 0.5, span, profile: 'blade', turretH: 32, rotSpd: rot, height3D: 38 });
+        }
         exitGapAng = gapAng;
+        extraClearance = 28;
       }
     }
 
     lastSafeGapAng = exitGapAng;
-
-    // Compute exact minimum radial clearance before the NEXT wave is allowed to spawn
-    // Accounts for human reaction time + turning across maxDelta at current wall speed!
     const safeTurnTime = (maxDelta / (TURN_SPEED * 0.68)) + 0.34;
-    nextRequiredClearance = Math.max(132, safeTurnTime * wallSpd) + extraClearance;
+    nextRequiredClearance = Math.max(134, safeTurnTime * wallSpd) + extraClearance;
   }
 
   // ===== PARTICLES & SHATTER PHYSICS =====
@@ -1535,11 +1883,12 @@
   }
 
   function triggerDeath(hitAng) {
+    const pal = getDynamicPalette();
     playSfx('shatter');
     vibe([35, 30, 55]);
     hitStop = 0.08;
     shake = 13;
-    shatterAt(hitAng, player.scale, curLvl.accent);
+    shatterAt(hitAng, player.scale, pal.accentA);
     if (duality.active) {
       shatterAt(normAng(hitAng + Math.PI), player.scale, '#00f5ff');
     }
@@ -1551,10 +1900,9 @@
     persist();
   }
 
-  // ===== HONEST COLLISION: SIDE SLIDE = SAFE, FRONTAL HIT = DEATH =====
+  // ===== EXACT PROFILE-AWARE COLLISION (SIDE SLIDE = SAFE, FRONTAL HIT = DEATH) =====
   function processCloneCollisions(cloneAng, dt, wallSpd) {
     const pR = ORBIT_R + player.radialBounce;
-    // Slightly forgiving hitbox (0.82x) so grazes feel heroic instead of unfair
     const halfW = (PLAYER_BASE_W * 0.42 * player.scale) / pR;
     const noseR = pR + PLAYER_BASE_H * 0.44 * player.scale;
     const tailR = pR - PLAYER_BASE_H * 0.30 * player.scale;
@@ -1564,12 +1912,18 @@
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
       if (w.vanished) continue;
+      // Disguised phantom tiles are already dissolving & non-lethal once below r = 96 so last-moment vanish is 100% fair!
+      if (w.kind === 'phantom' && w.r < 96) continue;
 
-      const innerR = w.r;
-      const outerR = w.r + w.thick;
+      // Compute exact profile radial bounds at player's angle inside this wall
+      const relAng = normAng(pushedAng - w.start);
+      const f = clamp(relAng / w.span, 0, 1);
+      const bounds = getWallRadialProfile(w, f);
+      const innerR = bounds.rIn;
+      const outerR = bounds.rOut;
       const prevInnerR = innerR + wallSpd * dt;
 
-      // Near Miss coin bonus
+      // Near Miss bonus
       if (!w.nearAwarded && !player.phasing && outerR < pR && outerR > pR - wallSpd * dt - 8) {
         const dStart = Math.abs(angDiff(pushedAng, w.start));
         const dEnd = Math.abs(angDiff(pushedAng, w.start + w.span));
@@ -1633,7 +1987,6 @@
       }
     }
 
-    // Active Laser check (Level 3)
     if (!died && !player.phasing && player.grace <= 0) {
       for (const lz of lasers) {
         if (lz.state === 'fire') {
@@ -1655,9 +2008,8 @@
       if (bannerTimer <= 0) eventBanner.classList.remove('show');
     }
 
-    // Background ambient star/ember drift
     for (const p of bgParticles) {
-      p.r -= p.spd * dt * (1 + hyperAmt * 2.5);
+      p.r -= p.spd * dt * (1 + chromaAmt * 0.4);
       p.ang += 0.08 * dt * (curLvl.id === 1 ? -1 : 1);
       if (p.r < CORE_R) {
         p.r = 440 + Math.random() * 80;
@@ -1666,14 +2018,15 @@
     }
     for (let i = sonarRipples.length - 1; i >= 0; i--) {
       const rp = sonarRipples[i];
-      rp.r += 240 * dt;
-      rp.alpha -= 0.75 * dt;
+      rp.r += 230 * dt;
+      rp.alpha -= 0.72 * dt;
       if (rp.alpha <= 0) sonarRipples.splice(i, 1);
     }
 
     if (mode === 'menu') {
       worldRot += 0.28 * dt;
       depth3D = lerp(depth3D, 0.35, dt * 2);
+      chromaAmt = lerp(chromaAmt, 0, dt * 3);
       camTiltX = Math.sin(performance.now() * 0.00065) * 0.26;
       camTiltY = Math.cos(performance.now() * 0.00048) * 0.15;
       return;
@@ -1726,14 +2079,17 @@
       const shAng = normAng(Math.atan2(sh.y, sh.x));
       for (const w of walls) {
         if (w.vanished) continue;
-        if (dist >= w.r - sh.sz * 0.5 && dist <= w.r + w.thick + sh.sz * 0.5 && isAngleInArc(shAng, w.start, w.span)) {
-          const nx = sh.x / (dist || 1), ny = sh.y / (dist || 1);
-          const dot = sh.vx * nx + sh.vy * ny;
-          if ((dist < w.r + w.thick * 0.5 && dot > 0) || (dist >= w.r + w.thick * 0.5 && dot < 0)) {
-            sh.vx -= 1.7 * dot * nx;
-            sh.vy -= 1.7 * dot * ny;
+        if (isAngleInArc(shAng, w.start, w.span)) {
+          const b = getWallRadialProfile(w, clamp(normAng(shAng - w.start) / w.span, 0, 1));
+          if (dist >= b.rIn - sh.sz * 0.5 && dist <= b.rOut + sh.sz * 0.5) {
+            const nx = sh.x / (dist || 1), ny = sh.y / (dist || 1);
+            const dot = sh.vx * nx + sh.vy * ny;
+            if ((dist < (b.rIn + b.rOut) * 0.5 && dot > 0) || (dist >= (b.rIn + b.rOut) * 0.5 && dot < 0)) {
+              sh.vx -= 1.7 * dot * nx;
+              sh.vy -= 1.7 * dot * ny;
+            }
+            break;
           }
-          break;
         }
       }
       sh.life -= dt;
@@ -1753,9 +2109,10 @@
       worldRot += worldSpin * 0.25 * dt;
       if (deathTimer <= 0) {
         mode = 'over';
-        document.getElementById('overLevel').textContent = `${curLvl.num} · ${curLvl.name}`;
+        const t = tr();
+        document.getElementById('overLevel').textContent = `${curLvl.num} · ${curLvl.name[save.lang]}`;
         document.getElementById('overTime').textContent = formatTime(runTime);
-        document.getElementById('overBest').textContent = `BEST ${formatTime(save.best[curLvl.id] || 0)}`;
+        document.getElementById('overBest').textContent = `${t.best} ${formatTime(save.best[curLvl.id] || 0)}`;
         document.getElementById('overRunCoins').textContent = `+${runCoins} ◈`;
         overOverlay.classList.remove('hidden');
       }
@@ -1766,84 +2123,103 @@
     // ===== ACTIVE GAMEPLAY UPDATE =====
     runTime += dt;
     timerBox.textContent = formatTime(runTime);
+    if (runTime > (save.best[curLvl.id] || 0)) {
+      bestHud.textContent = `${tr().best}: ${formatTime(runTime)}`;
+    }
     if (player.grace > 0) player.grace -= dt;
     if (player.nearMissCd > 0) player.nearMissCd -= dt;
     if (scrapeCooldown > 0) scrapeCooldown -= dt;
 
-    // Gentle speed tiers every 10s (+5% per tier, smoothly capped at 1.40x)
+    const t = tr();
     const speedTier = Math.floor(runTime / 10);
     if (speedTier > lastSpeedTier) {
       lastSpeedTier = speedTier;
-      if (speedTier === 2) {
-        showBanner('3D HYPER-TUNNEL', 2.2);
-        vibe([22, 28, 40]);
+      if (speedTier === 2 || (speedTier > 2 && speedTier % 3 === 2)) {
+        showBanner(t.bannerChroma, 2.2);
+        vibe([18, 26, 30]);
       } else if (speedTier === 3) {
-        showBanner('OVERDRIVE', 1.8);
-        vibe(28);
+        showBanner(t.bannerOverdrive, 1.8);
+        vibe(24);
       } else if (speedTier === 1) {
-        showBanner('3D PHASE · SPEED UP', 1.6);
-        vibe(18);
+        showBanner(t.banner3D, 1.6);
+        vibe(16);
       } else {
-        showBanner(`SPEED +${Math.min(40, speedTier * 5)}%`, 1.4);
+        showBanner(t.bannerSpeed(Math.min(40, speedTier * 5)), 1.4);
       }
     }
 
-    // 3D & Hyper-Tunnel envelopes
-    let targetHyper = 0;
-    if (runTime >= 20.0 && runTime <= 30.0) {
-      targetHyper = Math.min(smoothstep((runTime - 20.0) / 1.5), smoothstep((30.0 - runTime) / 1.5));
+    // ===== SMOOTH GRADIENT IRIDESCENCE (20:00–30:00 + cyclic every 30s) =====
+    // Replaces 3D Hyper-Tunnel with lush base-color gradient flow!
+    let targetChroma = 0;
+    if (runTime >= 20.0) {
+      const cyc30 = (runTime - 20.0) % 30.0;
+      if (cyc30 <= 10.0) {
+        targetChroma = Math.min(smoothstep(cyc30 / 1.8), smoothstep((10.0 - cyc30) / 1.8));
+      }
     }
-    hyperAmt = lerp(hyperAmt, targetHyper, 1 - Math.exp(-4.5 * dt));
+    chromaAmt = lerp(chromaAmt, targetChroma, 1 - Math.exp(-3.5 * dt));
+    if (chromaAmt > 0.01) {
+      chromaPhase += dt * 1.15;
+      const pal = getDynamicPalette();
+      document.documentElement.style.setProperty('--accent', pal.accentA);
+    } else if (runTime > 19) {
+      document.documentElement.style.setProperty('--accent', curLvl.accent);
+    }
 
+    // Smooth 3D phases (retained smoothly without any hyper-tunnel rush!)
     let target3D = 0;
-    if (runTime >= 10.0 && runTime <= 18.6) {
-      target3D = Math.min(smoothstep((runTime - 10.0) / 1.7), smoothstep((18.6 - runTime) / 1.7)) * 0.82;
-    } else if (runTime > 19.6 && runTime < 30.4) {
-      target3D = Math.max(target3D, hyperAmt);
+    if (runTime >= 10.0 && runTime <= 18.8) {
+      target3D = Math.min(smoothstep((runTime - 10.0) / 1.8), smoothstep((18.8 - runTime) / 1.8)) * 0.84;
+    } else if (runTime > 20.0 && runTime < 30.0) {
+      // Gentle sculptural 3D lift during Gradient Flow so the iridescent walls look luminous
+      target3D = chromaAmt * 0.58;
     } else if (runTime >= 32.0) {
       const cyc = (runTime - 32.0) % 18.0;
       if (cyc < 11.0) {
-        target3D = Math.min(smoothstep(cyc / 1.7), smoothstep((11.0 - cyc) / 1.7)) * 0.88;
+        target3D = Math.min(smoothstep(cyc / 1.8), smoothstep((11.0 - cyc) / 1.8)) * 0.86;
       }
     }
-    depth3D = lerp(depth3D, target3D, 1 - Math.exp(-3.8 * dt));
+    depth3D = lerp(depth3D, target3D, 1 - Math.exp(-3.5 * dt));
 
-    const speedMul = (1 + Math.min(0.40, speedTier * 0.05)) * (1 + hyperAmt * 0.16);
+    const speedMul = 1 + Math.min(0.40, speedTier * 0.05);
     const wallSpd = curLvl.baseSpeed * speedMul;
 
     // Beat Sequencer
-    const effBpm = curLvl.bpm * (1 + Math.min(0.12, speedTier * 0.02) + hyperAmt * 0.05);
+    const effBpm = curLvl.bpm * (1 + Math.min(0.12, speedTier * 0.02));
     const stepDur = 60 / effBpm / 2;
     beatAccum += dt;
     while (beatAccum >= stepDur) {
       beatAccum -= stepDur;
       const idx = stepIdx % 8;
       if (idx % 2 === 0) {
-        playKick(hyperAmt > 0.3 || idx === 0);
+        playKick(idx === 0);
         beatPulse = 1.0;
-        if (curLvl.id === 0) {
-          sonarRipples.push({ r: CORE_R + 4, alpha: 0.45 });
+        if (curLvl.id === 0 || chromaAmt > 0.25) {
+          sonarRipples.push({ r: CORE_R + 4, alpha: 0.42 + chromaAmt * 0.2 });
         }
       }
-      playBass(curLvl.notes[idx], stepDur * 0.9, hyperAmt > 0.25);
-      if (hyperAmt > 0.25 || stepIdx % 4 === 2) {
-        playHat(hyperAmt > 0.25 ? 0.13 : 0.065);
+      playBass(curLvl.notes[idx], stepDur * 0.9, chromaAmt > 0.25);
+      if (chromaAmt > 0.25 && idx % 2 === 1) {
+        playShimmerPad(curLvl.lead[idx], stepDur);
       }
-      if (hyperAmt > 0.35 || runTime >= 30) {
+      if (stepIdx % 4 === 2 || chromaAmt > 0.35) {
+        playHat(chromaAmt > 0.35 ? 0.1 : 0.06);
+      }
+      if (runTime >= 30 && idx % 2 === 0) {
         playLead(curLvl.lead[idx], stepDur * 0.72);
       }
       stepIdx++;
     }
     beatPulse = Math.max(0, beatPulse - dt * 4.2);
 
-    // Smooth Beat Camera & 3D Profile
+    // Smooth Beat Camera
     let tX = 0, tY = 0;
     if (curLvl.camProfile === 'dive') {
-      tX = depth3D * (0.46 + hyperAmt * 0.14);
+      tX = depth3D * 0.48;
       tY = Math.sin(runTime * 0.85) * 0.20 * depth3D;
     } else if (curLvl.camProfile === 'bank') {
       tX = depth3D * 0.40;
-      tY = Math.sin(runTime * 1.15) * 0.38 * depth3D;
+      tY = Math.sin(runTime * 1.15) * 0.36 * depth3D;
     } else if (curLvl.camProfile === 'iso') {
       tX = depth3D * 0.52;
       tY = Math.cos(runTime * 0.8) * 0.32 * depth3D;
@@ -1851,13 +2227,13 @@
       tX = (0.34 + Math.sin(runTime * 1.0) * 0.16) * depth3D;
       tY = Math.cos(runTime * 0.9) * 0.34 * depth3D;
     }
-    camTiltX = lerp(camTiltX, tX, 1 - Math.exp(-4.2 * dt));
-    camTiltY = lerp(camTiltY, tY, 1 - Math.exp(-4.2 * dt));
-    const targetZoom = 1 + beatPulse * 0.032 + hyperAmt * 0.07;
+    camTiltX = lerp(camTiltX, tX, 1 - Math.exp(-4.0 * dt));
+    camTiltY = lerp(camTiltY, tY, 1 - Math.exp(-4.0 * dt));
+    const targetZoom = 1 + beatPulse * 0.03 + chromaAmt * 0.035;
     camZoom = lerp(camZoom, targetZoom, 1 - Math.exp(-9 * dt));
-    camSway = lerp(camSway, Math.sin(runTime * 1.9) * 0.02 * (1 + beatPulse * 0.7), 1 - Math.exp(-6 * dt));
+    camSway = lerp(camSway, Math.sin(runTime * 1.8) * 0.02 * (1 + beatPulse * 0.65), 1 - Math.exp(-6 * dt));
 
-    // Smooth World Rotation
+    // World Rotation
     if (curLvl.id === 3) {
       const targetSpin = Math.sin(runTime * 0.38) * 0.56 * (1 + Math.min(0.25, speedTier * 0.04));
       worldSpin = lerp(worldSpin, targetSpin, 1 - Math.exp(-2.4 * dt));
@@ -1878,14 +2254,14 @@
           player.grace = 0.8;
           playSfx('split');
           vibe([18, 22, 22]);
-          showBanner('DUAL CLONE ACTIVE', 1.6);
+          showBanner(t.bannerDual, 1.6);
         }
       } else {
         duality.splitBlend = lerp(duality.splitBlend, 1, 1 - Math.exp(-5.0 * dt));
       }
     }
 
-    // Player Controls & Phase Shield (Irreversible growth up to maxScale)
+    // Player Input, Phase Shield & Irreversible Growth
     const inp = getInput();
     const bothHeld = inp.left && inp.right;
 
@@ -1912,13 +2288,13 @@
     player.radialVel += (-player.radialBounce * 180 - player.radialVel * 14) * dt;
     player.radialBounce += player.radialVel * dt;
 
-    // ===== SPATIAL WAVE SPAWNER (ZERO OVERLAP GUARANTEED) =====
+    // Spatial Wave Spawner
     const spawnR = getSpawnRadius();
     if (getOutermostWallOuterR() <= spawnR - nextRequiredClearance) {
       spawnFairWave(wallSpd);
     }
 
-    // Update Walls
+    // Update Walls (including DISGUISED LAST-MOMENT VANISH on Level 2!)
     for (let i = walls.length - 1; i >= 0; i--) {
       const w = walls[i];
       w.r -= wallSpd * dt;
@@ -1927,13 +2303,21 @@
       w.vibeOff *= Math.pow(0.01, dt);
 
       if (w.kind === 'phantom' && !w.vanished) {
-        if (w.r < w.phantomTriggerR) {
-          w.phantomAlpha -= dt * 1.45;
-          if (Math.random() < 0.45) {
-            const pa = w.start + Math.random() * w.span;
-            emitSparks(Math.cos(pa) * w.r, Math.sin(pa) * w.r, Math.cos(pa), Math.sin(pa), 1, '#a6ffff', 0.45);
+        // Disguised as a solid wall until close to the player!
+        // Between r = 136 and r = 84 it rapidly dissolves right in front of the player!
+        if (w.r < 138) {
+          if (!w.vanishSfxDone) {
+            w.vanishSfxDone = true;
+            playSfx('vanish');
           }
-          if (w.phantomAlpha <= 0.04 || w.r < 155) {
+          w.phantomAlpha = clamp((w.r - 84) / (138 - 84), 0, 1);
+          // Dissolving crimson-white glitch sparks right before the player
+          if (Math.random() < 0.8) {
+            const pa = w.start + Math.random() * w.span;
+            const pr = w.r + Math.random() * w.thick;
+            emitSparks(Math.cos(pa) * pr, Math.sin(pa) * pr, Math.cos(pa), Math.sin(pa), 2, Math.random() < 0.45 ? '#ffffff' : curLvl.accent, 0.55);
+          }
+          if (w.r <= 85) {
             w.vanished = true;
             w.phantomAlpha = 0;
           }
@@ -1947,11 +2331,11 @@
         w.span = clamp(w.baseSpan + osc * w.oscAmp, 0.42, Math.PI - 0.96);
       }
 
-      if (w.r + w.thick < CORE_R - 8) walls.splice(i, 1);
+      if (w.r + w.thick + (w.turretH || 0) < CORE_R - 8) walls.splice(i, 1);
     }
 
-    // Level 3 Telegraphed Solar Core Lasers (fair 1.70s charge + audio ticks)
-    if (curLvl.id === 2 && hyperAmt < 0.25 && runTime > 3.5) {
+    // Level 3 Solar Core Lasers
+    if (curLvl.id === 2 && runTime > 3.5) {
       laserTimer -= dt;
       if (laserTimer <= 0) {
         const aimAng = normAng(player.ang + (Math.random() - 0.5) * 0.4);
@@ -2017,17 +2401,6 @@
       if (c.taken || c.r < CORE_R) coins.splice(i, 1);
     }
 
-    // Hyper-Tunnel warp streaks
-    if (hyperAmt > 0.02) {
-      for (const st of warpStreaks) {
-        st.r -= st.spd * dt * (1.1 + hyperAmt * 1.3);
-        if (st.r < 0.08) {
-          st.r = 1.05;
-          st.ang = Math.random() * TAU;
-        }
-      }
-    }
-
     // Collisions
     if (curLvl.id === 3 && duality.active) {
       const angA = player.ang;
@@ -2044,13 +2417,13 @@
         vibe([25, 25, 20]);
         hitStop = 0.06;
         shake = 9;
-        shatterAt(hitAng, player.scale, resA.died ? curLvl.accent : '#00f5ff');
+        shatterAt(hitAng, player.scale, resA.died ? getDynamicPalette().accentA : '#00f5ff');
         duality.active = false;
         duality.splitBlend = 0;
         duality.respawnTimer = 9.0;
         player.ang = survAng;
         player.grace = 0.9;
-        showBanner('CLONE LOST · SURVIVE 9S', 1.7);
+        showBanner(t.bannerCloneLost, 1.7);
       } else {
         if (resA.ang !== angA) player.ang = resA.ang;
         else if (resB.ang !== angB) player.ang = normAng(resB.ang - Math.PI * duality.splitBlend);
@@ -2062,7 +2435,7 @@
     }
   }
 
-  // ===== 3D PROJECTION (SCALED TO NORMALIZED VIRTUAL ARENA) =====
+  // ===== 3D PROJECTION =====
   function project(wx, wy, wz) {
     const rot = worldRot + camSway;
     const cr = Math.cos(rot), sr = Math.sin(rot);
@@ -2084,49 +2457,51 @@
     return { x: W * 0.5 + x2 * s, y: H * 0.5 + y1 * s, s };
   }
 
-  // ===== LEVEL-SPECIFIC ATMOSPHERIC BACKGROUNDS =====
-  function drawLevelBackground() {
+  // ===== LEVEL-SPECIFIC BACKGROUNDS + SMOOTH GRADIENT FLOW AURORA =====
+  function drawLevelBackground(pal) {
     const t = performance.now() * 0.001;
 
-    // 1. Rich multi-stop radial gradient backdrop
-    const grad = ctx.createRadialGradient(W * 0.5, H * 0.5, 16 * arenaScale, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
-    grad.addColorStop(0, curLvl.bg);
-    grad.addColorStop(0.55, curLvl.bgMid);
-    grad.addColorStop(1, curLvl.bgDeep);
+    // 1. Base radial gradient (smoothly shifts hue during Chroma Flow!)
+    const grad = ctx.createRadialGradient(W * 0.5, H * 0.5, 16 * arenaScale, W * 0.5, H * 0.5, Math.max(W, H) * 0.74);
+    grad.addColorStop(0, pal.bgInner);
+    grad.addColorStop(0.55, pal.bgMid);
+    grad.addColorStop(1, pal.bgDeep);
     ctx.fillStyle = grad;
     ctx.fillRect(-20, -20, W + 40, H + 40);
 
-    // 2. Unique architectural motif per level
+    // 2. Smooth Gradient Iridescence Aurora Lobes (20:00–30:00 CHROMA FLOW!)
+    if (chromaAmt > 0.01) {
+      ctx.save();
+      const orbitR = Math.min(W, H) * 0.34;
+      const lobes = [
+        { x: W * 0.5 + Math.cos(chromaPhase * 0.7) * orbitR, y: H * 0.5 + Math.sin(chromaPhase * 0.7) * orbitR * 0.75, r: Math.max(W, H) * 0.52, col: pal.lobe1 },
+        { x: W * 0.5 + Math.cos(chromaPhase * 0.7 + 2.1) * orbitR, y: H * 0.5 + Math.sin(chromaPhase * 0.7 + 2.1) * orbitR * 0.75, r: Math.max(W, H) * 0.48, col: pal.lobe2 },
+        { x: W * 0.5 + Math.cos(chromaPhase * 0.55 + 4.2) * orbitR * 0.8, y: H * 0.5 + Math.sin(chromaPhase * 0.55 + 4.2) * orbitR * 0.65, r: Math.max(W, H) * 0.45, col: pal.lobe3 }
+      ];
+      ctx.globalCompositeOperation = 'lighter';
+      for (const lb of lobes) {
+        const lg = ctx.createRadialGradient(lb.x, lb.y, 10, lb.x, lb.y, lb.r);
+        lg.addColorStop(0, lb.col);
+        lg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = lg;
+        ctx.fillRect(0, 0, W, H);
+      }
+      ctx.restore();
+    }
+
+    // 3. Unique Level Architectural Motif
     ctx.save();
     if (curLvl.id === 0) {
-      // LEVEL 1: CYAN PULSE — Holographic 6-sector blueprint grid + expanding beat sonar ripples
-      ctx.strokeStyle = curLvl.gridCol;
+      ctx.strokeStyle = hsl(pal.hA, 90, 58, 0.09);
       ctx.lineWidth = 1.2;
       for (let k = 0; k < 6; k++) {
         const a = (k / 6) * TAU;
         const p1 = project(Math.cos(a) * CORE_R, Math.sin(a) * CORE_R, -12);
         const p2 = project(Math.cos(a) * 520, Math.sin(a) * 520, -12);
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      }
-      for (const rp of sonarRipples) {
-        ctx.strokeStyle = curLvl.accent;
-        ctx.globalAlpha = clamp(rp.alpha, 0, 1);
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        for (let s = 0; s <= 40; s++) {
-          const a = (s / 40) * TAU;
-          const p = project(Math.cos(a) * rp.r, Math.sin(a) * rp.r, -6);
-          if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-        }
-        ctx.closePath();
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
       }
     } else if (curLvl.id === 1) {
-      // LEVEL 2: CRIMSON PHANTOM — Rotating Tactical Radar Sweep + Range Rings
-      ctx.strokeStyle = curLvl.gridCol;
+      ctx.strokeStyle = hsl(pal.hA, 90, 56, 0.10);
       ctx.lineWidth = 1;
       for (let rad = 110; rad <= 440; rad += 110) {
         ctx.beginPath();
@@ -2138,7 +2513,6 @@
         ctx.closePath();
         ctx.stroke();
       }
-      // Rotating radar sweep cone
       const sweepA = t * 1.15;
       const c0 = project(0, 0, -8);
       ctx.beginPath();
@@ -2149,12 +2523,11 @@
         ctx.lineTo(p.x, p.y);
       }
       ctx.closePath();
-      ctx.fillStyle = 'rgba(255, 30, 60, 0.08)';
+      ctx.fillStyle = hsl(pal.hA, 95, 55, 0.085);
       ctx.fill();
     } else if (curLvl.id === 2) {
-      // LEVEL 3: GOLD ECLIPSE — Giant Counter-Rotating Background Clockwork Gears + Solar Rays
       const drawBgGear = (rad, teeth, rotOff, alpha) => {
-        ctx.strokeStyle = curLvl.accent;
+        ctx.strokeStyle = pal.accentA;
         ctx.globalAlpha = alpha;
         ctx.lineWidth = 1.6;
         ctx.beginPath();
@@ -2170,19 +2543,15 @@
       };
       drawBgGear(190, 16, t * 0.25, 0.11);
       drawBgGear(325, 24, -t * 0.18, 0.08);
-      // Warm solar corona glow behind core
       const c0 = project(0, 0, 0);
-      const sg = ctx.createRadialGradient(c0.x, c0.y, 12 * arenaScale, c0.x, c0.y, 165 * arenaScale);
-      sg.addColorStop(0, 'rgba(255, 212, 0, 0.16)');
-      sg.addColorStop(1, 'rgba(255, 212, 0, 0)');
+      const sg = ctx.createRadialGradient(c0.x, c0.y, 12 * arenaScale, c0.x, c0.y, 170 * arenaScale);
+      sg.addColorStop(0, hsl(pal.hA, 95, 55, 0.16));
+      sg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.globalAlpha = 1;
       ctx.fillStyle = sg;
-      ctx.beginPath();
-      ctx.arc(c0.x, c0.y, 165 * arenaScale, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(c0.x, c0.y, 170 * arenaScale, 0, TAU); ctx.fill();
     } else {
-      // LEVEL 4: VIOLET DUALITY — Cosmic Starfield + Symmetrical Hex-Prism Lattice
-      ctx.strokeStyle = 'rgba(0, 245, 255, 0.07)';
+      ctx.strokeStyle = hsl(pal.hB, 90, 62, 0.08);
       ctx.lineWidth = 1.2;
       for (let ring = 1; ring <= 3; ring++) {
         const rad = ring * 135;
@@ -2195,11 +2564,10 @@
         ctx.closePath();
         ctx.stroke();
       }
-      // Harmonic rotation direction indicator chevron around core
       if (mode === 'play') {
         const spinDir = worldSpin >= 0 ? 1 : -1;
         const indR = CORE_R + 14;
-        ctx.strokeStyle = spinDir > 0 ? '#ca4eff' : '#00f5ff';
+        ctx.strokeStyle = spinDir > 0 ? pal.accentA : '#00f5ff';
         ctx.globalAlpha = 0.35 + Math.abs(worldSpin) * 0.45;
         ctx.lineWidth = 2;
         for (let side = 0; side < 2; side++) {
@@ -2215,47 +2583,109 @@
       }
     }
 
-    // Subtle drifting ambient motes/embers/stars
+    // Sonar / Chroma harmonic ripples
+    for (const rp of sonarRipples) {
+      ctx.strokeStyle = chromaAmt > 0.2 ? pal.accentB : pal.accentA;
+      ctx.globalAlpha = clamp(rp.alpha, 0, 1);
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      for (let s = 0; s <= 40; s++) {
+        const a = (s / 40) * TAU;
+        const p = project(Math.cos(a) * rp.r, Math.sin(a) * rp.r, -6);
+        if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    // Ambient motes
     for (const bp of bgParticles) {
       const p = project(Math.cos(bp.ang) * bp.r, Math.sin(bp.ang) * bp.r, -25);
-      ctx.globalAlpha = bp.alpha * (curLvl.id === 3 ? 0.85 : 0.45);
-      ctx.fillStyle = curLvl.id === 3 && (bp.sz > 2.2) ? '#00f5ff' : curLvl.rim;
+      ctx.globalAlpha = bp.alpha * (curLvl.id === 3 || chromaAmt > 0.3 ? 0.78 : 0.42);
+      ctx.fillStyle = curLvl.id === 3 && (bp.sz > 2.2) ? '#00f5ff' : pal.rim;
       ctx.fillRect(p.x, p.y, bp.sz * arenaScale, bp.sz * arenaScale);
     }
     ctx.restore();
   }
 
-  // ===== EXTRUDED 3D WALL RENDERER WITH LEVEL-SPECIFIC STYLING =====
-  function drawExtrudedSector(rIn, rOut, startAng, span, zTop, fillTop, fillSide, rimCol, alpha, style) {
-    const isGear = (style === 'gear');
-    const isPhantom = (style === 'phantom');
-    const segs = isGear ? Math.max(8, Math.ceil(span * 11)) : Math.max(6, Math.ceil(span * 14));
+  // ===== SCULPTURAL 3D EXTRUDED WALL RENDERER WITH LIVE GRADIENT IRIDESCENCE =====
+  function drawArchitecturalWall(w, pal) {
+    const isGear = (w.kind === 'gear');
+    const isPhantom = (w.kind === 'phantom');
+    // Dense sampling for crisp stepped bastions, battlements, blades, and gears
+    const segs = isGear
+      ? Math.max(10, Math.ceil(w.span * 12))
+      : (w.profile === 'bastion' || w.profile === 'fortress' || w.profile === 'notch')
+        ? Math.max(24, Math.ceil(w.span * 26))
+        : Math.max(10, Math.ceil(w.span * 16));
+
     const botOut = [], botIn = [], topOut = [], topIn = [];
+    const zTop = w.height3D;
 
     for (let i = 0; i <= segs; i++) {
       const f = i / segs;
-      const a = startAng + f * span;
-      let rO = rOut;
-      let rI = rIn;
+      const a = w.start + f * w.span;
+      let { rIn, rOut } = getWallRadialProfile(w, f);
       if (isGear) {
-        const tooth = (i % 2 === 0 ? 6.5 : -2.5);
-        rO += tooth;
-        rI += tooth * 0.35;
+        const tooth = (i % 2 === 0 ? 7.5 : -2.5);
+        rOut += tooth;
+        rIn += tooth * 0.35;
       }
       const ca = Math.cos(a), sa = Math.sin(a);
-      topOut.push(project(ca * rO, sa * rO, zTop));
-      topIn.push(project(ca * rI, sa * rI, zTop));
+      topOut.push(project(ca * rOut, sa * rOut, zTop));
+      topIn.push(project(ca * rIn, sa * rIn, zTop));
       if (depth3D > 0.04) {
-        botOut.push(project(ca * rO, sa * rO, 0));
-        botIn.push(project(ca * rI, sa * rI, 0));
+        botOut.push(project(ca * rOut, sa * rOut, 0));
+        botIn.push(project(ca * rIn, sa * rIn, 0));
       }
+    }
+
+    // Disguised Phantom Tile Visual Logic (Level 2):
+    // Looks SOLID & identical to normal crimson walls from afar!
+    // At r < 185 gives a very subtle hairline shimmer, then dissolves rapidly right before the player (r = 138 -> 84)!
+    let alpha = 1;
+    let subtleGlitchRim = false;
+    if (isPhantom) {
+      alpha = clamp(w.phantomAlpha, 0, 1);
+      if (w.r < 185 && w.r >= 138) {
+        // Subtle barely-there shimmer clue for sharp-eyed players
+        const pulse = Math.sin(runTime * 22 + w.start * 3);
+        if (pulse > 0.65) {
+          alpha = 0.88;
+          subtleGlitchRim = true;
+        }
+      } else if (w.r < 138) {
+        // Rapid dissolve flicker right before the player
+        subtleGlitchRim = true;
+      }
+    }
+
+    // Build smooth gradient fill across the wall (active subtly always, lushly during Chroma Flow!)
+    const pStart = topOut[0];
+    const pEnd = topOut[segs];
+    let fillTop = pal.accentA;
+    let fillSide = pal.sideA;
+    if (w.hitFlash > 0.05) {
+      fillTop = '#ffffff';
+    } else if (chromaAmt > 0.03) {
+      const gTop = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+      gTop.addColorStop(0, pal.accentA);
+      gTop.addColorStop(0.5, pal.accentB);
+      gTop.addColorStop(1, pal.accentA);
+      fillTop = gTop;
+
+      const gSide = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+      gSide.addColorStop(0, pal.sideA);
+      gSide.addColorStop(0.5, pal.sideB);
+      gSide.addColorStop(1, pal.sideA);
+      fillSide = gSide;
     }
 
     ctx.save();
     ctx.globalAlpha = alpha;
 
     // 3D Extruded Side Walls
-    if (depth3D > 0.04 && !isPhantom) {
+    if (depth3D > 0.04) {
       ctx.fillStyle = fillSide;
       ctx.beginPath();
       for (let i = 0; i <= segs; i++) {
@@ -2286,39 +2716,29 @@
       ctx.fill();
     }
 
-    // Top Cap (Phantom walls get distinct translucent holographic look!)
+    // Top Architectural Cap
     ctx.beginPath();
     for (let i = 0; i <= segs; i++) {
       if (i === 0) ctx.moveTo(topOut[i].x, topOut[i].y); else ctx.lineTo(topOut[i].x, topOut[i].y);
     }
     for (let i = segs; i >= 0; i--) ctx.lineTo(topIn[i].x, topIn[i].y);
     ctx.closePath();
+    ctx.fillStyle = fillTop;
+    ctx.fill();
 
-    if (isPhantom) {
-      ctx.fillStyle = 'rgba(130, 255, 255, 0.24)';
-      ctx.fill();
-      ctx.setLineDash([6, 5]);
-      ctx.strokeStyle = '#a8ffff';
-      ctx.lineWidth = 2.0;
-      ctx.stroke();
-      ctx.setLineDash([]);
-    } else {
-      ctx.fillStyle = fillTop;
-      ctx.fill();
-
-      // Bright inner leading-edge rim highlight for crystal-clear readability!
-      ctx.beginPath();
-      for (let i = 0; i <= segs; i++) {
-        if (i === 0) ctx.moveTo(topIn[i].x, topIn[i].y); else ctx.lineTo(topIn[i].x, topIn[i].y);
-      }
-      ctx.strokeStyle = rimCol;
-      ctx.lineWidth = (1.6 + depth3D * 0.9) * arenaScale;
-      ctx.stroke();
+    // Crisp leading-edge inner rim highlight (gives architectural sharpness & readability)
+    ctx.beginPath();
+    for (let i = 0; i <= segs; i++) {
+      if (i === 0) ctx.moveTo(topIn[i].x, topIn[i].y); else ctx.lineTo(topIn[i].x, topIn[i].y);
     }
+    ctx.strokeStyle = subtleGlitchRim ? '#ffffff' : (w.hitFlash > 0.05 ? '#ffffff' : pal.rim);
+    ctx.lineWidth = (subtleGlitchRim ? 2.2 : (1.5 + depth3D * 0.8)) * arenaScale;
+    ctx.stroke();
+
     ctx.restore();
   }
 
-  function drawSkinLetter(ang, scale, color, isPhasing, isCloneB) {
+  function drawSkinLetter(ang, scale, pal, isPhasing, isCloneB) {
     const r = ORBIT_R + player.radialBounce;
     const ux = Math.cos(ang), uy = Math.sin(ang);
     const vx = -uy, vy = ux;
@@ -2345,11 +2765,11 @@
     } else if (player.grace > 0 && Math.floor(runTime * 18) % 2 === 0) {
       ctx.globalAlpha = 0.45;
     } else {
-      ctx.shadowColor = isCloneB ? '#00f5ff' : color;
-      ctx.shadowBlur = 10;
+      ctx.shadowColor = isCloneB ? '#00f5ff' : pal.accentA;
+      ctx.shadowBlur = 11;
     }
 
-    ctx.strokeStyle = isPhasing ? '#ffffff' : (isCloneB ? '#00f5ff' : curLvl.rim);
+    ctx.strokeStyle = isPhasing ? '#ffffff' : (isCloneB ? '#00f5ff' : pal.rim);
     ctx.lineWidth = Math.max(2.2, 2.6 * Math.sqrt(scale) * arenaScale);
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'square';
@@ -2388,15 +2808,14 @@
     ctx.restore();
   }
 
-  // ===== UNIQUE CENTRAL CORE PER LEVEL =====
-  function drawLevelCore() {
+  function drawLevelCore(pal) {
     const coreZ = 18 * depth3D;
     const coreR = CORE_R + beatPulse * 2.5;
     const coreSteps = 44;
 
     if (depth3D > 0.06) {
       ctx.save();
-      ctx.fillStyle = curLvl.sideShade;
+      ctx.fillStyle = pal.sideA;
       ctx.beginPath();
       for (let i = 0; i <= coreSteps; i++) {
         const a = (i / coreSteps) * TAU;
@@ -2411,7 +2830,6 @@
     ctx.save();
     ctx.beginPath();
     if (curLvl.id === 2) {
-      // Level 3: Toothed Clockwork Gear Core
       const teeth = 12;
       const tot = teeth * 2;
       for (let i = 0; i <= tot; i++) {
@@ -2428,11 +2846,10 @@
       }
     }
     ctx.closePath();
-    ctx.fillStyle = curLvl.bgDeep;
+    ctx.fillStyle = pal.bgDeep;
     ctx.fill();
 
     if (curLvl.id === 3) {
-      // Level 4: Dual-Colored Quantum Core (Violet + Cyan halves)
       for (let half = 0; half < 2; half++) {
         ctx.beginPath();
         for (let i = 0; i <= 22; i++) {
@@ -2440,32 +2857,27 @@
           const p = project(Math.cos(a) * coreR, Math.sin(a) * coreR, coreZ);
           if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
         }
-        ctx.strokeStyle = half === 0 ? curLvl.accent : '#00f5ff';
+        ctx.strokeStyle = half === 0 ? pal.accentA : '#00f5ff';
         ctx.lineWidth = 4.2 * arenaScale;
         ctx.stroke();
       }
     } else {
-      ctx.strokeStyle = curLvl.accent;
+      ctx.strokeStyle = pal.accentA;
       ctx.lineWidth = 4.2 * arenaScale;
       ctx.stroke();
     }
 
-    // Level 2: Tactical Reticle Ticks inside Core
     if (curLvl.id === 1) {
-      ctx.strokeStyle = 'rgba(255, 30, 60, 0.55)';
+      ctx.strokeStyle = hsl(pal.hA, 95, 58, 0.55);
       ctx.lineWidth = 1.6;
       for (let k = 0; k < 4; k++) {
         const a = k * Math.PI * 0.5;
         const p1 = project(Math.cos(a) * (CORE_R - 11), Math.sin(a) * (CORE_R - 11), coreZ);
         const p2 = project(Math.cos(a) * (CORE_R - 3), Math.sin(a) * (CORE_R - 3), coreZ);
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
       }
     }
 
-    // Subtle Phase Fuel Arc inside Core
     if (mode === 'play') {
       const frac = player.phaseFuel / player.phaseMax;
       if (frac > 0.01) {
@@ -2487,22 +2899,24 @@
 
   // ===== MAIN RENDER LOOP =====
   function draw() {
+    const pal = getDynamicPalette();
+
     ctx.save();
     if (shake > 0.2) {
       ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
     }
 
-    drawLevelBackground();
+    drawLevelBackground(pal);
 
-    // 3D Depth Tunnel Rings
+    // 3D Depth Tunnel Rings (smooth subtle depth framing during 3D phases)
     if (depth3D > 0.04) {
       ctx.save();
-      ctx.strokeStyle = curLvl.accent;
+      ctx.strokeStyle = chromaAmt > 0.15 ? pal.accentB : pal.accentA;
       for (let k = 1; k <= 5; k++) {
         const zDepth = -k * 65 * depth3D;
         const rad = 110 + k * 75;
-        ctx.globalAlpha = (0.14 - k * 0.02) * depth3D * (1 + hyperAmt * 0.85);
-        ctx.lineWidth = 1.2 + hyperAmt;
+        ctx.globalAlpha = (0.14 - k * 0.02) * depth3D;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         for (let s = 0; s <= 40; s++) {
           const a = (s / 40) * TAU;
@@ -2515,62 +2929,22 @@
       ctx.restore();
     }
 
-    // 3D HYPER-TUNNEL Warp Streaks
-    if (hyperAmt > 0.03) {
-      ctx.save();
-      ctx.strokeStyle = curLvl.rim;
-      ctx.lineWidth = 1.6;
-      const maxR = getSpawnRadius();
-      for (const st of warpStreaks) {
-        const r1 = st.r * maxR;
-        const r2 = Math.max(CORE_R, (st.r - 0.14) * maxR);
-        const p1 = project(Math.cos(st.ang) * r1, Math.sin(st.ang) * r1, 20);
-        const p2 = project(Math.cos(st.ang) * r2, Math.sin(st.ang) * r2, -30);
-        ctx.globalAlpha = hyperAmt * 0.45 * (1 - Math.abs(st.r - 0.5));
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
     // Walls (sorted outer-to-inner for crisp 3D painter's order)
     const sortedWalls = walls.slice().sort((a, b) => b.r - a.r);
     for (const w of sortedWalls) {
       if (w.vanished) continue;
-      let alpha = 1;
-      let topCol = curLvl.accent;
-      let sideCol = curLvl.sideShade;
-      let rimCol = curLvl.rim;
-
-      if (w.kind === 'phantom') {
-        alpha = clamp(w.phantomAlpha, 0, 1);
-      } else if (curLvl.id === 3) {
-        // Level 4 twin walls have cyan rim glow on alternating phase
-        rimCol = '#96ffff';
-      }
-      if (w.hitFlash > 0.05) {
-        topCol = '#ffffff';
-        rimCol = '#ffffff';
-      }
-
-      const rIn = Math.max(CORE_R * 0.86, w.r + w.vibeOff);
-      const rOut = Math.max(rIn + 2, w.r + w.thick + w.vibeOff);
-      const h3d = w.height3D * (1 + hyperAmt * 0.5);
-      drawExtrudedSector(rIn, rOut, w.start, w.span, h3d, topCol, sideCol, rimCol, alpha, w.kind);
+      drawArchitecturalWall(w, pal);
     }
 
-    // Level 3 Solar Core Lasers (Charging Orb + Converging Sightlines + Plasma Beam)
+    // Level 3 Solar Core Lasers
     for (const lz of lasers) {
       const maxR = getSpawnRadius() + 40;
       ctx.save();
       if (lz.state === 'warn') {
         const prog = 1 - clamp(lz.timer / lz.maxWarn, 0, 1);
         const orbPos = project(Math.cos(lz.ang) * (CORE_R + 3), Math.sin(lz.ang) * (CORE_R + 3), 18);
-        // Converging telegraph lines
         const spread = (1 - prog) * 0.14 + lz.halfWidth;
-        ctx.strokeStyle = prog > 0.72 ? '#ffffff' : '#ffd400';
+        ctx.strokeStyle = prog > 0.72 ? '#ffffff' : pal.accentA;
         ctx.globalAlpha = 0.35 + prog * 0.55;
         ctx.setLineDash([7, 5]);
         ctx.lineWidth = 1.6 + prog * 1.2;
@@ -2578,21 +2952,28 @@
           const a = lz.ang + sgn * spread;
           const p1 = project(Math.cos(a) * CORE_R, Math.sin(a) * CORE_R, 14);
           const p2 = project(Math.cos(a) * maxR, Math.sin(a) * maxR, 14);
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
         }
         ctx.setLineDash([]);
-        // Charging plasma orb at core rim
         ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#ffd400';
+        ctx.shadowColor = pal.accentA;
         ctx.shadowBlur = 16;
         ctx.beginPath();
         ctx.arc(orbPos.x, orbPos.y, (3 + prog * 7) * arenaScale, 0, TAU);
         ctx.fill();
       } else {
-        drawExtrudedSector(CORE_R, maxR, lz.ang - lz.halfWidth, lz.halfWidth * 2, 24, '#ffffff', '#ffd400', '#ffffff', 0.94, 'arc');
+        // Active plasma beam
+        const p1 = project(Math.cos(lz.ang - lz.halfWidth) * CORE_R, Math.sin(lz.ang - lz.halfWidth) * CORE_R, 20);
+        const p2 = project(Math.cos(lz.ang - lz.halfWidth) * maxR, Math.sin(lz.ang - lz.halfWidth) * maxR, 20);
+        const p3 = project(Math.cos(lz.ang + lz.halfWidth) * maxR, Math.sin(lz.ang + lz.halfWidth) * maxR, 20);
+        const p4 = project(Math.cos(lz.ang + lz.halfWidth) * CORE_R, Math.sin(lz.ang + lz.halfWidth) * CORE_R, 20);
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = pal.accentA;
+        ctx.shadowBlur = 22;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
+        ctx.closePath();
+        ctx.fill();
       }
       ctx.restore();
     }
@@ -2608,16 +2989,13 @@
       ctx.shadowColor = '#ffd800';
       ctx.shadowBlur = 11;
       ctx.beginPath();
-      ctx.moveTo(0, -sz);
-      ctx.lineTo(sz * 0.78, 0);
-      ctx.lineTo(0, sz);
-      ctx.lineTo(-sz * 0.78, 0);
+      ctx.moveTo(0, -sz); ctx.lineTo(sz * 0.78, 0); ctx.lineTo(0, sz); ctx.lineTo(-sz * 0.78, 0);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
     }
 
-    drawLevelCore();
+    drawLevelCore(pal);
 
     // Level 4 Duality Neon Tether
     if (mode === 'play' && curLvl.id === 3 && duality.active) {
@@ -2631,19 +3009,16 @@
       ctx.globalAlpha = 0.6;
       ctx.lineWidth = 2.0 * arenaScale;
       ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(pA.x, pA.y);
-      ctx.lineTo(pB.x, pB.y);
-      ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
       ctx.restore();
     }
 
     // Player(s)
     if (mode === 'play' || mode === 'menu') {
-      drawSkinLetter(player.ang, player.scale, curLvl.accent, player.phasing, false);
+      drawSkinLetter(player.ang, player.scale, pal, player.phasing, false);
       if (mode === 'play' && curLvl.id === 3 && duality.active) {
         const angB = normAng(player.ang + Math.PI * duality.splitBlend);
-        drawSkinLetter(angB, player.scale, '#00f5ff', player.phasing, true);
+        drawSkinLetter(angB, player.scale, pal, player.phasing, true);
       }
     }
 
@@ -2667,9 +3042,7 @@
       ctx.fillStyle = sh.color;
       const sz = sh.sz * arenaScale;
       ctx.beginPath();
-      ctx.moveTo(0, -sz);
-      ctx.lineTo(sz * 0.75, sz * 0.65);
-      ctx.lineTo(-sz * 0.75, sz * 0.45);
+      ctx.moveTo(0, -sz); ctx.lineTo(sz * 0.75, sz * 0.65); ctx.lineTo(-sz * 0.75, sz * 0.45);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
@@ -2681,7 +3054,7 @@
       ctx.save();
       ctx.globalAlpha = clamp(ft.life / ft.maxLife, 0, 1);
       ctx.fillStyle = ft.color;
-      ctx.font = `900 ${Math.round(13 * arenaScale)}px sans-serif`;
+      ctx.font = `900 ${Math.round(13 * arenaScale)}px Montserrat, sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillText(ft.text, p.x, p.y);
       ctx.restore();
@@ -2701,7 +3074,7 @@
   }
 
   applyTheme(curLvl);
-  renderMenu();
+  applyLanguageUI();
   requestAnimationFrame(loop);
 })();
 </script>
