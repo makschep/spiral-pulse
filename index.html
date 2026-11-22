@@ -55,7 +55,7 @@
       height: 100%;
     }
 
-    /* Chamfered geometric HUD boxes inspired by classic .Spiral Pulse reference */
+    /* Chamfered geometric HUD boxes */
     #timerBox {
       position: absolute;
       top: 0;
@@ -125,7 +125,7 @@
       left: 50%;
       transform: translateX(-50%) scale(0.9);
       padding: 6px 18px;
-      background: rgba(0, 0, 0, 0.86);
+      background: rgba(0, 0, 0, 0.88);
       border: 2px solid var(--accent);
       color: #ffffff;
       font-weight: 900;
@@ -150,7 +150,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 16px 22px;
+      padding: 15px 20px;
       background: radial-gradient(circle at 50% 50%, rgba(0, 12, 16, 0.42) 0%, rgba(0, 6, 10, 0.86) 100%);
       z-index: 30;
       transition: opacity 0.25s ease;
@@ -177,7 +177,7 @@
       filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 60%, transparent));
     }
     .brand {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 900;
       letter-spacing: 1.6px;
       color: var(--accent);
@@ -192,21 +192,21 @@
     }
     .levelsGrid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
       width: 100%;
-      max-width: 860px;
+      max-width: 960px;
       margin: auto;
     }
     .lvlCard {
-      background: rgba(0, 0, 0, 0.78);
+      background: rgba(0, 0, 0, 0.80);
       border: 2px solid rgba(255, 255, 255, 0.18);
-      padding: 12px 12px 11px;
+      padding: 11px 10px 10px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 8px;
+      gap: 7px;
       transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
       position: relative;
       overflow: hidden;
@@ -219,7 +219,7 @@
       right: 0;
       height: 3px;
       background: var(--c);
-      opacity: 0.4;
+      opacity: 0.42;
       transition: opacity 0.16s ease;
     }
     .lvlCard.selected {
@@ -229,28 +229,37 @@
     }
     .lvlCard.selected::before { opacity: 1; }
     .lvlNum {
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 900;
-      letter-spacing: 1.4px;
+      letter-spacing: 1.3px;
       color: var(--c);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .lvlName {
-      font-size: 14px;
+    .lvlBadge {
+      font-size: 8.5px;
       font-weight: 900;
-      letter-spacing: 0.4px;
+      padding: 1px 5px;
+      background: var(--c);
+      color: #000;
+      letter-spacing: 0.7px;
+    }
+    .lvlName {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
       color: #fff;
-      line-height: 1.2;
+      line-height: 1.18;
     }
     .lvlTag {
-      font-size: 9.5px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       color: rgba(255, 255, 255, 0.64);
       text-transform: uppercase;
       margin-top: 3px;
+      line-height: 1.25;
     }
     .lvlFoot {
       display: flex;
@@ -258,15 +267,15 @@
       align-items: center;
       padding-top: 6px;
       border-top: 1px solid rgba(255, 255, 255, 0.12);
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       color: var(--c);
       font-variant-numeric: tabular-nums;
     }
     .medal {
       display: inline-block;
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.15);
     }
@@ -283,7 +292,7 @@
     .ctrlHints {
       display: flex;
       gap: 8px;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.5px;
       color: rgba(255, 255, 255, 0.72);
@@ -310,7 +319,7 @@
     }
     #playBtn:active { transform: scale(0.95); }
 
-    /* Modals (Shop & Settings) */
+    /* Modals */
     #shopModal, #settingsModal {
       justify-content: center;
       align-items: center;
@@ -327,9 +336,7 @@
       flex-direction: column;
       gap: 13px;
     }
-    .settingsPanel {
-      max-width: 460px;
-    }
+    .settingsPanel { max-width: 460px; }
     .modalHead {
       display: flex;
       justify-content: space-between;
@@ -398,7 +405,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Settings rows */
     .setRow {
       display: flex;
       align-items: center;
@@ -415,10 +421,7 @@
       color: #fff;
       text-transform: uppercase;
     }
-    .segGroup {
-      display: flex;
-      gap: 6px;
-    }
+    .segGroup { display: flex; gap: 6px; }
     .segBtn {
       background: rgba(0, 0, 0, 0.6);
       color: rgba(255, 255, 255, 0.65);
@@ -494,12 +497,15 @@
       border-color: #ffd800;
       color: #ffd800;
     }
-    @media (max-height: 410px) {
-      .overlay { padding: 10px 14px; }
-      .brand { font-size: 18px; }
-      .lvlCard { padding: 8px 9px; gap: 5px; }
-      .lvlName { font-size: 12.5px; }
-      #playBtn { padding: 8px 26px; font-size: 13px; }
+    @media (max-height: 410px), (max-width: 760px) {
+      .overlay { padding: 10px 12px; }
+      .brand { font-size: 17px; }
+      .levelsGrid { gap: 7px; }
+      .lvlCard { padding: 7px 7px 6px; gap: 4px; }
+      .lvlName { font-size: 11px; }
+      .lvlTag { font-size: 8px; }
+      .lvlFoot { font-size: 9px; padding-top: 4px; }
+      #playBtn { padding: 8px 24px; font-size: 13px; }
       .modalPanel { padding: 10px 14px; gap: 8px; }
       .skinGlyph { font-size: 20px; }
     }
@@ -644,7 +650,7 @@
     installBtn.style.display = 'none';
   });
 
-  // ===== LOCALIZATION (RUSSIAN DEFAULT + ENGLISH IN SETTINGS) =====
+  // ===== LOCALIZATION =====
   const I18N = {
     ru: {
       play: 'ИГРАТЬ',
@@ -655,6 +661,7 @@
       close: 'ЗАКРЫТЬ',
       install: 'УСТАНОВИТЬ',
       best: 'РЕКОРД',
+      newTag: 'НОВЫЙ',
       skins: 'СКИНЫ',
       perks: 'УЛУЧШЕНИЯ',
       equipped: 'ВЫБРАН',
@@ -673,6 +680,9 @@
       bannerSpeed: (p) => `СКОРОСТЬ +${p}%`,
       bannerDual: 'ДВОЙНОЙ КЛОН',
       bannerCloneLost: 'КЛОН РАЗБИТ · 9 СЕК',
+      bannerOutward: 'ОБРАТНАЯ ОРБИТА · ВЫБРОС ЯДРА',
+      bannerInward: 'ВОЗВРАТ В ЯДРО',
+      bannerCrystalHint: 'ТАРАНЬ ЯНТАРНЫЕ КРИСТАЛЛЫ!',
       perksMeta: {
         magnet: { name: 'МАГНИТ', sub: 'ПРИТЯГИВАЕТ МОНЕТЫ' },
         phasePlus: { name: 'ФАЗА+', sub: 'ЩИТ НА 4.0 СЕК' },
@@ -688,6 +698,7 @@
       close: 'CLOSE',
       install: 'INSTALL',
       best: 'BEST',
+      newTag: 'NEW',
       skins: 'SKINS',
       perks: 'PERKS',
       equipped: 'EQUIPPED',
@@ -706,6 +717,9 @@
       bannerSpeed: (p) => `SPEED +${p}%`,
       bannerDual: 'DUAL CLONE ACTIVE',
       bannerCloneLost: 'CLONE LOST · 9S',
+      bannerOutward: 'ANTI-GRAVITY ORBIT · CORE ERUPTION',
+      bannerInward: 'CORE DIVE',
+      bannerCrystalHint: 'SMASH AMBER CRYSTALS!',
       perksMeta: {
         magnet: { name: 'MAGNET', sub: 'PULLS COINS' },
         phasePlus: { name: 'PHASE+', sub: '4.0S SHIELD' },
@@ -714,40 +728,7 @@
     }
   };
 
-  // ===== STORAGE & STATE =====
-  const SAVE_KEY = 'spiral_pulse_pwa_v1';
-  const defaultSave = {
-    coins: 0,
-    skin: 'M',
-    ownedSkins: ['M'],
-    perks: { magnet: false, phasePlus: false, stabilizer: false },
-    best: [0, 0, 0, 0],
-    sound: true,
-    vibe: true,
-    lang: 'ru',
-    selectedLevel: 0
-  };
-  let save;
-  try {
-    const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
-    save = {
-      ...defaultSave,
-      ...raw,
-      perks: { ...defaultSave.perks, ...(raw.perks || {}) },
-      ownedSkins: Array.isArray(raw.ownedSkins) ? raw.ownedSkins : ['M'],
-      best: Array.isArray(raw.best) && raw.best.length === 4 ? raw.best : [0, 0, 0, 0],
-      lang: raw.lang === 'en' ? 'en' : 'ru',
-      vibe: raw.vibe !== undefined ? !!raw.vibe : true
-    };
-  } catch (_) {
-    save = JSON.parse(JSON.stringify(defaultSave));
-  }
-  function persist() {
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (_) {}
-  }
-  function tr() { return I18N[save.lang] || I18N.ru; }
-
-  // ===== 4 UNIQUE LEVELS WITH HARMONIC BASE HUES FOR GRADIENT FLOW =====
+  // ===== 5 UNIQUE LEVELS =====
   const LEVELS = [
     {
       id: 0,
@@ -755,8 +736,8 @@
       name: { ru: 'ЦИАН-ПУЛЬС', en: 'CYAN PULSE' },
       tag: { ru: 'БАСТИОНЫ · СПИРАЛИ', en: 'BASTIONS · SPIRALS' },
       baseHue: 186,
-      hueSwing: 36,     // Flows gracefully: Aquamarine <-> Cyan <-> Electric Azure
-      huePartner: 34,   // Companion gradient lobe offset
+      hueSwing: 36,
+      huePartner: 34,
       bg: '#002228',
       bgMid: '#00171c',
       bgDeep: '#000c0f',
@@ -776,7 +757,7 @@
       name: { ru: 'АЛЫЙ МИРАЖ', en: 'CRIMSON PHANTOM' },
       tag: { ru: 'РАДАР · СКРЫТЫЕ ПЛИТЫ', en: 'RADAR · DISGUISED WALLS' },
       baseHue: 352,
-      hueSwing: 32,     // Flows gracefully: Rose-Magenta <-> Crimson <-> Warm Coral-Amber
+      hueSwing: 32,
       huePartner: -28,
       bg: '#240208',
       bgMid: '#160004',
@@ -797,7 +778,7 @@
       name: { ru: 'ЗОЛОТОЙ МЕХАНИЗМ', en: 'GOLD ECLIPSE' },
       tag: { ru: 'ШЕСТЕРНИ · ЛАЗЕРЫ', en: 'GEARS · LASERS' },
       baseHue: 48,
-      hueSwing: 30,     // Flows gracefully: Warm Amber <-> Solar Gold <-> Luminous Lime-Gold
+      hueSwing: 30,
       huePartner: -24,
       bg: '#201900',
       bgMid: '#140f00',
@@ -818,7 +799,7 @@
       name: { ru: 'ДВОЙНАЯ ПРИЗМА', en: 'VIOLET DUALITY' },
       tag: { ru: 'КЛОН 180° · КРЫЛЬЯ', en: 'TWIN 180° · WINGS' },
       baseHue: 278,
-      hueSwing: 40,     // Flows gracefully: Royal Indigo <-> Violet <-> Orchid-Rose
+      hueSwing: 40,
       huePartner: -42,
       bg: '#19052e',
       bgMid: '#10021f',
@@ -832,8 +813,66 @@
       camProfile: 'wave',
       notes: [49, 58.27, 65.41, 73.42, 87.31, 73.42, 65.41, 58.27],
       lead: [196, 233.08, 293.66, 349.23, 392, 349.23, 293.66, 261.63]
+    },
+    {
+      id: 4,
+      num: '05',
+      isNew: true,
+      name: { ru: 'ГОРИЗОНТ СОБЫТИЙ', en: 'EVENT HORIZON' },
+      tag: { ru: 'АНТИГРАВИТАЦИЯ · ТАРАН', en: 'ANTI-GRAVITY · SHATTER' },
+      baseHue: 152,
+      hueSwing: 34,
+      huePartner: 36,
+      bg: '#022217',
+      bgMid: '#01140e',
+      bgDeep: '#000806',
+      accent: '#00ff88',
+      rim: '#d4ffea',
+      sideShade: '#006e3e',
+      bpm: 134,
+      baseSpeed: 124,
+      baseSpin: -0.36,
+      camProfile: 'vortex',
+      notes: [73.42, 77.78, 87.31, 77.78, 73.42, 65.41, 73.42, 110],
+      lead: [293.66, 311.13, 349.23, 392, 440, 392, 349.23, 311.13]
     }
   ];
+
+  // ===== STORAGE & SAFE MIGRATION (4 -> 5 LEVELS) =====
+  const SAVE_KEY = 'spiral_pulse_pwa_v1';
+  const defaultSave = {
+    coins: 0,
+    skin: 'M',
+    ownedSkins: ['M'],
+    perks: { magnet: false, phasePlus: false, stabilizer: false },
+    best: [0, 0, 0, 0, 0],
+    sound: true,
+    vibe: true,
+    lang: 'ru',
+    selectedLevel: 0
+  };
+  let save;
+  try {
+    const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+    const migratedBest = Array.isArray(raw.best) ? raw.best.slice(0, LEVELS.length) : [];
+    while (migratedBest.length < LEVELS.length) migratedBest.push(0);
+    save = {
+      ...defaultSave,
+      ...raw,
+      perks: { ...defaultSave.perks, ...(raw.perks || {}) },
+      ownedSkins: Array.isArray(raw.ownedSkins) ? raw.ownedSkins : ['M'],
+      best: migratedBest,
+      lang: raw.lang === 'en' ? 'en' : 'ru',
+      vibe: raw.vibe !== undefined ? !!raw.vibe : true,
+      selectedLevel: Math.min(LEVELS.length - 1, Math.max(0, raw.selectedLevel || 0))
+    };
+  } catch (_) {
+    save = JSON.parse(JSON.stringify(defaultSave));
+  }
+  function persist() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (_) {}
+  }
+  function tr() { return I18N[save.lang] || I18N.ru; }
 
   const SKINS = [
     { id: 'M', price: 0 },
@@ -846,7 +885,7 @@
     { id: 'stabilizer', price: 60 }
   ];
 
-  // ===== DYNAMIC HSL PALETTE ENGINE (SMOOTH GRADIENT IRIDESCENCE AROUND BASE HUE) =====
+  // ===== DYNAMIC HSL PALETTE ENGINE (SMOOTH GRADIENT IRIDESCENCE) =====
   function hsl(h, s, l, a = 1) {
     h = ((h % 360) + 360) % 360;
     return a >= 0.999 ? `hsl(${h.toFixed(1)}, ${s}%, ${l}%)` : `hsla(${h.toFixed(1)}, ${s}%, ${l}%, ${a.toFixed(3)})`;
@@ -854,7 +893,7 @@
 
   function getDynamicPalette() {
     const h0 = curLvl.baseHue;
-    const c = chromaAmt; // 0..1 smooth envelope during 20-30s (and harmonic recurrences)
+    const c = chromaAmt;
     const drift1 = Math.sin(chromaPhase * 0.95) * curLvl.hueSwing * c;
     const drift2 = Math.cos(chromaPhase * 0.65) * (curLvl.hueSwing * 0.85) * c;
     const hA = h0 + drift1;
@@ -863,10 +902,10 @@
 
     return {
       hA, hB, hC,
-      accentA: c < 0.01 ? curLvl.accent : hsl(hA, 98, 56),
-      accentB: c < 0.01 ? curLvl.accent : hsl(hB, 96, 60),
-      sideA: c < 0.01 ? curLvl.sideShade : hsl(hA, 85, 27),
-      sideB: c < 0.01 ? curLvl.sideShade : hsl(hB, 80, 24),
+      accentA: c < 0.01 ? curLvl.accent : hsl(hA, 98, 55),
+      accentB: c < 0.01 ? curLvl.accent : hsl(hB, 96, 58),
+      sideA: c < 0.01 ? curLvl.sideShade : hsl(hA, 85, 25),
+      sideB: c < 0.01 ? curLvl.sideShade : hsl(hB, 80, 22),
       rim: c < 0.01 ? curLvl.rim : hsl((hA + hB) * 0.5, 100, 88),
       bgInner: c < 0.01 ? curLvl.bg : hsl(hA, 78, 12),
       bgMid: c < 0.01 ? curLvl.bgMid : hsl(hB, 72, 7),
@@ -877,7 +916,7 @@
     };
   }
 
-  // ===== DOM & STAGE (STRICT LANDSCAPE + NORMALIZED VIRTUAL ARENA) =====
+  // ===== DOM & STAGE =====
   const stage = document.getElementById('stage');
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -1042,6 +1081,40 @@
   function playSfx(type) {
     if (!audioCtx || !save.sound) return;
     const now = audioCtx.currentTime;
+    if (type === 'crystal') {
+      // Crystalline harmonic smash chord!
+      [659.25, 987.77, 1318.51, 1760].forEach((f, idx) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = idx % 2 === 0 ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(f, now + idx * 0.015);
+        osc.frequency.exponentialRampToValueAtTime(f * 1.25, now + 0.22);
+        g.gain.setValueAtTime(0.16, now + idx * 0.015);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(now + idx * 0.015);
+        osc.stop(now + 0.27);
+      });
+      return;
+    }
+    if (type === 'gravity') {
+      // Deep sci-fi singularity whoosh sweep
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(42, now + 0.55);
+      osc.frequency.exponentialRampToValueAtTime(210, now + 0.95);
+      g.gain.setValueAtTime(0.01, now);
+      g.gain.linearRampToValueAtTime(0.42, now + 0.22);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.98);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start(now);
+      osc.stop(now + 1.0);
+      return;
+    }
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
     if (type === 'coin') {
@@ -1128,65 +1201,60 @@
     return d >= 0 && d <= span;
   }
 
-  // ===== ARCHITECTURAL SHAPE PROFILE ENGINE (100% SYNCED RENDER + COLLISION!) =====
-  // Given a wall and normalized angular position f in [0..1], returns { rIn, rOut }
+  // ===== ARCHITECTURAL SHAPE PROFILE ENGINE (100% SYNCED RENDER + COLLISION) =====
   function getWallRadialProfile(w, f) {
     let rIn = w.r + w.vibeOff;
     let rOut = rIn + w.thick;
 
     if (w.profile === 'bastion') {
-      // Iconic stepped monolith / turret directly inspired by reference image_b492a4.png!
-      // Solid broad base + towering protruding central turret + crisp shoulder steps
       if (f > 0.24 && f < 0.76) {
         rOut += w.turretH || 46;
       } else if (f > 0.14 && f < 0.86) {
         rOut += (w.turretH || 46) * 0.38;
       }
     } else if (w.profile === 'fortress') {
-      // Stepped battlement wall (outer ring of reference image_b492a4.png): crisp alternating blocks
       const tier = Math.floor(f * 5);
       const bump = (tier === 1 || tier === 3) ? (w.turretH || 28) : (tier === 2 ? 12 : 0);
       rOut += bump;
       if (tier === 2) rIn -= 6;
     } else if (w.profile === 'blade') {
-      // Swept aerodynamic turbine fin / wedge (narrow tip -> thick curved anvil)
       const t = w.flip ? (1 - f) : f;
       const extra = Math.pow(t, 1.35) * (w.turretH || 44);
       rOut += extra;
       rIn += (1 - t) * 10;
     } else if (w.profile === 'chevron') {
-      // Faceted crystalline spearhead / diamond ridge
       const peak = 1 - Math.abs(f * 2 - 1);
       rOut += peak * (w.turretH || 34);
       rIn -= peak * 9;
     } else if (w.profile === 'notch') {
-      // Armored shield with carved inner pocket / alcove
       if (f > 0.30 && f < 0.70) {
         rIn += Math.min(w.thick * 0.48, 22);
         rOut += 14;
       }
     } else if (w.profile === 'wing') {
-      // Sculptural swept wing for Level 4 Dual Clone (tapers elegantly at both ends, swells in center)
       const bell = Math.sin(f * Math.PI);
       rOut += bell * (w.turretH || 30);
       rIn += (1 - bell) * 8;
     } else if (w.profile === 'piston') {
-      // Level 3 clockwork radial hammer that rhythmically pumps outward & inward in sync with beat
       const pump = (0.5 + 0.5 * Math.sin(runTime * 3.0 + w.phase)) * 18;
-      if (f > 0.22 && f < 0.78) {
-        rOut += pump + 16;
-      }
+      if (f > 0.22 && f < 0.78) rOut += pump + 16;
+    } else if (w.profile === 'prism') {
+      // Level 5 faceted crystalline sawtooth-diamond arc
+      const tri = 1 - Math.abs(((f * 3) % 1) * 2 - 1);
+      rOut += tri * (w.turretH || 28);
+      rIn -= tri * 6;
     }
 
     return {
-      rIn: Math.max(CORE_R * 0.86, rIn),
-      rOut: Math.max(CORE_R * 0.86 + 3, rOut)
+      rIn: Math.max(CORE_R * 0.84, rIn),
+      rOut: Math.max(CORE_R * 0.84 + 3, rOut)
     };
   }
 
-  // ===== GAME STATE (NORMALIZED VIRTUAL ARENA UNITS) =====
+  // ===== GAME STATE =====
   const CORE_R = 36;
-  const ORBIT_R = 60;
+  const BASE_ORBIT_R = 60;
+  const OUTER_ORBIT_R = 178;
   const PLAYER_BASE_H = 11.5;
   const PLAYER_BASE_W = 10.5;
   const TURN_SPEED = 6.25;
@@ -1204,9 +1272,8 @@
   let lastSpeedTier = 0;
   let scrapeCooldown = 0;
 
-  // 3D Camera & Chroma Gradient Flow state (replaces 3D Hyper-Tunnel!)
   let depth3D = 0;
-  let chromaAmt = 0;    // 0..1 smooth iridescence during 20-30s (and 50-60s, etc.)
+  let chromaAmt = 0;
   let chromaPhase = 0;
   let camTiltX = 0;
   let camTiltY = 0;
@@ -1227,6 +1294,8 @@
   let player = {
     ang: -Math.PI / 2,
     angVel: 0,
+    orbitR: BASE_ORBIT_R,
+    faceRot: 0,           // 0 = facing outward, PI = facing inward (Level 5 Outward Orbit!)
     radialBounce: 0,
     radialVel: 0,
     scale: 1.0,
@@ -1237,10 +1306,21 @@
     grace: 0
   };
 
+  // Level 4 Duality state
   let duality = {
     active: false,
     splitBlend: 0,
     respawnTimer: 5.0
+  };
+
+  // Level 5 Event Horizon Singularity state (Anti-Gravity Orbit Expansion + Crystal Smashing!)
+  let singularity = {
+    phase: 'inward',      // 'inward' | 'to_outward' | 'outward' | 'to_inward'
+    timer: 9.5,
+    transDur: 1.9,
+    orbitFactor: 0,       // 0 = inner orbit (60), 1 = outer anti-gravity orbit (178)
+    coreFlare: 0,
+    crystalHintShown: false
   };
 
   let walls = [];
@@ -1381,8 +1461,11 @@
       const card = document.createElement('div');
       card.className = 'lvlCard' + (idx === save.selectedLevel ? ' selected' : '');
       card.style.setProperty('--c', lvl.accent);
+      const rightTop = (lvl.isNew && best < 1)
+        ? `<span class="lvlBadge">${t.newTag}</span>`
+        : `<span class="medal ${med}"></span>`;
       card.innerHTML = `
-        <div class="lvlNum"><span>${lvl.num}</span><span class="medal ${med}"></span></div>
+        <div class="lvlNum"><span>${lvl.num}</span>${rightTop}</div>
         <div>
           <div class="lvlName">${lvl.name[save.lang]}</div>
           <div class="lvlTag">${lvl.tag[save.lang]}</div>
@@ -1476,6 +1559,9 @@
   function openMenu() {
     mode = 'menu';
     chromaAmt = 0;
+    singularity.orbitFactor = 0;
+    player.orbitR = BASE_ORBIT_R;
+    player.faceRot = 0;
     applyTheme(curLvl);
     activeTouches.clear();
     mouseSide = null;
@@ -1491,7 +1577,6 @@
     renderMenu();
   }
 
-  // Button bindings
   document.getElementById('playBtn').onclick = () => { ensureAudio(); startRun(save.selectedLevel); };
   document.getElementById('retryBtn').onclick = () => { ensureAudio(); startRun(curLvl.id); };
   document.getElementById('overMenuBtn').onclick = () => openMenu();
@@ -1535,6 +1620,8 @@
 
     player.ang = -Math.PI / 2;
     player.angVel = 0;
+    player.orbitR = BASE_ORBIT_R;
+    player.faceRot = 0;
     player.radialBounce = 0;
     player.radialVel = 0;
     player.scale = 1.0;
@@ -1547,6 +1634,12 @@
     duality.active = false;
     duality.splitBlend = 0;
     duality.respawnTimer = 5.0;
+
+    singularity.phase = 'inward';
+    singularity.timer = 9.5;
+    singularity.orbitFactor = 0;
+    singularity.coreFlare = 0;
+    singularity.crystalHintShown = false;
 
     walls = [];
     coins = [];
@@ -1572,33 +1665,44 @@
     showBanner(`${curLvl.num} · ${curLvl.name[save.lang]}`, 1.6);
   }
 
-  // ===== ARCHITECTURAL FAIR SPATIAL WAVE GENERATOR =====
+  // ===== FAIR SPATIAL WAVE SPAWNER (INWARD & OUTWARD SINGULARITY!) =====
   function getSpawnRadius() {
     const vW = W / arenaScale;
     const vH = H / arenaScale;
     return Math.hypot(vW, vH) * 0.54 + 42;
   }
 
-  function getOutermostWallOuterR() {
+  function getOutermostInwardWallOuterR() {
     let maxR = 0;
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
-      const extra = w.turretH || 0;
-      const outer = w.r + w.thick + extra;
+      if (w.dir !== -1 || w.vanished) continue;
+      const outer = w.r + w.thick + (w.turretH || 0);
       if (outer > maxR) maxR = outer;
     }
     return maxR;
   }
 
+  function getInnermostOutwardWallInnerR() {
+    let minR = 99999;
+    for (let i = 0; i < walls.length; i++) {
+      const w = walls[i];
+      if (w.dir !== 1 || w.vanished) continue;
+      if (w.r < minR) minR = w.r;
+    }
+    return minR;
+  }
+
   function addWall(opts) {
     walls.push({
       r: opts.r,
+      dir: opts.dir === 1 ? 1 : -1,      // -1 = inward, +1 = outward (Level 5 Singularity!)
       thick: opts.thick || 24,
       start: normAng(opts.start),
       span: clamp(opts.span, 0.14, TAU - 0.14),
       rotSpd: opts.rotSpd || 0,
-      kind: opts.kind || 'arc',          // 'arc' | 'gear' | 'phantom' | 'split' | 'breathe'
-      profile: opts.profile || 'arc',    // 'arc' | 'bastion' | 'fortress' | 'blade' | 'chevron' | 'notch' | 'wing' | 'piston'
+      kind: opts.kind || 'arc',          // 'arc' | 'gear' | 'phantom' | 'split' | 'breathe' | 'crystal'
+      profile: opts.profile || 'arc',    // 'arc' | 'bastion' | 'fortress' | 'blade' | 'chevron' | 'notch' | 'wing' | 'piston' | 'prism'
       turretH: opts.turretH || 0,
       flip: !!opts.flip,
       baseStart: normAng(opts.start),
@@ -1615,8 +1719,8 @@
     });
   }
 
-  function addCoin(r, ang) {
-    coins.push({ r, ang: normAng(ang), taken: false, pulse: Math.random() * TAU });
+  function addCoin(r, ang, dir = -1) {
+    coins.push({ r, ang: normAng(ang), dir, taken: false, pulse: Math.random() * TAU });
   }
 
   function addRingWithGap(r, thick, gapCenter, gapWidth, extra = {}) {
@@ -1639,8 +1743,8 @@
     patternCount++;
 
     const isDualLvl = (curLvl.id === 3);
-    const maxDelta = isDualLvl ? 0.92 : 1.38;
-    const minDelta = 0.42;
+    const maxDelta = isDualLvl ? 0.92 : 1.35;
+    const minDelta = 0.40;
     const dir = Math.random() < 0.5 ? 1 : -1;
     const delta = dir * (minDelta + Math.random() * (maxDelta - minDelta));
     const gapAng = normAng(lastSafeGapAng + delta);
@@ -1651,33 +1755,126 @@
     let exitGapAng = gapAng;
     let extraClearance = 0;
 
-    // --- LEVEL 01: ЦИАН-ПУЛЬС (Reference-inspired Stepped Bastion Monoliths, Fortress Rings, Turbine Blades, Chevron Crystals) ---
-    if (curLvl.id === 0) {
+    // --- LEVEL 05: ГОРИЗОНТ СОБЫТИЙ (ANTI-GRAVITY OUTWARD ERUPTIONS + SMASHABLE AMBER CRYSTALS!) ---
+    if (curLvl.id === 4) {
+      const isOutward = (singularity.phase === 'outward');
+
+      if (isOutward) {
+        // OUTWARD ERUPTIONS FROM THE BLACK HOLE CORE (r = CORE_R + 4 -> outward!)
+        const rStart = CORE_R + 4;
+        const outGap = lerp(1.15, 1.48, ease);
+        const pick = patternCount % 4;
+        singularity.coreFlare = 1.0;
+
+        if (pick === 0) {
+          // Outward Obsidian Prism Ring + Smashable Amber Crystal Shortcut opposite!
+          const bonusSpan = 0.95;
+          const solidSpan = TAU - outGap - bonusSpan;
+          const solid1Start = normAng(gapAng + outGap * 0.5);
+          const halfSolid = solidSpan * 0.5;
+          addWall({ r: rStart, dir: 1, thick: 22, start: solid1Start, span: halfSolid, profile: 'prism', turretH: 18, height3D: 38 });
+          // Glowing Amber Crystal Gate you can RAM straight through for +2 coins + shield!
+          const crysStart = normAng(solid1Start + halfSolid + 0.04);
+          addWall({ r: rStart, dir: 1, thick: 24, start: crysStart, span: bonusSpan - 0.08, kind: 'crystal', profile: 'chevron', turretH: 16, height3D: 40 });
+          addWall({ r: rStart, dir: 1, thick: 22, start: normAng(crysStart + bonusSpan - 0.04), span: halfSolid, profile: 'prism', turretH: 18, height3D: 38 });
+          addCoin(rStart + 12, gapAng, 1);
+          exitGapAng = gapAng;
+        } else if (pick === 1) {
+          // Outward Twin Swept Event-Horizon Blades
+          addSymmetricPair(rStart, 20, gapAng, lerp(1.05, 1.32, ease), { dir: 1, profile: 'blade', turretH: 26, flip: dir > 0, height3D: 38 });
+          addCoin(rStart + 10, gapAng, 1);
+          exitGapAng = gapAng;
+        } else if (pick === 2) {
+          // Pure Crystal Breakthrough Ring! (Wide Amber Crystal Lock right in front of you — SMASH IT!)
+          const crysW = lerp(1.55, 1.85, ease);
+          addRingWithGap(rStart, 22, gapAng, crysW, { dir: 1, profile: 'fortress', turretH: 18, height3D: 38 });
+          addWall({ r: rStart, dir: 1, thick: 24, start: normAng(gapAng - crysW * 0.5 + 0.04), span: crysW - 0.08, kind: 'crystal', height3D: 42 });
+          exitGapAng = gapAng;
+        } else {
+          // Outward 3-Way Rotating Emerald Crown
+          const open = lerp(0.84, 1.02, ease);
+          const span = TAU / 3 - open;
+          addWall({ r: rStart, dir: 1, thick: 22, start: gapAng + open * 0.5, span, rotSpd: dir * 0.22, profile: 'chevron', turretH: 18, height3D: 36 });
+          addWall({ r: rStart, dir: 1, thick: 22, start: gapAng + open * 0.5 + TAU / 3, span, rotSpd: dir * 0.22, profile: 'chevron', turretH: 18, height3D: 36 });
+          addWall({ r: rStart, dir: 1, thick: 22, start: gapAng + open * 0.5 + 2 * TAU / 3, span, rotSpd: dir * 0.22, profile: 'chevron', turretH: 18, height3D: 36 });
+          addCoin(rStart + 11, gapAng, 1);
+          exitGapAng = gapAng;
+        }
+
+        lastSafeGapAng = exitGapAng;
+        // Spatial outward clearance so expanding rings are always cleanly spaced!
+        nextRequiredClearance = 104 + lerp(16, 0, 1 - ease);
+        return;
+      }
+
+      // INWARD PHASE OF LEVEL 5 (Obsidian Prisms + Smashable Amber Crystal Gates!)
+      const pick = patternCount % 4;
+      if (pick === 1) {
+        // First crystal wave shows a quick tip banner once!
+        if (!singularity.crystalHintShown) {
+          singularity.crystalHintShown = true;
+          showBanner(tr().bannerCrystalHint, 2.0);
+        }
+        // Full Obsidian Ring with a HUGE glowing Amber Crystal Gate — SMASH RIGHT THROUGH IT!
+        const crysGap = lerp(1.48, 1.82, ease);
+        addRingWithGap(R0, 28, gapAng, crysGap, { profile: 'prism', turretH: 24, height3D: 40 });
+        addWall({
+          r: R0, thick: 30,
+          start: normAng(gapAng - crysGap * 0.5 + 0.04),
+          span: crysGap - 0.08,
+          kind: 'crystal',
+          profile: 'chevron',
+          turretH: 18,
+          height3D: 44
+        });
+        exitGapAng = gapAng;
+        extraClearance = 28;
+      } else if (pick === 2) {
+        // Obsidian Bastion Monolith + Side Amber Crystal Bonus Door!
+        const monSpan = lerp(2.35, 2.1, ease);
+        const monStart = normAng(gapAng + stdGap * 0.55);
+        addWall({ r: R0, thick: 64, start: monStart, span: monSpan, profile: 'bastion', turretH: 42, height3D: 48 });
+        // Bonus shatter crystal sitting inside half of the gap for extra coins
+        addWall({ r: R0 + 18, thick: 24, start: normAng(gapAng - stdGap * 0.45), span: stdGap * 0.42, kind: 'crystal', height3D: 40 });
+        addCoin(R0 + 32, gapAng + stdGap * 0.2);
+        exitGapAng = gapAng;
+        extraClearance = 36;
+      } else if (pick === 3) {
+        // Twin Faceted Prism Wings
+        addSymmetricPair(R0, 24, gapAng, lerp(1.12, 1.40, ease), { profile: 'prism', turretH: 28, rotSpd: dir * 0.22, height3D: 40 });
+        addCoin(R0 + 14, gapAng);
+        exitGapAng = gapAng;
+        extraClearance = 24;
+      } else {
+        // Obsidian Stepped Fortress + Crystal Core
+        addRingWithGap(R0, 30, gapAng, stdGap, { profile: 'fortress', turretH: 28, height3D: 40 });
+        addCoin(R0 + 16, gapAng);
+        exitGapAng = gapAng;
+      }
+    }
+
+    // --- LEVEL 01: ЦИАН-ПУЛЬС ---
+    else if (curLvl.id === 0) {
       const pick = patternCount % 5;
       if (pick === 0) {
-        // Signature Stepped Bastion Monolith (just like image_b492a4.png!) + Outer Stepped Fortress Ring
         const monSpan = lerp(2.65, 2.35, ease);
         const monStart = normAng(gapAng + stdGap * 0.55);
         addWall({ r: R0, thick: 72, start: monStart, span: monSpan, profile: 'bastion', turretH: 48, height3D: 48 });
-        // Companion stepped outer fortress arc framing it
         addRingWithGap(R0 + 138, 34, normAng(gapAng + dir * 0.72), stdGap + 0.14, { profile: 'fortress', turretH: 30, height3D: 36 });
         if (Math.random() < 0.65) addCoin(R0 + 36, gapAng);
         exitGapAng = normAng(gapAng + dir * 0.72);
         extraClearance = 38;
       } else if (pick === 1) {
-        // Twin Swept Turbine Blades (asymmetric tapered wedges)
         const bladeGap = lerp(1.08, 1.36, ease);
         addSymmetricPair(R0, 22, gapAng, bladeGap, { profile: 'blade', turretH: 48, flip: dir > 0, height3D: 42 });
         if (Math.random() < 0.55) addCoin(R0 + 28, gapAng);
         exitGapAng = gapAng;
         extraClearance = 24;
       } else if (pick === 2) {
-        // Stepped Fortress Battlement Ring (alternating thick/thin castle blocks)
         addRingWithGap(R0, 28, gapAng, stdGap, { profile: 'fortress', turretH: 32, height3D: 40 });
         if (Math.random() < 0.5) addCoin(R0 + 18, gapAng);
         exitGapAng = gapAng;
       } else if (pick === 3) {
-        // Crystalline Chevron Cloverleaf (3 pointed diamond spearheads) + notched follow-up
         const open = lerp(0.80, 0.96, ease);
         const span = TAU / 3 - open;
         for (let k = 0; k < 3; k++) {
@@ -1688,7 +1885,6 @@
         exitGapAng = a2;
         extraClearance = 32;
       } else {
-        // Classic Stepped Snail Spiral with bold architectural depth
         const steps = 4;
         const arcTotal = TAU - stdGap;
         const segSpan = arcTotal / steps;
@@ -1702,44 +1898,31 @@
       }
     }
 
-    // --- LEVEL 02: АЛЫЙ МИРАЖ (Disguised Solid-Looking Phantom Tiles that Vanish RIGHT in Front of Player + Massive Bastions!) ---
+    // --- LEVEL 02: АЛЫЙ МИРАЖ (Disguised Phantom Tiles!) ---
     else if (curLvl.id === 1) {
       const pick = patternCount % 4;
       if (pick === 0) {
-        // Disguised Mirage Fortress Ring: looks like a SOLID fortress ring with a disguised mirage gate that dissolves right before impact!
         const mirageGap = lerp(1.36, 1.70, ease);
         addRingWithGap(R0, 32, gapAng, mirageGap, { profile: 'fortress', turretH: 26, height3D: 38 });
-        // Disguised phantom door matches thickness & solid crimson color until close to player!
-        addWall({
-          r: R0, thick: 32,
-          start: normAng(gapAng - mirageGap * 0.5 + 0.03),
-          span: mirageGap - 0.06,
-          kind: 'phantom',
-          profile: 'arc',
-          height3D: 38
-        });
+        addWall({ r: R0, thick: 32, start: normAng(gapAng - mirageGap * 0.5 + 0.03), span: mirageGap - 0.06, kind: 'phantom', profile: 'arc', height3D: 38 });
         addCoin(R0 + 16, gapAng);
         exitGapAng = gapAng;
         extraClearance = 32;
       } else if (pick === 1) {
-        // Dual Massive Bastion Wedges + Disguised Mirage Seal across the corridor!
         const wedgeSpan = lerp(1.12, 0.96, ease);
         const laneHalf = (Math.PI - wedgeSpan) * 0.5;
         addWall({ r: R0, thick: 74, start: gapAng + laneHalf, span: wedgeSpan, profile: 'bastion', turretH: 40, height3D: 48 });
         addWall({ r: R0, thick: 74, start: gapAng + laneHalf + Math.PI, span: wedgeSpan, profile: 'bastion', turretH: 40, height3D: 48 });
-        // Disguised bar blocking the gap, dissolves dramatically right in front of the player
         addWall({ r: R0 + 16, thick: 28, start: gapAng - laneHalf + 0.04, span: laneHalf * 2 - 0.08, kind: 'phantom', height3D: 36 });
         addCoin(R0 + 38, gapAng);
         exitGapAng = gapAng;
         extraClearance = 44;
       } else if (pick === 2) {
-        // Splitting / Rejoining Armored Blades + Disguised Decoy
         const baseGap = lerp(1.14, 1.40, ease);
         addSymmetricPair(R0, 26, gapAng, baseGap, { kind: 'split', profile: 'blade', turretH: 32, oscAmp: 0.14, flip: dir > 0, height3D: 38 });
         exitGapAng = gapAng;
         extraClearance = 24;
       } else {
-        // Notched Bastion + Disguised Inner Phantom Plug
         const mirageW = lerp(1.30, 1.56, ease);
         addRingWithGap(R0, 42, gapAng, mirageW, { profile: 'notch', height3D: 42 });
         addWall({ r: R0 + 6, thick: 30, start: normAng(gapAng - mirageW * 0.5 + 0.04), span: mirageW - 0.08, kind: 'phantom', height3D: 40 });
@@ -1748,25 +1931,22 @@
       }
     }
 
-    // --- LEVEL 03: ЗОЛОТОЙ МЕХАНИЗМ (Clockwork Gears, Pumping Radial Pistons, Chevron Blades + Core Lasers) ---
+    // --- LEVEL 03: ЗОЛОТОЙ МЕХАНИЗМ ---
     else if (curLvl.id === 2) {
       const pick = patternCount % 4;
       if (pick === 0) {
-        // Rotating Clockwork Gear Crown
         const g = lerp(1.28, 1.62, ease);
         const rot = dir * 0.26;
         addRingWithGap(R0, 30, gapAng, g, { kind: 'gear', rotSpd: rot, height3D: 42 });
         if (Math.random() < 0.6) addCoin(R0 + 15, gapAng);
         exitGapAng = normAng(gapAng + rot * 1.4);
       } else if (pick === 1) {
-        // Pumping Clockwork Pistons (rhythmic radial hammers!)
         const pGap = lerp(1.12, 1.38, ease);
         addSymmetricPair(R0, 28, gapAng, pGap, { profile: 'piston', turretH: 34, phase: 0, rotSpd: dir * 0.18, height3D: 44 });
         addCoin(R0 + 18, gapAng);
         exitGapAng = gapAng;
         extraClearance = 30;
       } else if (pick === 2) {
-        // Massive Golden Bastion Turret + Counter-Rotating Outer Gear
         const monSpan = lerp(2.45, 2.2, ease);
         addWall({ r: R0, thick: 64, start: normAng(gapAng + stdGap * 0.55), span: monSpan, profile: 'bastion', turretH: 42, rotSpd: 0.16, height3D: 48 });
         const a2 = normAng(gapAng + dir * 0.72);
@@ -1774,7 +1954,6 @@
         exitGapAng = a2;
         extraClearance = 40;
       } else {
-        // Triple Swept Golden Turbine Blades
         const open = lerp(0.84, 1.0, ease);
         const span = TAU / 3 - open;
         const rot = -dir * 0.22;
@@ -1787,11 +1966,10 @@
       }
     }
 
-    // --- LEVEL 04: ДВОЙНАЯ ПРИЗМА (100% 180°-Symmetric Sculptural Wings, Twin Bastions, Twin Chevrons & Breathing Gates) ---
+    // --- LEVEL 04: ДВОЙНАЯ ПРИЗМА ---
     else {
       const pick = patternCount % 4;
       if (pick === 0) {
-        // Twin Sculptural Prism Wings (breathing gently, guaranteed wide safe opening!)
         const safeBaseGap = Math.max(1.22, dualGap);
         addSymmetricPair(R0, 26, gapAng, safeBaseGap, { kind: 'breathe', profile: 'wing', turretH: 34, oscAmp: 0.12, phase: 0, height3D: 42 });
         if (Math.random() < 0.65) {
@@ -1801,14 +1979,12 @@
         exitGapAng = gapAng;
         extraClearance = 24;
       } else if (pick === 1) {
-        // Twin Stepped Bastion Monoliths (massive architectural pair at 180°!)
         const bGap = lerp(1.16, 1.40, ease);
         addSymmetricPair(R0, 52, gapAng, bGap, { profile: 'bastion', turretH: 36, height3D: 48 });
         addCoin(R0 + 26, gapAng);
         exitGapAng = gapAng;
         extraClearance = 42;
       } else if (pick === 2) {
-        // Flowing Twin Chevron Staircase (3 crystalline pairs)
         const step = dir * 0.42;
         for (let k = 0; k < 3; k++) {
           const a = normAng(gapAng + k * step);
@@ -1819,7 +1995,6 @@
         }
         extraClearance = 36;
       } else {
-        // Symmetric 4-Way Swept Turbine Blades (still 100% 180°-symmetric!)
         const open = lerp(0.74, 0.88, ease);
         const span = Math.PI * 0.5 - open;
         const rot = dir * 0.24;
@@ -1854,13 +2029,13 @@
     }
   }
 
-  function shatterAt(ang, scale, color) {
-    const r = ORBIT_R + player.radialBounce;
+  function shatterAt(ang, scale, color, customR = null, count = 18) {
+    const r = customR !== null ? customR : (player.orbitR + player.radialBounce);
     const ox = Math.cos(ang) * r;
     const oy = Math.sin(ang) * r;
-    emitSparks(ox, oy, Math.cos(ang), Math.sin(ang), 24, '#ffffff', 1.35);
-    for (let i = 0; i < 18; i++) {
-      const a = (i / 18) * TAU + (Math.random() - 0.5) * 0.4;
+    emitSparks(ox, oy, Math.cos(ang), Math.sin(ang), count + 4, '#ffffff', 1.35);
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * TAU + (Math.random() - 0.5) * 0.4;
       const spd = 110 + Math.random() * 230;
       const sz = (3.4 + Math.random() * 5.2) * Math.sqrt(scale);
       shards.push({
@@ -1871,11 +2046,34 @@
         rot: Math.random() * TAU,
         vrot: (Math.random() - 0.5) * 15,
         sz,
-        life: 1.05 + Math.random() * 0.5,
-        maxLife: 1.55,
+        life: 0.95 + Math.random() * 0.45,
+        maxLife: 1.4,
         color: i % 3 === 0 ? '#ffffff' : color
       });
     }
+  }
+
+  function smashCrystalWall(w, hitAng) {
+    w.vanished = true;
+    const rMid = w.r + w.thick * 0.5;
+    // Burst golden crystal shards along the smashed barrier!
+    for (let k = 0; k < 4; k++) {
+      const a = w.start + ((k + 0.5) / 4) * w.span;
+      shatterAt(a, 1.0, k % 2 === 0 ? '#ffae00' : '#ffe680', rMid, 4);
+    }
+    playSfx('crystal');
+    vibe([16, 18, 22]);
+    hitStop = 0.032;
+    shake = Math.max(shake, 6.5);
+    player.radialVel += (w.dir === 1 ? 45 : -45);
+    // Reward: +2 coins & +0.35s phase shield recharge!
+    save.coins += 2;
+    runCoins += 2;
+    player.phaseFuel = Math.min(player.phaseMax, player.phaseFuel + 0.35);
+    coinHud.textContent = `◈ ${save.coins}`;
+    const px = Math.cos(hitAng) * (player.orbitR + player.radialBounce);
+    const py = Math.sin(hitAng) * (player.orbitR + player.radialBounce);
+    addFloatText(px, py - 14, '+2 ◈', '#ffd800');
   }
 
   function addFloatText(x, y, text, color) {
@@ -1900,56 +2098,68 @@
     persist();
   }
 
-  // ===== EXACT PROFILE-AWARE COLLISION (SIDE SLIDE = SAFE, FRONTAL HIT = DEATH) =====
+  // ===== BIDIRECTIONAL PROFILE-AWARE COLLISION (INWARD + OUTWARD + SMASHABLE CRYSTALS!) =====
   function processCloneCollisions(cloneAng, dt, wallSpd) {
-    const pR = ORBIT_R + player.radialBounce;
+    const pR = player.orbitR + player.radialBounce;
     const halfW = (PLAYER_BASE_W * 0.42 * player.scale) / pR;
-    const noseR = pR + PLAYER_BASE_H * 0.44 * player.scale;
-    const tailR = pR - PLAYER_BASE_H * 0.30 * player.scale;
+    const facingInward = (curLvl.id === 4 && singularity.orbitFactor > 0.5);
+    const noseExtent = PLAYER_BASE_H * 0.44 * player.scale;
+    const tailExtent = PLAYER_BASE_H * 0.30 * player.scale;
+    const bandMinR = facingInward ? (pR - noseExtent) : (pR - tailExtent);
+    const bandMaxR = facingInward ? (pR + tailExtent) : (pR + noseExtent);
     let pushedAng = cloneAng;
     let died = false;
 
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
       if (w.vanished) continue;
-      // Disguised phantom tiles are already dissolving & non-lethal once below r = 96 so last-moment vanish is 100% fair!
       if (w.kind === 'phantom' && w.r < 96) continue;
 
-      // Compute exact profile radial bounds at player's angle inside this wall
+      const effSpd = w.dir === 1 ? wallSpd * 0.80 : wallSpd;
       const relAng = normAng(pushedAng - w.start);
       const f = clamp(relAng / w.span, 0, 1);
       const bounds = getWallRadialProfile(w, f);
       const innerR = bounds.rIn;
       const outerR = bounds.rOut;
-      const prevInnerR = innerR + wallSpd * dt;
 
-      // Near Miss bonus
-      if (!w.nearAwarded && !player.phasing && outerR < pR && outerR > pR - wallSpd * dt - 8) {
-        const dStart = Math.abs(angDiff(pushedAng, w.start));
-        const dEnd = Math.abs(angDiff(pushedAng, w.start + w.span));
-        const nearThresh = halfW + 0.16;
-        if ((dStart < nearThresh || dEnd < nearThresh) && !isAngleInArc(pushedAng, w.start, w.span)) {
-          w.nearAwarded = true;
-          if (player.nearMissCd <= 0) {
-            player.nearMissCd = 0.48;
-            save.coins += 1;
-            runCoins += 1;
-            coinHud.textContent = `◈ ${save.coins}`;
-            playSfx('nearmiss');
-            const mx = Math.cos(pushedAng) * pR;
-            const my = Math.sin(pushedAng) * pR;
-            emitSparks(mx, my, Math.cos(pushedAng), Math.sin(pushedAng), 8, '#ffd800', 0.8);
-            addFloatText(mx, my - 12, '+1 ◈', '#ffd800');
+      // Near Miss bonus (only on lethal walls!)
+      if (w.kind !== 'crystal' && !w.nearAwarded && !player.phasing) {
+        const justPassed = w.dir === -1
+          ? (outerR < pR && outerR > pR - effSpd * dt - 8)
+          : (innerR > pR && innerR < pR + effSpd * dt + 8);
+        if (justPassed) {
+          const dStart = Math.abs(angDiff(pushedAng, w.start));
+          const dEnd = Math.abs(angDiff(pushedAng, w.start + w.span));
+          const nearThresh = halfW + 0.16;
+          if ((dStart < nearThresh || dEnd < nearThresh) && !isAngleInArc(pushedAng, w.start, w.span)) {
+            w.nearAwarded = true;
+            if (player.nearMissCd <= 0) {
+              player.nearMissCd = 0.48;
+              save.coins += 1;
+              runCoins += 1;
+              coinHud.textContent = `◈ ${save.coins}`;
+              playSfx('nearmiss');
+              const mx = Math.cos(pushedAng) * pR;
+              const my = Math.sin(pushedAng) * pR;
+              emitSparks(mx, my, Math.cos(pushedAng), Math.sin(pushedAng), 8, '#ffd800', 0.8);
+              addFloatText(mx, my - 12, '+1 ◈', '#ffd800');
+            }
           }
         }
       }
 
-      if (innerR > noseR || outerR < tailR) continue;
+      if (innerR > bandMaxR || outerR < bandMinR) continue;
 
       const inCore = isAngleInArc(pushedAng, w.start, w.span);
       const inLeft = isAngleInArc(pushedAng - halfW, w.start, w.span);
       const inRight = isAngleInArc(pushedAng + halfW, w.start, w.span);
       if (!inCore && !inLeft && !inRight) continue;
+
+      // SMASHABLE AMBER CRYSTAL WALLS: Ramming them SHATTERS them for loot & shield!
+      if (w.kind === 'crystal') {
+        smashCrystalWall(w, pushedAng);
+        continue;
+      }
 
       if (player.phasing || player.grace > 0) continue;
 
@@ -1959,8 +2169,21 @@
       const distEnd = Math.abs(dToEnd);
       const sideEdgeMargin = halfW + 0.24;
 
-      const isAlreadyPastNose = innerR < pR - 1;
       const touchingSideEdge = !inCore || distStart < sideEdgeMargin || distEnd < sideEdgeMargin;
+      let isAlreadyPastNose = false;
+      let isFrontal = false;
+
+      if (w.dir === -1) {
+        // Inward wall: front face is innerR approaching nose at bandMaxR
+        const prevInnerR = innerR + effSpd * dt;
+        isAlreadyPastNose = innerR < pR - 1;
+        isFrontal = (prevInnerR >= bandMaxR - 12 || inCore);
+      } else {
+        // Outward wall: front face is outerR approaching inward nose at bandMinR
+        const prevOuterR = outerR - effSpd * dt;
+        isAlreadyPastNose = outerR > pR + 1;
+        isFrontal = (prevOuterR <= bandMinR + 12 || inCore);
+      }
 
       if (isAlreadyPastNose && touchingSideEdge) {
         if (distStart <= distEnd) {
@@ -1970,7 +2193,7 @@
           pushedAng = normAng(w.start + w.span + halfW + 0.012);
           player.angVel = Math.max(player.angVel, 0.7);
         }
-        player.radialVel -= 32;
+        player.radialVel += (w.dir === 1 ? 28 : -32);
         w.hitFlash = 1.0;
         w.vibeOff = (Math.random() < 0.5 ? 1 : -1) * 3.2;
         const sx = Math.cos(pushedAng) * pR;
@@ -1981,7 +2204,7 @@
           vibe(7);
           scrapeCooldown = 0.08;
         }
-      } else if (prevInnerR >= noseR - 12 || inCore) {
+      } else if (isFrontal) {
         died = true;
         break;
       }
@@ -2008,11 +2231,15 @@
       if (bannerTimer <= 0) eventBanner.classList.remove('show');
     }
 
+    const particleDir = (curLvl.id === 4 && singularity.orbitFactor > 0.5) ? -1 : 1;
     for (const p of bgParticles) {
-      p.r -= p.spd * dt * (1 + chromaAmt * 0.4);
-      p.ang += 0.08 * dt * (curLvl.id === 1 ? -1 : 1);
+      p.r -= p.spd * dt * (1 + chromaAmt * 0.4) * particleDir;
+      p.ang += (curLvl.id === 4 ? 0.22 : 0.08) * dt * (curLvl.id === 1 ? -1 : 1);
       if (p.r < CORE_R) {
         p.r = 440 + Math.random() * 80;
+        p.ang = Math.random() * TAU;
+      } else if (p.r > 520) {
+        p.r = CORE_R + 6;
         p.ang = Math.random() * TAU;
       }
     }
@@ -2140,16 +2367,62 @@
       } else if (speedTier === 3) {
         showBanner(t.bannerOverdrive, 1.8);
         vibe(24);
-      } else if (speedTier === 1) {
+      } else if (speedTier === 1 && curLvl.id !== 4) {
         showBanner(t.banner3D, 1.6);
         vibe(16);
-      } else {
+      } else if (curLvl.id !== 4) {
         showBanner(t.bannerSpeed(Math.min(40, speedTier * 5)), 1.4);
       }
     }
 
-    // ===== SMOOTH GRADIENT IRIDESCENCE (20:00–30:00 + cyclic every 30s) =====
-    // Replaces 3D Hyper-Tunnel with lush base-color gradient flow!
+    // ===== LEVEL 5 EVENT HORIZON ANTI-GRAVITY ORBIT STATE MACHINE =====
+    if (curLvl.id === 4) {
+      singularity.coreFlare = Math.max(0, singularity.coreFlare - dt * 2.4);
+      singularity.timer -= dt;
+      if (singularity.phase === 'inward' && singularity.timer <= 0) {
+        singularity.phase = 'to_outward';
+        singularity.timer = singularity.transDur;
+        playSfx('gravity');
+        vibe([22, 35, 28]);
+        showBanner(t.bannerOutward, 2.2);
+        sonarRipples.push({ r: CORE_R + 4, alpha: 0.85 });
+      } else if (singularity.phase === 'to_outward') {
+        const p = 1 - clamp(singularity.timer / singularity.transDur, 0, 1);
+        singularity.orbitFactor = smoothstep(p);
+        player.grace = Math.max(player.grace, 0.3);
+        if (singularity.timer <= 0) {
+          singularity.phase = 'outward';
+          singularity.orbitFactor = 1;
+          singularity.timer = 11.0;
+          lastSafeGapAng = player.ang;
+          nextRequiredClearance = 0;
+        }
+      } else if (singularity.phase === 'outward' && singularity.timer <= 0) {
+        singularity.phase = 'to_inward';
+        singularity.timer = singularity.transDur;
+        playSfx('gravity');
+        vibe([22, 30, 22]);
+        showBanner(t.bannerInward, 1.8);
+      } else if (singularity.phase === 'to_inward') {
+        const p = clamp(singularity.timer / singularity.transDur, 0, 1);
+        singularity.orbitFactor = smoothstep(p);
+        player.grace = Math.max(player.grace, 0.3);
+        if (singularity.timer <= 0) {
+          singularity.phase = 'inward';
+          singularity.orbitFactor = 0;
+          singularity.timer = 11.5;
+          lastSafeGapAng = player.ang;
+          nextRequiredClearance = 0;
+        }
+      }
+      player.orbitR = lerp(BASE_ORBIT_R, OUTER_ORBIT_R, singularity.orbitFactor);
+      player.faceRot = Math.PI * singularity.orbitFactor;
+    } else {
+      player.orbitR = BASE_ORBIT_R;
+      player.faceRot = 0;
+    }
+
+    // ===== SMOOTH GRADIENT FLOW (20:00–30:00 + cyclic every 30s) =====
     let targetChroma = 0;
     if (runTime >= 20.0) {
       const cyc30 = (runTime - 20.0) % 30.0;
@@ -2166,12 +2439,13 @@
       document.documentElement.style.setProperty('--accent', curLvl.accent);
     }
 
-    // Smooth 3D phases (retained smoothly without any hyper-tunnel rush!)
+    // Smooth 3D phases (Level 5 gets rich 3D bowl lift during Outward Orbit too!)
     let target3D = 0;
-    if (runTime >= 10.0 && runTime <= 18.8) {
+    if (curLvl.id === 4) {
+      target3D = Math.max(0.32 + singularity.orbitFactor * 0.56, chromaAmt * 0.65);
+    } else if (runTime >= 10.0 && runTime <= 18.8) {
       target3D = Math.min(smoothstep((runTime - 10.0) / 1.8), smoothstep((18.8 - runTime) / 1.8)) * 0.84;
     } else if (runTime > 20.0 && runTime < 30.0) {
-      // Gentle sculptural 3D lift during Gradient Flow so the iridescent walls look luminous
       target3D = chromaAmt * 0.58;
     } else if (runTime >= 32.0) {
       const cyc = (runTime - 32.0) % 18.0;
@@ -2194,12 +2468,12 @@
       if (idx % 2 === 0) {
         playKick(idx === 0);
         beatPulse = 1.0;
-        if (curLvl.id === 0 || chromaAmt > 0.25) {
+        if (curLvl.id === 0 || curLvl.id === 4 || chromaAmt > 0.25) {
           sonarRipples.push({ r: CORE_R + 4, alpha: 0.42 + chromaAmt * 0.2 });
         }
       }
-      playBass(curLvl.notes[idx], stepDur * 0.9, chromaAmt > 0.25);
-      if (chromaAmt > 0.25 && idx % 2 === 1) {
+      playBass(curLvl.notes[idx], stepDur * 0.9, chromaAmt > 0.25 || (curLvl.id === 4 && singularity.orbitFactor > 0.5));
+      if ((chromaAmt > 0.25 || (curLvl.id === 4 && singularity.orbitFactor > 0.5)) && idx % 2 === 1) {
         playShimmerPad(curLvl.lead[idx], stepDur);
       }
       if (stepIdx % 4 === 2 || chromaAmt > 0.35) {
@@ -2212,7 +2486,7 @@
     }
     beatPulse = Math.max(0, beatPulse - dt * 4.2);
 
-    // Smooth Beat Camera
+    // Smooth Beat Camera (automatically zooms out smoothly to frame Outer Orbit on Level 5!)
     let tX = 0, tY = 0;
     if (curLvl.camProfile === 'dive') {
       tX = depth3D * 0.48;
@@ -2223,20 +2497,28 @@
     } else if (curLvl.camProfile === 'iso') {
       tX = depth3D * 0.52;
       tY = Math.cos(runTime * 0.8) * 0.32 * depth3D;
+    } else if (curLvl.camProfile === 'vortex') {
+      tX = depth3D * (0.38 + singularity.orbitFactor * 0.18);
+      tY = Math.sin(runTime * 0.75) * 0.24 * depth3D;
     } else {
       tX = (0.34 + Math.sin(runTime * 1.0) * 0.16) * depth3D;
       tY = Math.cos(runTime * 0.9) * 0.34 * depth3D;
     }
     camTiltX = lerp(camTiltX, tX, 1 - Math.exp(-4.0 * dt));
     camTiltY = lerp(camTiltY, tY, 1 - Math.exp(-4.0 * dt));
-    const targetZoom = 1 + beatPulse * 0.03 + chromaAmt * 0.035;
-    camZoom = lerp(camZoom, targetZoom, 1 - Math.exp(-9 * dt));
-    camSway = lerp(camSway, Math.sin(runTime * 1.8) * 0.02 * (1 + beatPulse * 0.65), 1 - Math.exp(-6 * dt));
+    const orbitZoomBase = curLvl.id === 4 ? lerp(1.0, 0.78, singularity.orbitFactor) : 1.0;
+    const targetZoom = orbitZoomBase + beatPulse * 0.028 + chromaAmt * 0.03;
+    camZoom = lerp(camZoom, targetZoom, 1 - Math.exp(-7 * dt));
+    camSway = lerp(camSway, Math.sin(runTime * 1.8) * 0.018 * (1 + beatPulse * 0.65), 1 - Math.exp(-6 * dt));
 
     // World Rotation
     if (curLvl.id === 3) {
       const targetSpin = Math.sin(runTime * 0.38) * 0.56 * (1 + Math.min(0.25, speedTier * 0.04));
       worldSpin = lerp(worldSpin, targetSpin, 1 - Math.exp(-2.4 * dt));
+    } else if (curLvl.id === 4) {
+      const dirFlip = singularity.orbitFactor > 0.5 ? -1 : 1;
+      const targetSpin = curLvl.baseSpin * dirFlip * (1 + Math.min(0.25, speedTier * 0.04));
+      worldSpin = lerp(worldSpin, targetSpin, 1 - Math.exp(-2.2 * dt));
     } else {
       const dirFlip = (curLvl.id === 1 && Math.floor(runTime / 15) % 2 === 1) ? -1 : 1;
       const targetSpin = curLvl.baseSpin * dirFlip * (1 + Math.min(0.3, speedTier * 0.05));
@@ -2276,10 +2558,11 @@
       player.phasing = false;
     }
 
+    const effTurnSpeed = curLvl.id === 4 ? lerp(TURN_SPEED, TURN_SPEED * 0.86, singularity.orbitFactor) : TURN_SPEED;
     let targetAngVel = 0;
     if (!bothHeld) {
-      if (inp.right) targetAngVel = TURN_SPEED;
-      else if (inp.left) targetAngVel = -TURN_SPEED;
+      if (inp.right) targetAngVel = effTurnSpeed;
+      else if (inp.left) targetAngVel = -effTurnSpeed;
     }
     player.angVel = lerp(player.angVel, targetAngVel, 1 - Math.exp(-26 * dt));
     if (Math.abs(player.angVel) < 0.02 && targetAngVel === 0) player.angVel = 0;
@@ -2288,30 +2571,41 @@
     player.radialVel += (-player.radialBounce * 180 - player.radialVel * 14) * dt;
     player.radialBounce += player.radialVel * dt;
 
-    // Spatial Wave Spawner
+    // ===== SPATIAL WAVE SPAWNER (PAUSES CLEANLY DURING LEVEL 5 ORBIT TRANSITIONS!) =====
     const spawnR = getSpawnRadius();
-    if (getOutermostWallOuterR() <= spawnR - nextRequiredClearance) {
-      spawnFairWave(wallSpd);
+    if (curLvl.id === 4) {
+      if (singularity.phase === 'inward') {
+        if (getOutermostInwardWallOuterR() <= spawnR - nextRequiredClearance) {
+          spawnFairWave(wallSpd);
+        }
+      } else if (singularity.phase === 'outward') {
+        if (getInnermostOutwardWallInnerR() >= CORE_R + nextRequiredClearance) {
+          spawnFairWave(wallSpd);
+        }
+      }
+    } else {
+      if (getOutermostInwardWallOuterR() <= spawnR - nextRequiredClearance) {
+        spawnFairWave(wallSpd);
+      }
     }
 
-    // Update Walls (including DISGUISED LAST-MOMENT VANISH on Level 2!)
+    // Update Walls (supports both Inward dir=-1 and Outward dir=+1!)
+    const maxCleanupR = spawnR + 90;
     for (let i = walls.length - 1; i >= 0; i--) {
       const w = walls[i];
-      w.r -= wallSpd * dt;
+      const effSpd = w.dir === 1 ? wallSpd * 0.80 : wallSpd;
+      w.r += w.dir * effSpd * dt;
       w.start = normAng(w.start + w.rotSpd * dt);
       if (w.hitFlash > 0) w.hitFlash = Math.max(0, w.hitFlash - dt * 5);
       w.vibeOff *= Math.pow(0.01, dt);
 
       if (w.kind === 'phantom' && !w.vanished) {
-        // Disguised as a solid wall until close to the player!
-        // Between r = 136 and r = 84 it rapidly dissolves right in front of the player!
         if (w.r < 138) {
           if (!w.vanishSfxDone) {
             w.vanishSfxDone = true;
             playSfx('vanish');
           }
           w.phantomAlpha = clamp((w.r - 84) / (138 - 84), 0, 1);
-          // Dissolving crimson-white glitch sparks right before the player
           if (Math.random() < 0.8) {
             const pa = w.start + Math.random() * w.span;
             const pr = w.r + Math.random() * w.thick;
@@ -2331,7 +2625,9 @@
         w.span = clamp(w.baseSpan + osc * w.oscAmp, 0.42, Math.PI - 0.96);
       }
 
-      if (w.r + w.thick + (w.turretH || 0) < CORE_R - 8) walls.splice(i, 1);
+      if (w.vanished || (w.dir === -1 && w.r + w.thick + (w.turretH || 0) < CORE_R - 8) || (w.dir === 1 && w.r > maxCleanupR)) {
+        walls.splice(i, 1);
+      }
     }
 
     // Level 3 Solar Core Lasers
@@ -2339,14 +2635,7 @@
       laserTimer -= dt;
       if (laserTimer <= 0) {
         const aimAng = normAng(player.ang + (Math.random() - 0.5) * 0.4);
-        lasers.push({
-          ang: aimAng,
-          state: 'warn',
-          timer: 1.70,
-          maxWarn: 1.70,
-          ticks: 3,
-          halfWidth: 0.082
-        });
+        lasers.push({ ang: aimAng, state: 'warn', timer: 1.70, maxWarn: 1.70, ticks: 3, halfWidth: 0.082 });
         laserTimer = Math.max(3.6, 5.4 - speedTier * 0.22);
       }
     }
@@ -2370,12 +2659,13 @@
       }
     }
 
-    // Coins
-    const pR = ORBIT_R + player.radialBounce;
+    // Coins (support both inward and outward movement!)
+    const pR = player.orbitR + player.radialBounce;
     const magnetRange = save.perks.magnet ? 115 : 28 * player.scale;
     for (let i = coins.length - 1; i >= 0; i--) {
       const c = coins[i];
-      c.r -= wallSpd * dt;
+      const effSpd = c.dir === 1 ? wallSpd * 0.80 : wallSpd;
+      c.r += c.dir * effSpd * dt;
       c.pulse += dt * 5;
       const checkAngs = duality.active ? [player.ang, normAng(player.ang + Math.PI * duality.splitBlend)] : [player.ang];
       for (const a of checkAngs) {
@@ -2398,7 +2688,7 @@
           break;
         }
       }
-      if (c.taken || c.r < CORE_R) coins.splice(i, 1);
+      if (c.taken || (c.dir === -1 && c.r < CORE_R) || (c.dir === 1 && c.r > maxCleanupR)) coins.splice(i, 1);
     }
 
     // Collisions
@@ -2457,11 +2747,10 @@
     return { x: W * 0.5 + x2 * s, y: H * 0.5 + y1 * s, s };
   }
 
-  // ===== LEVEL-SPECIFIC BACKGROUNDS + SMOOTH GRADIENT FLOW AURORA =====
+  // ===== LEVEL-SPECIFIC BACKGROUNDS =====
   function drawLevelBackground(pal) {
     const t = performance.now() * 0.001;
 
-    // 1. Base radial gradient (smoothly shifts hue during Chroma Flow!)
     const grad = ctx.createRadialGradient(W * 0.5, H * 0.5, 16 * arenaScale, W * 0.5, H * 0.5, Math.max(W, H) * 0.74);
     grad.addColorStop(0, pal.bgInner);
     grad.addColorStop(0.55, pal.bgMid);
@@ -2469,7 +2758,7 @@
     ctx.fillStyle = grad;
     ctx.fillRect(-20, -20, W + 40, H + 40);
 
-    // 2. Smooth Gradient Iridescence Aurora Lobes (20:00–30:00 CHROMA FLOW!)
+    // Smooth Gradient Iridescence Aurora Lobes (Chroma Flow!)
     if (chromaAmt > 0.01) {
       ctx.save();
       const orbitR = Math.min(W, H) * 0.34;
@@ -2489,7 +2778,6 @@
       ctx.restore();
     }
 
-    // 3. Unique Level Architectural Motif
     ctx.save();
     if (curLvl.id === 0) {
       ctx.strokeStyle = hsl(pal.hA, 90, 58, 0.09);
@@ -2510,8 +2798,7 @@
           const p = project(Math.cos(a) * rad, Math.sin(a) * rad, -10);
           if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
         }
-        ctx.closePath();
-        ctx.stroke();
+        ctx.closePath(); ctx.stroke();
       }
       const sweepA = t * 1.15;
       const c0 = project(0, 0, -8);
@@ -2538,8 +2825,7 @@
           const p = project(Math.cos(a) * rr, Math.sin(a) * rr, -22);
           if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
         }
-        ctx.closePath();
-        ctx.stroke();
+        ctx.closePath(); ctx.stroke();
       };
       drawBgGear(190, 16, t * 0.25, 0.11);
       drawBgGear(325, 24, -t * 0.18, 0.08);
@@ -2550,7 +2836,7 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = sg;
       ctx.beginPath(); ctx.arc(c0.x, c0.y, 170 * arenaScale, 0, TAU); ctx.fill();
-    } else {
+    } else if (curLvl.id === 3) {
       ctx.strokeStyle = hsl(pal.hB, 90, 62, 0.08);
       ctx.lineWidth = 1.2;
       for (let ring = 1; ring <= 3; ring++) {
@@ -2561,8 +2847,7 @@
           const p = project(Math.cos(a) * rad, Math.sin(a) * rad, -18);
           if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
         }
-        ctx.closePath();
-        ctx.stroke();
+        ctx.closePath(); ctx.stroke();
       }
       if (mode === 'play') {
         const spinDir = worldSpin >= 0 ? 1 : -1;
@@ -2581,9 +2866,52 @@
           ctx.stroke();
         }
       }
+    } else {
+      // LEVEL 5: EVENT HORIZON — Black Hole Accretion Disk + Curved Spacetime Vortex Grid + Glowing Outer Orbit Track!
+      const c0 = project(0, 0, -10);
+      const acc = ctx.createRadialGradient(c0.x, c0.y, 18 * arenaScale, c0.x, c0.y, 240 * arenaScale);
+      acc.addColorStop(0, hsl(pal.hA, 100, 52, 0.24 + singularity.coreFlare * 0.16));
+      acc.addColorStop(0.45, hsl(pal.hB, 90, 40, 0.10));
+      acc.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = acc;
+      ctx.beginPath(); ctx.arc(c0.x, c0.y, 240 * arenaScale, 0, TAU); ctx.fill();
+
+      // Swirling gravitational-lensing spacetime arms
+      ctx.strokeStyle = hsl(pal.hA, 95, 58, 0.11);
+      ctx.lineWidth = 1.2;
+      for (let k = 0; k < 8; k++) {
+        const baseA = (k / 8) * TAU;
+        ctx.beginPath();
+        for (let s = 0; s <= 14; s++) {
+          const r = CORE_R + (s / 14) * 440;
+          const twist = Math.sin(t * 0.7) * 0.32 * (s / 14) + (singularity.orbitFactor * 0.45 * (s / 14));
+          const a = baseA + twist;
+          const p = project(Math.cos(a) * r, Math.sin(a) * r, -16 - s * 2);
+          if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      // Glowing Orbital Track Ring whenever player expands into Outer Anti-Gravity Orbit!
+      if (mode === 'play' && singularity.orbitFactor > 0.02) {
+        const trackR = player.orbitR;
+        ctx.strokeStyle = pal.accentA;
+        ctx.globalAlpha = 0.28 + singularity.orbitFactor * 0.28;
+        ctx.lineWidth = 1.8 * arenaScale;
+        ctx.setLineDash([8, 8]);
+        ctx.beginPath();
+        for (let s = 0; s <= 56; s++) {
+          const a = (s / 56) * TAU;
+          const p = project(Math.cos(a) * trackR, Math.sin(a) * trackR, 6);
+          if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
 
-    // Sonar / Chroma harmonic ripples
+    // Sonar / Harmonic ripples
     for (const rp of sonarRipples) {
       ctx.strokeStyle = chromaAmt > 0.2 ? pal.accentB : pal.accentA;
       ctx.globalAlpha = clamp(rp.alpha, 0, 1);
@@ -2594,28 +2922,28 @@
         const p = project(Math.cos(a) * rp.r, Math.sin(a) * rp.r, -6);
         if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
       }
-      ctx.closePath();
-      ctx.stroke();
+      ctx.closePath(); ctx.stroke();
     }
 
     // Ambient motes
     for (const bp of bgParticles) {
       const p = project(Math.cos(bp.ang) * bp.r, Math.sin(bp.ang) * bp.r, -25);
-      ctx.globalAlpha = bp.alpha * (curLvl.id === 3 || chromaAmt > 0.3 ? 0.78 : 0.42);
-      ctx.fillStyle = curLvl.id === 3 && (bp.sz > 2.2) ? '#00f5ff' : pal.rim;
+      ctx.globalAlpha = bp.alpha * (curLvl.id === 3 || curLvl.id === 4 || chromaAmt > 0.3 ? 0.78 : 0.42);
+      ctx.fillStyle = curLvl.id === 3 && (bp.sz > 2.2) ? '#00f5ff' : (curLvl.id === 4 && bp.sz > 2.4 ? '#ffae00' : pal.rim);
       ctx.fillRect(p.x, p.y, bp.sz * arenaScale, bp.sz * arenaScale);
     }
     ctx.restore();
   }
 
-  // ===== SCULPTURAL 3D EXTRUDED WALL RENDERER WITH LIVE GRADIENT IRIDESCENCE =====
+  // ===== SCULPTURAL 3D EXTRUDED WALL RENDERER (+ SMASHABLE AMBER CRYSTALS!) =====
   function drawArchitecturalWall(w, pal) {
     const isGear = (w.kind === 'gear');
     const isPhantom = (w.kind === 'phantom');
-    // Dense sampling for crisp stepped bastions, battlements, blades, and gears
+    const isCrystal = (w.kind === 'crystal');
+
     const segs = isGear
       ? Math.max(10, Math.ceil(w.span * 12))
-      : (w.profile === 'bastion' || w.profile === 'fortress' || w.profile === 'notch')
+      : (w.profile === 'bastion' || w.profile === 'fortress' || w.profile === 'notch' || w.profile === 'prism')
         ? Math.max(24, Math.ceil(w.span * 26))
         : Math.max(10, Math.ceil(w.span * 16));
 
@@ -2640,33 +2968,38 @@
       }
     }
 
-    // Disguised Phantom Tile Visual Logic (Level 2):
-    // Looks SOLID & identical to normal crimson walls from afar!
-    // At r < 185 gives a very subtle hairline shimmer, then dissolves rapidly right before the player (r = 138 -> 84)!
     let alpha = 1;
     let subtleGlitchRim = false;
     if (isPhantom) {
       alpha = clamp(w.phantomAlpha, 0, 1);
       if (w.r < 185 && w.r >= 138) {
-        // Subtle barely-there shimmer clue for sharp-eyed players
-        const pulse = Math.sin(runTime * 22 + w.start * 3);
-        if (pulse > 0.65) {
+        if (Math.sin(runTime * 22 + w.start * 3) > 0.65) {
           alpha = 0.88;
           subtleGlitchRim = true;
         }
       } else if (w.r < 138) {
-        // Rapid dissolve flicker right before the player
         subtleGlitchRim = true;
       }
     }
 
-    // Build smooth gradient fill across the wall (active subtly always, lushly during Chroma Flow!)
     const pStart = topOut[0];
     const pEnd = topOut[segs];
     let fillTop = pal.accentA;
     let fillSide = pal.sideA;
-    if (w.hitFlash > 0.05) {
+    let rimStroke = pal.rim;
+
+    if (isCrystal) {
+      // Glowing Molten Amber-Gold Fracture Crystal (unmistakably SMASHABLE!)
+      const gCrys = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+      gCrys.addColorStop(0, '#ff9800');
+      gCrys.addColorStop(0.5, '#ffe875');
+      gCrys.addColorStop(1, '#ff9800');
+      fillTop = gCrys;
+      fillSide = '#8f4b00';
+      rimStroke = '#fff8d6';
+    } else if (w.hitFlash > 0.05) {
       fillTop = '#ffffff';
+      rimStroke = '#ffffff';
     } else if (chromaAmt > 0.03) {
       const gTop = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
       gTop.addColorStop(0, pal.accentA);
@@ -2684,7 +3017,6 @@
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    // 3D Extruded Side Walls
     if (depth3D > 0.04) {
       ctx.fillStyle = fillSide;
       ctx.beginPath();
@@ -2692,54 +3024,72 @@
         if (i === 0) ctx.moveTo(botIn[i].x, botIn[i].y); else ctx.lineTo(botIn[i].x, botIn[i].y);
       }
       for (let i = segs; i >= 0; i--) ctx.lineTo(topIn[i].x, topIn[i].y);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
 
       ctx.beginPath();
       for (let i = 0; i <= segs; i++) {
         if (i === 0) ctx.moveTo(botOut[i].x, botOut[i].y); else ctx.lineTo(botOut[i].x, botOut[i].y);
       }
       for (let i = segs; i >= 0; i--) ctx.lineTo(topOut[i].x, topOut[i].y);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
 
       ctx.beginPath();
       ctx.moveTo(botIn[0].x, botIn[0].y); ctx.lineTo(botOut[0].x, botOut[0].y);
       ctx.lineTo(topOut[0].x, topOut[0].y); ctx.lineTo(topIn[0].x, topIn[0].y);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
 
       ctx.beginPath();
       ctx.moveTo(botIn[segs].x, botIn[segs].y); ctx.lineTo(botOut[segs].x, botOut[segs].y);
       ctx.lineTo(topOut[segs].x, topOut[segs].y); ctx.lineTo(topIn[segs].x, topIn[segs].y);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
     }
 
-    // Top Architectural Cap
+    // Top Cap
     ctx.beginPath();
     for (let i = 0; i <= segs; i++) {
       if (i === 0) ctx.moveTo(topOut[i].x, topOut[i].y); else ctx.lineTo(topOut[i].x, topOut[i].y);
     }
     for (let i = segs; i >= 0; i--) ctx.lineTo(topIn[i].x, topIn[i].y);
     ctx.closePath();
+    if (isCrystal) {
+      ctx.shadowColor = '#ffae00';
+      ctx.shadowBlur = 14;
+    }
     ctx.fillStyle = fillTop;
     ctx.fill();
+    ctx.shadowBlur = 0;
 
-    // Crisp leading-edge inner rim highlight (gives architectural sharpness & readability)
+    // Diagonal crystalline fracture lines across smashable Amber Crystals!
+    if (isCrystal) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 1.6 * arenaScale;
+      const step = Math.max(2, Math.floor(segs / 5));
+      ctx.beginPath();
+      for (let i = 1; i < segs - 1; i += step) {
+        const j = Math.min(segs, i + Math.max(1, Math.floor(step * 0.7)));
+        ctx.moveTo(topIn[i].x, topIn[i].y);
+        ctx.lineTo(topOut[j].x, topOut[j].y);
+        ctx.moveTo(topOut[i].x, topOut[i].y);
+        ctx.lineTo(topIn[j].x, topIn[j].y);
+      }
+      ctx.stroke();
+    }
+
+    // Leading-edge highlight rim (inner edge for inward walls, outer edge for outward walls!)
+    const rimPts = w.dir === 1 ? topOut : topIn;
     ctx.beginPath();
     for (let i = 0; i <= segs; i++) {
-      if (i === 0) ctx.moveTo(topIn[i].x, topIn[i].y); else ctx.lineTo(topIn[i].x, topIn[i].y);
+      if (i === 0) ctx.moveTo(rimPts[i].x, rimPts[i].y); else ctx.lineTo(rimPts[i].x, rimPts[i].y);
     }
-    ctx.strokeStyle = subtleGlitchRim ? '#ffffff' : (w.hitFlash > 0.05 ? '#ffffff' : pal.rim);
-    ctx.lineWidth = (subtleGlitchRim ? 2.2 : (1.5 + depth3D * 0.8)) * arenaScale;
+    ctx.strokeStyle = subtleGlitchRim ? '#ffffff' : rimStroke;
+    ctx.lineWidth = (subtleGlitchRim || isCrystal ? 2.2 : (1.5 + depth3D * 0.8)) * arenaScale;
     ctx.stroke();
 
     ctx.restore();
   }
 
   function drawSkinLetter(ang, scale, pal, isPhasing, isCloneB) {
-    const r = ORBIT_R + player.radialBounce;
+    const r = player.orbitR + player.radialBounce;
     const ux = Math.cos(ang), uy = Math.sin(ang);
     const vx = -uy, vy = ux;
     const sz = 9.5 * scale;
@@ -2755,7 +3105,13 @@
     }
 
     const zLift = 12 * depth3D;
-    const toScreen = (lx, ly) => project(ux * r + vx * lx * sz + ux * ly * sz, uy * r + vy * lx * sz + uy * ly * sz, zLift);
+    // Rotate local glyph smoothly by player.faceRot (0 = facing outward, PI = facing black hole core!)
+    const cf = Math.cos(player.faceRot), sf = Math.sin(player.faceRot);
+    const toScreen = (lx, ly) => {
+      const rx = lx * cf - ly * sf;
+      const ry = lx * sf + ly * cf;
+      return project(ux * r + vx * rx * sz + ux * ry * sz, uy * r + vy * rx * sz + uy * ry * sz, zLift);
+    };
 
     ctx.save();
     if (isPhasing) {
@@ -2810,20 +3166,19 @@
 
   function drawLevelCore(pal) {
     const coreZ = 18 * depth3D;
-    const coreR = CORE_R + beatPulse * 2.5;
+    const coreR = CORE_R + beatPulse * 2.5 + (curLvl.id === 4 ? singularity.coreFlare * 5 : 0);
     const coreSteps = 44;
 
     if (depth3D > 0.06) {
       ctx.save();
-      ctx.fillStyle = pal.sideA;
+      ctx.fillStyle = curLvl.id === 4 ? '#000000' : pal.sideA;
       ctx.beginPath();
       for (let i = 0; i <= coreSteps; i++) {
         const a = (i / coreSteps) * TAU;
         const p = project(Math.cos(a) * CORE_R, Math.sin(a) * CORE_R, 0);
         if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
       }
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
       ctx.restore();
     }
 
@@ -2846,10 +3201,18 @@
       }
     }
     ctx.closePath();
-    ctx.fillStyle = pal.bgDeep;
+    ctx.fillStyle = curLvl.id === 4 ? '#000000' : pal.bgDeep;
     ctx.fill();
 
-    if (curLvl.id === 3) {
+    if (curLvl.id === 4) {
+      // Event Horizon Blazing Photon Ring!
+      ctx.shadowColor = pal.accentA;
+      ctx.shadowBlur = 18 + singularity.coreFlare * 18;
+      ctx.strokeStyle = singularity.coreFlare > 0.35 ? '#ffffff' : pal.accentA;
+      ctx.lineWidth = (4.5 + singularity.coreFlare * 2) * arenaScale;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    } else if (curLvl.id === 3) {
       for (let half = 0; half < 2; half++) {
         ctx.beginPath();
         for (let i = 0; i <= 22; i++) {
@@ -2908,7 +3271,7 @@
 
     drawLevelBackground(pal);
 
-    // 3D Depth Tunnel Rings (smooth subtle depth framing during 3D phases)
+    // 3D Depth Tunnel Rings
     if (depth3D > 0.04) {
       ctx.save();
       ctx.strokeStyle = chromaAmt > 0.15 ? pal.accentB : pal.accentA;
@@ -2923,13 +3286,12 @@
           const p = project(Math.cos(a) * rad, Math.sin(a) * rad, zDepth);
           if (s === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
         }
-        ctx.closePath();
-        ctx.stroke();
+        ctx.closePath(); ctx.stroke();
       }
       ctx.restore();
     }
 
-    // Walls (sorted outer-to-inner for crisp 3D painter's order)
+    // Walls (sorted outer-to-inner; drawn BEFORE core so Level 5 outward walls emerge from beneath the Black Hole!)
     const sortedWalls = walls.slice().sort((a, b) => b.r - a.r);
     for (const w of sortedWalls) {
       if (w.vanished) continue;
@@ -2962,7 +3324,6 @@
         ctx.arc(orbPos.x, orbPos.y, (3 + prog * 7) * arenaScale, 0, TAU);
         ctx.fill();
       } else {
-        // Active plasma beam
         const p1 = project(Math.cos(lz.ang - lz.halfWidth) * CORE_R, Math.sin(lz.ang - lz.halfWidth) * CORE_R, 20);
         const p2 = project(Math.cos(lz.ang - lz.halfWidth) * maxR, Math.sin(lz.ang - lz.halfWidth) * maxR, 20);
         const p3 = project(Math.cos(lz.ang + lz.halfWidth) * maxR, Math.sin(lz.ang + lz.halfWidth) * maxR, 20);
@@ -2972,8 +3333,7 @@
         ctx.shadowBlur = 22;
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
-        ctx.closePath();
-        ctx.fill();
+        ctx.closePath(); ctx.fill();
       }
       ctx.restore();
     }
@@ -2990,8 +3350,7 @@
       ctx.shadowBlur = 11;
       ctx.beginPath();
       ctx.moveTo(0, -sz); ctx.lineTo(sz * 0.78, 0); ctx.lineTo(0, sz); ctx.lineTo(-sz * 0.78, 0);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
       ctx.restore();
     }
 
@@ -3001,7 +3360,7 @@
     if (mode === 'play' && curLvl.id === 3 && duality.active) {
       const angA = player.ang;
       const angB = normAng(player.ang + Math.PI * duality.splitBlend);
-      const rP = ORBIT_R + player.radialBounce;
+      const rP = player.orbitR + player.radialBounce;
       const pA = project(Math.cos(angA) * rP, Math.sin(angA) * rP, 12);
       const pB = project(Math.cos(angB) * rP, Math.sin(angB) * rP, 12);
       ctx.save();
@@ -3043,12 +3402,11 @@
       const sz = sh.sz * arenaScale;
       ctx.beginPath();
       ctx.moveTo(0, -sz); ctx.lineTo(sz * 0.75, sz * 0.65); ctx.lineTo(-sz * 0.75, sz * 0.45);
-      ctx.closePath();
-      ctx.fill();
+      ctx.closePath(); ctx.fill();
       ctx.restore();
     }
 
-    // Floating +1 Coin Text
+    // Floating +1 / +2 Coin Text
     for (const ft of floatTexts) {
       const p = project(ft.x, ft.y, 18);
       ctx.save();

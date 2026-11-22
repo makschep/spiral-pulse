@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spiral-pulse-v3';
+const CACHE_NAME = 'spiral-pulse-v4';
 const ASSETS = [
   './',
   './index.html',
