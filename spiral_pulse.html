@@ -1,0 +1,3746 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>.Spiral Pulse</title>
+    <style>
+        /* =========================================================================
+           BASE RESET & STRICT LANDSCAPE VIEWPORT
+           ========================================================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+        }
+
+        :root {
+            --neon: #00ffff;
+            --neon-dim: rgba(0, 255, 255, 0.28);
+            --accent: #00ffff;
+            --bg-void: #001417;
+            --font-display: 'Orbitron', 'Eurostile', 'Bank Gothic', 'Rajdhani', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-ui: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-void);
+            font-family: var(--font-ui);
+            color: #ffffff;
+        }
+
+        /* Full-viewport horizontal container */
+        #game-root {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            transform-origin: center center;
+            background-color: var(--bg-void);
+        }
+
+        /* Auto-rotate 90deg clockwise on portrait screens */
+        @media screen and (orientation: portrait) {
+            #game-root {
+                width: 100vh;
+                height: 100vw;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg);
+            }
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================================================================
+           HUD: TOP-RIGHT ICONIC TIMER, TOP-LEFT MINIMAL CONTROLS & STATUS BADGE
+           ========================================================================= */
+        #edge-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.28s ease;
+            box-shadow:
+                inset 0 0 64px var(--neon-dim),
+                inset 5px 0 26px rgba(56, 249, 215, 0.24),
+                inset -5px 0 26px rgba(255, 30, 86, 0.24);
+        }
+
+        #timer-box {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #000000;
+            border-left: 3.5px solid var(--neon);
+            border-bottom: 3.5px solid var(--neon);
+            padding: 8px 18px 10px 22px;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(1.25rem, 3.2vw, 2.2rem);
+            color: var(--neon);
+            letter-spacing: 0.05em;
+            line-height: 1;
+            z-index: 25;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: box-shadow 0.35s ease, border-color 0.25s ease, color 0.25s ease;
+        }
+
+        #timer-box.glow {
+            box-shadow: 0 0 32px var(--neon-dim);
+        }
+
+        #top-left-hud {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-btn {
+            background: rgba(0, 0, 0, 0.82);
+            border: 2px solid var(--neon);
+            color: var(--neon);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            padding: 7px 11px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 34px;
+            min-width: 36px;
+            transition: transform 0.14s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .hud-btn:hover {
+            box-shadow: 0 0 16px -3px var(--neon);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .hud-btn:active {
+            transform: scale(0.93);
+        }
+
+        .coin-badge {
+            background: rgba(0, 0, 0, 0.84);
+            border: 2px solid #ffd60a;
+            color: #ffd60a;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 0.75rem;
+            padding: 6px 11px;
+            border-radius: 10px;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            letter-spacing: 0.05em;
+        }
+
+        .hud-pill {
+            background: rgba(0, 0, 0, 0.76);
+            border: 1.5px solid var(--neon);
+            color: var(--neon);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.66rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            pointer-events: none;
+            letter-spacing: 0.08em;
+            opacity: 0.92;
+        }
+
+        #dual-pill {
+            border-color: #38f9d7;
+            color: #38f9d7;
+        }
+
+        #status-badge {
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.94);
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(0.9rem, 2.3vw, 1.4rem);
+            letter-spacing: 0.26em;
+            color: var(--neon);
+            text-shadow: 0 0 24px var(--neon);
+            z-index: 24;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.36s ease, transform 0.36s ease;
+            white-space: nowrap;
+        }
+
+        #status-badge.visible {
+            opacity: 0.96;
+            transform: translateX(-50%) scale(1.04);
+        }
+
+        /* =========================================================================
+           OVERLAYS: MENU, SHOP, PAUSE, GAME OVER
+           ========================================================================= */
+        #overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.66);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 35;
+            padding: 14px 20px;
+            transition: opacity 0.26s ease;
+        }
+
+        #overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .game-title {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(1.35rem, 3.6vw, 2.3rem);
+            letter-spacing: 0.16em;
+            color: var(--neon);
+            text-shadow: 0 0 26px var(--neon-dim);
+            margin: 0 0 14px 0;
+            text-transform: uppercase;
+        }
+
+        /* Strictly 4-card sleek horizontal grid */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: clamp(8px, 1.5vw, 16px);
+            width: 100%;
+            max-width: 780px;
+        }
+
+        .level-card {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--card-col);
+            color: var(--card-col);
+            border-radius: 14px;
+            padding: clamp(10px, 1.8vw, 16px) 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            text-align: center;
+            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, background-color 0.2s ease;
+        }
+
+        .level-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 24px -4px var(--card-col);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .level-card:active {
+            transform: scale(0.95);
+        }
+
+        .lvl-num {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            opacity: 0.72;
+        }
+
+        .lvl-name {
+            font-family: var(--font-display);
+            font-size: clamp(0.68rem, 1.35vw, 0.86rem);
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            line-height: 1.2;
+        }
+
+        .lvl-best {
+            font-family: var(--font-display);
+            font-size: clamp(0.74rem, 1.4vw, 0.92rem);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+
+        .medals-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 2px;
+        }
+
+        .medal {
+            width: 9px;
+            height: 9px;
+            border-radius: 2px;
+            transform: rotate(45deg);
+            border: 1.5px solid rgba(255, 255, 255, 0.24);
+            background: transparent;
+        }
+
+        .medal.bronze.earned {
+            background: #cd7f32;
+            border-color: #f4b77b;
+            box-shadow: 0 0 8px #cd7f32;
+        }
+
+        .medal.silver.earned {
+            background: #d8e2ec;
+            border-color: #ffffff;
+            box-shadow: 0 0 8px #d8e2ec;
+        }
+
+        .medal.gold.earned {
+            background: #ffd60a;
+            border-color: #fff3a1;
+            box-shadow: 0 0 10px #ffd60a;
+        }
+
+        .controls-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 14px;
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: var(--neon);
+            opacity: 0.78;
+        }
+
+        /* Shop Modal View */
+        .shop-panel {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .shop-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .shop-tab {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.74rem;
+            letter-spacing: 0.12em;
+            padding: 7px 18px;
+            border-radius: 9px;
+            border: 2px solid rgba(255, 255, 255, 0.22);
+            background: rgba(0, 0, 0, 0.74);
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .shop-tab.active {
+            border-color: var(--neon);
+            color: var(--neon);
+            box-shadow: 0 0 16px -4px var(--neon);
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+        .shop-card {
+            background: rgba(0, 0, 0, 0.86);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: var(--neon);
+            border-radius: 13px;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--neon);
+        }
+
+        .shop-card.owned {
+            border-color: var(--neon);
+        }
+
+        .shop-card.equipped {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px -3px var(--neon);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .shop-card:active {
+            transform: scale(0.95);
+        }
+
+        .shop-label {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+        }
+
+        .shop-sub {
+            font-family: var(--font-display);
+            font-size: 0.58rem;
+            letter-spacing: 0.08em;
+            opacity: 0.72;
+        }
+
+        .shop-status {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+        }
+
+        /* Compact Modal Card (Pause & Game Over) */
+        .modal-card {
+            background: rgba(0, 0, 0, 0.88);
+            border: 2px solid var(--neon);
+            border-radius: 16px;
+            padding: 18px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 264px;
+            box-shadow: 0 0 36px -8px var(--neon);
+        }
+
+        .go-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--neon);
+        }
+
+        .record-tag {
+            background: #ffd60a;
+            color: #000000;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 5px;
+            letter-spacing: 0.1em;
+        }
+
+        .go-time {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(2rem, 5vw, 3.1rem);
+            color: var(--neon);
+            letter-spacing: 0.05em;
+            line-height: 1.05;
+        }
+
+        .go-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .btn-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .cta-btn {
+            background: var(--neon);
+            color: #000000;
+            border: 2px solid var(--neon);
+            border-radius: 10px;
+            padding: 9px 24px;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 0.82rem;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            box-shadow: 0 0 22px -4px var(--neon);
+            transition: transform 0.14s ease, filter 0.2s ease;
+        }
+
+        .cta-btn:hover {
+            filter: brightness(1.12);
+        }
+
+        .cta-btn:active {
+            transform: scale(0.94);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-root">
+        <canvas id="gameCanvas"></canvas>
+        <div id="edge-vignette"></div>
+
+        <!-- Top-Left Minimal HUD -->
+        <div id="top-left-hud">
+            <button id="btn-pause" class="hud-btn hidden" aria-label="Pause">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+                    <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+                </svg>
+            </button>
+            <button id="btn-sound" class="hud-btn" aria-label="Toggle Sound">
+                <svg id="icon-sound-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+                <svg id="icon-sound-off" class="hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+            <div class="coin-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffd60a" stroke-width="2.6">
+                    <polygon points="12 2 21 12 12 22 3 12 12 2"/>
+                    <circle cx="12" cy="12" r="2.6" fill="#ffd60a"/>
+                </svg>
+                <span id="coin-count">0</span>
+            </div>
+            <button id="btn-shop" class="hud-btn" aria-label="Shop">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>SHOP</span>
+            </button>
+            <span id="size-pill" class="hud-pill hidden">1.00x</span>
+            <span id="dual-pill" class="hud-pill hidden">DUAL</span>
+        </div>
+
+        <!-- Iconic Top-Right Black-Bordered Timer -->
+        <div id="timer-box">
+            <span id="timer-val">0:00</span>
+        </div>
+
+        <!-- Subtle Smoothly Fading Event Badge -->
+        <div id="status-badge">3D HYPER-TUNNEL</div>
+
+        <!-- Overlay: Main Menu / Shop / Pause / Game Over -->
+        <div id="overlay">
+            <h1 id="main-title" class="game-title">.Spiral Pulse</h1>
+
+            <!-- 1. MAIN MENU (STRICTLY 4 UNIQUE LEVELS) -->
+            <div id="menu-view" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+                <div class="levels-grid">
+                    <!-- 01 · CYAN PULSE -->
+                    <div class="level-card" data-level="0" style="--card-col: #00ffff;">
+                        <div class="lvl-num">01</div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M12 12a2 2 0 1 0-2-2 4 4 0 1 0 4 4 6 6 0 1 0-6-6 8 8 0 1 0 8 8"/>
+                        </svg>
+                        <div class="lvl-name">CYAN<br>PULSE</div>
+                        <div class="lvl-best" id="best-0">0:00</div>
+                        <div class="medals-row">
+                            <span class="medal bronze" id="m-0-b"></span>
+                            <span class="medal silver" id="m-0-s"></span>
+                            <span class="medal gold" id="m-0-g"></span>
+                        </div>
+                    </div>
+
+                    <!-- 02 · CRIMSON PHANTOM -->
+                    <div class="level-card" data-level="1" style="--card-col: #ff1e38;">
+                        <div class="lvl-num">02</div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
+                            <circle cx="12" cy="12" r="2.8"/>
+                        </svg>
+                        <div class="lvl-name">CRIMSON<br>PHANTOM</div>
+                        <div class="lvl-best" id="best-1">0:00</div>
+                        <div class="medals-row">
+                            <span class="medal bronze" id="m-1-b"></span>
+                            <span class="medal silver" id="m-1-s"></span>
+                            <span class="medal gold" id="m-1-g"></span>
+                        </div>
+                    </div>
+
+                    <!-- 03 · GOLD ECLIPSE -->
+                    <div class="level-card" data-level="2" style="--card-col: #ffd60a;">
+                        <div class="lvl-num">03</div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M7.7 16.3l-2.8 2.8"/>
+                        </svg>
+                        <div class="lvl-name">GOLD<br>ECLIPSE</div>
+                        <div class="lvl-best" id="best-2">0:00</div>
+                        <div class="medals-row">
+                            <span class="medal bronze" id="m-2-b"></span>
+                            <span class="medal silver" id="m-2-s"></span>
+                            <span class="medal gold" id="m-2-g"></span>
+                        </div>
+                    </div>
+
+                    <!-- 04 · VIOLET DUALITY -->
+                    <div class="level-card" data-level="3" style="--card-col: #c05cff;">
+                        <div class="lvl-num">04</div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="7" cy="12" r="3"/>
+                            <circle cx="17" cy="12" r="3"/>
+                            <line x1="10" y1="12" x2="14" y2="12" stroke="#38f9d7" stroke-dasharray="2 1"/>
+                        </svg>
+                        <div class="lvl-name">VIOLET<br>DUALITY</div>
+                        <div class="lvl-best" id="best-3">0:00</div>
+                        <div class="medals-row">
+                            <span class="medal bronze" id="m-3-b"></span>
+                            <span class="medal silver" id="m-3-s"></span>
+                            <span class="medal gold" id="m-3-g"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-strip">
+                    <span>◀ HOLD L</span>
+                    <span>[L + R] PHASE</span>
+                    <span>HOLD R ▶</span>
+                </div>
+            </div>
+
+            <!-- 2. SHOP MODAL (SKINS & PERKS) -->
+            <div id="shop-view" class="shop-panel hidden">
+                <div class="shop-tabs">
+                    <button id="tab-skins" class="shop-tab active">SKINS</button>
+                    <button id="tab-perks" class="shop-tab">PERKS</button>
+                </div>
+
+                <div id="shop-skins-grid" class="shop-grid">
+                    <div class="shop-card" data-skin="M">
+                        <svg width="36" height="36" viewBox="-16 -16 32 32" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="miter">
+                            <path d="M -10 10 L -7 -10 L 0 -2 L 7 -10 L 10 10"/>
+                        </svg>
+                        <div class="shop-label">M</div>
+                        <div id="skin-status-M" class="shop-status">ACTIVE</div>
+                    </div>
+                    <div class="shop-card" data-skin="A">
+                        <svg width="36" height="36" viewBox="-16 -16 32 32" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="miter">
+                            <path d="M -10 10 L 0 -11 L 10 10 M -6 3 L 6 3"/>
+                        </svg>
+                        <div class="shop-label">A</div>
+                        <div id="skin-status-A" class="shop-status">15 ◈</div>
+                    </div>
+                    <div class="shop-card" data-skin="X">
+                        <svg width="36" height="36" viewBox="-16 -16 32 32" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="miter">
+                            <path d="M -9 -10 L 9 10 M 9 -10 L -9 10"/>
+                        </svg>
+                        <div class="shop-label">X</div>
+                        <div id="skin-status-X" class="shop-status">30 ◈</div>
+                    </div>
+                </div>
+
+                <div id="shop-perks-grid" class="shop-grid hidden">
+                    <div class="shop-card" data-perk="MAGNET">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M6 4v7a6 6 0 0 0 12 0V4"/>
+                            <line x1="6" y1="8" x2="10" y2="8"/>
+                            <line x1="14" y1="8" x2="18" y2="8"/>
+                        </svg>
+                        <div class="shop-label">MAGNET</div>
+                        <div class="shop-sub">PULL COINS</div>
+                        <div id="perk-status-MAGNET" class="shop-status">20 ◈</div>
+                    </div>
+                    <div class="shop-card" data-perk="PHASE_PLUS">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="12" cy="12" r="8"/>
+                            <path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        <div class="shop-label">PHASE+</div>
+                        <div class="shop-sub">4.0s SHIELD</div>
+                        <div id="perk-status-PHASE_PLUS" class="shop-status">25 ◈</div>
+                    </div>
+                    <div class="shop-card" data-perk="STABILIZER">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <polygon points="12 3 21 12 12 21 3 12 12 3"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <div class="shop-label">STABILIZER</div>
+                        <div class="shop-sub">MAX 1.55x</div>
+                        <div id="perk-status-STABILIZER" class="shop-status">35 ◈</div>
+                    </div>
+                </div>
+
+                <button id="btn-shop-back" class="hud-btn" style="padding: 8px 24px;">BACK</button>
+            </div>
+
+            <!-- 3. PAUSE MODAL -->
+            <div id="pause-view" class="modal-card hidden">
+                <div class="go-header">PAUSED</div>
+                <div class="btn-row">
+                    <button id="btn-resume" class="cta-btn">RESUME</button>
+                    <button id="btn-pause-retry" class="hud-btn">RETRY</button>
+                    <button id="btn-pause-menu" class="hud-btn">MENU</button>
+                </div>
+            </div>
+
+            <!-- 4. GAME OVER MODAL -->
+            <div id="gameover-view" class="modal-card hidden">
+                <div class="go-header">
+                    <span id="go-level-name">01 · CYAN PULSE</span>
+                    <span id="go-record-badge" class="record-tag hidden">NEW BEST</span>
+                </div>
+                <div id="go-time" class="go-time">0:00</div>
+                <div class="go-stats">
+                    <span style="color:#ffd60a;">+<span id="go-coins">0</span> ◈</span>
+                    <span id="go-medal-label" class="hidden">★ BRONZE</span>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-retry" class="cta-btn">RETRY</button>
+                    <button id="btn-go-menu" class="hud-btn">MENU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * .SPIRAL PULSE — Final Self-Contained 2.5D/3D Arcade Engine
+         * Zero external dependencies | Pure HTML5 Canvas + Procedural Web Audio API
+         * - Strictly landscape (auto-rotates 90deg on portrait screens with remapped multi-touch)
+         * - Strictly 4 unique levels: Cyan Pulse, Crimson Phantom, Gold Eclipse, Violet Duality
+         * - NO Slow-Mo: replaced with epic 20:00–30:00 "3D HYPER-TUNNEL" dive + energetic musical drop
+         * - Level 4 completely reworked: Dual Character Split (180° synced pair + energy tether +
+         *   100% centrally symmetric obstacle adaptation + tactical clone survival & auto re-split)
+         * - Contact physics (elastic side micro-bounce, wall vibration, ricocheting sparks) +
+         *   18-shard rigid-body shatter with core & wall ricochets on clone loss or death
+         */
+
+        'use strict';
+
+        // =========================================================================
+        // DOM REFERENCES
+        // =========================================================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        const edgeVignette = document.getElementById('edge-vignette');
+        const timerBox = document.getElementById('timer-box');
+        const timerVal = document.getElementById('timer-val');
+        const statusBadge = document.getElementById('status-badge');
+        const overlay = document.getElementById('overlay');
+        const mainTitle = document.getElementById('main-title');
+        const menuView = document.getElementById('menu-view');
+        const shopView = document.getElementById('shop-view');
+        const pauseView = document.getElementById('pause-view');
+        const gameoverView = document.getElementById('gameover-view');
+
+        const btnPause = document.getElementById('btn-pause');
+        const btnSound = document.getElementById('btn-sound');
+        const iconSoundOn = document.getElementById('icon-sound-on');
+        const iconSoundOff = document.getElementById('icon-sound-off');
+        const btnShop = document.getElementById('btn-shop');
+        const btnShopBack = document.getElementById('btn-shop-back');
+        const tabSkins = document.getElementById('tab-skins');
+        const tabPerks = document.getElementById('tab-perks');
+        const shopSkinsGrid = document.getElementById('shop-skins-grid');
+        const shopPerksGrid = document.getElementById('shop-perks-grid');
+        const btnResume = document.getElementById('btn-resume');
+        const btnPauseRetry = document.getElementById('btn-pause-retry');
+        const btnPauseMenu = document.getElementById('btn-pause-menu');
+        const btnRetry = document.getElementById('btn-retry');
+        const btnGoMenu = document.getElementById('btn-go-menu');
+
+        const coinCountEl = document.getElementById('coin-count');
+        const sizePill = document.getElementById('size-pill');
+        const dualPill = document.getElementById('dual-pill');
+        const goLevelName = document.getElementById('go-level-name');
+        const goRecordBadge = document.getElementById('go-record-badge');
+        const goTime = document.getElementById('go-time');
+        const goCoins = document.getElementById('go-coins');
+        const goMedalLabel = document.getElementById('go-medal-label');
+
+        const TWO_PI = Math.PI * 2;
+        const MEDAL_TIMES = { bronze: 15, silver: 30, gold: 45 };
+
+        // =========================================================================
+        // STRICTLY 4 UNIQUE LEVELS
+        // =========================================================================
+        const LEVELS = [
+            {
+                id: 0,
+                code: '01 · CYAN PULSE',
+                bgRGB: [0, 34, 38],       // #002226
+                bgDarkRGB: [0, 16, 18],
+                fgRGB: [0, 255, 255],     // #00ffff
+                accentRGB: [120, 255, 255],
+                baseSpeed: 126,
+                bpm: 128,
+                rotSpeed: 0.31,
+                tiltAmp: 0.026,
+                style3D: 'tunnel_dive',
+                patterns: ['snail_stair', 'trefoil_gate', 'anvil_arc', 'wide_gate'],
+                hyperPatterns: ['hyper_corridor', 'hyper_snail', 'hyper_trefoil']
+            },
+            {
+                id: 1,
+                code: '02 · CRIMSON PHANTOM',
+                bgRGB: [34, 2, 5],        // #220205
+                bgDarkRGB: [17, 1, 3],
+                fgRGB: [255, 30, 56],     // #ff1e38
+                accentRGB: [255, 130, 145],
+                baseSpeed: 132,
+                bpm: 134,
+                rotSpeed: -0.36,
+                tiltAmp: 0.032,
+                style3D: 'cinematic_bank',
+                patterns: ['radar_wedges', 'phantom_gate', 'split_arch', 'phantom_stair'],
+                hyperPatterns: ['hyper_phantom_corridor', 'hyper_corridor', 'hyper_split_run']
+            },
+            {
+                id: 2,
+                code: '03 · GOLD ECLIPSE',
+                bgRGB: [28, 22, 0],       // #1c1600
+                bgDarkRGB: [14, 11, 0],
+                fgRGB: [255, 214, 10],    // #ffd60a
+                accentRGB: [255, 242, 140],
+                baseSpeed: 136,
+                bpm: 138,
+                rotSpeed: 0.40,
+                tiltAmp: 0.035,
+                style3D: 'iso_orbital',
+                patterns: ['gear_sector', 'trefoil_gate', 'anvil_arc', 'wide_gate'],
+                hyperPatterns: ['hyper_gear_corridor', 'hyper_corridor', 'hyper_trefoil']
+            },
+            {
+                id: 3,
+                code: '04 · VIOLET DUALITY',
+                bgRGB: [20, 4, 36],       // #140424
+                bgDarkRGB: [10, 2, 20],
+                fgRGB: [192, 92, 255],    // #c05cff
+                accentRGB: [56, 249, 215],// #38f9d7
+                baseSpeed: 134,
+                bpm: 142,
+                rotSpeed: 0.44,
+                tiltAmp: 0.036,
+                style3D: 'dual_wave',
+                // 100% centrally symmetric (180°-mirrored) patterns for guaranteed fair dual play
+                patterns: ['dual_breathing', 'dual_spiral', 'dual_corridor', 'dual_anvil'],
+                hyperPatterns: ['hyper_dual_slalom', 'hyper_dual_breathing', 'hyper_dual_spiral']
+            }
+        ];
+
+        const SKINS = {
+            M: { id: 'M', cost: 0 },
+            A: { id: 'A', cost: 15 },
+            X: { id: 'X', cost: 30 }
+        };
+
+        const PERKS = {
+            MAGNET: { id: 'MAGNET', cost: 20 },
+            PHASE_PLUS: { id: 'PHASE_PLUS', cost: 25 },
+            STABILIZER: { id: 'STABILIZER', cost: 35 }
+        };
+
+        // =========================================================================
+        // GLOBAL GAME STATE
+        // =========================================================================
+        const state = {
+            mode: 'MENU', // 'MENU' | 'PLAYING' | 'PAUSED' | 'DYING' | 'GAMEOVER'
+            levelIndex: 0,
+            elapsed: 0,
+            lastTime: 0,
+            speedMult: 1.0,
+            gameOverGuardTimer: 0,
+
+            // Persisted meta
+            bestTimes: [0, 0, 0, 0],
+            coins: 0,
+            runCoins: 0,
+            unlockedSkins: ['M'],
+            equippedSkin: 'M',
+            ownedPerks: [],
+            soundEnabled: true,
+
+            // Viewport & logical polar geometry
+            width: 800,
+            height: 450,
+            centerRadius: 24,
+            orbitRadius: 36,
+            spawnRadius: 720,
+
+            // Player physics & irreversible growth
+            playerAngle: -Math.PI / 2,
+            playerAngVel: 0,
+            playerRadOffset: 0,
+            playerRadVel: 0,
+            playerScale: 1.0,
+            basePlayerHeight: 11.5,
+            basePlayerHalfArc: 0.130,
+
+            // Level 4 Dual Character Split State
+            splitState: 'NONE', // 'NONE' | 'SOLO_WARMUP' | 'DUAL' | 'SOLO_RECOVERY'
+            splitAnim: 0,       // 0 -> 1 smooth orbital separation into 180° opposite pair
+            resplitTimer: 0,    // counts down 9.0s in SOLO_RECOVERY before auto re-split
+            splitInvulnTimer: 0,// brief invulnerability on split / clone loss
+
+            // Phase Shield (Hold Left + Right)
+            phaseActive: false,
+            phaseCharge: 3.0,
+            phaseMax: 3.0,
+            phaseHeldTotal: 0,
+            phaseCooldownLock: false,
+
+            // Timers & feedback
+            nearMissCooldown: 0,
+            scrapeSfxTimer: 0,
+            badgeTimer: 0,
+            badgeActive3D: false,
+
+            // 3D HYPER-TUNNEL EVENT (20:00 – 30:00) & OVERDRIVE (30:00+)
+            isHyperTunnel: false,
+            hyperBlend: 0,
+            overdriveFlash: 0,
+            chromaFlash: 0,
+
+            // Real-time 3D Projection state
+            depth3D: 0,
+            camPitch: 0,
+            camRoll: 0,
+            fov3D: 680,
+
+            // Camera & smooth spring recoil
+            worldAngle: 0,
+            worldRotVel: 0,
+            worldRotTarget: 0,
+            rotSwitchTimer: 5.5,
+            camZoom: 1.0,
+            camTilt: 0,
+            camRecoilX: 0,
+            camRecoilY: 0,
+            camRecoilVx: 0,
+            camRecoilVy: 0,
+            beatPulse: 0,
+            tunnelPhase: 0,
+            harmonicPhase: 0,
+
+            // Hit-stop, shatter shards & visual FX
+            hitStopTimer: 0,
+            deathTimer: 0,
+            impactFlashes: [],
+            shards: [],
+            warpStreaks: [],
+            corePulses: [],
+
+            // Level entities
+            walls: [],
+            lasers: [],
+            laserTimer: 2.6,
+            collectibles: [],
+            sparks: [],
+            popups: []
+        };
+
+        // Pre-populate 3D radial warp streaks for the 20:00–30:00 Hyper-Tunnel
+        function initWarpStreaks() {
+            state.warpStreaks = [];
+            for (let i = 0; i < 44; i++) {
+                state.warpStreaks.push({
+                    angle: Math.random() * TWO_PI,
+                    radius: 80 + Math.random() * 440,
+                    z: -560 + Math.random() * 680,
+                    speed: 520 + Math.random() * 460,
+                    len: 48 + Math.random() * 72
+                });
+            }
+        }
+        initWarpStreaks();
+
+        // =========================================================================
+        // PERSISTENCE (localStorage) & HAPTICS
+        // =========================================================================
+        function loadProgress() {
+            try {
+                const b = JSON.parse(localStorage.getItem('sp_v4_bests'));
+                if (Array.isArray(b) && b.length === 4) state.bestTimes = b;
+                const c = parseInt(localStorage.getItem('sp_v4_coins'), 10);
+                if (!isNaN(c)) state.coins = c;
+                const s = JSON.parse(localStorage.getItem('sp_v4_skins'));
+                if (Array.isArray(s) && s.length > 0) state.unlockedSkins = s;
+                const eq = localStorage.getItem('sp_v4_equipped');
+                if (eq && SKINS[eq]) state.equippedSkin = eq;
+                const p = JSON.parse(localStorage.getItem('sp_v4_perks'));
+                if (Array.isArray(p)) state.ownedPerks = p;
+            } catch (e) {}
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem('sp_v4_bests', JSON.stringify(state.bestTimes));
+                localStorage.setItem('sp_v4_coins', String(state.coins));
+                localStorage.setItem('sp_v4_skins', JSON.stringify(state.unlockedSkins));
+                localStorage.setItem('sp_v4_equipped', state.equippedSkin);
+                localStorage.setItem('sp_v4_perks', JSON.stringify(state.ownedPerks));
+            } catch (e) {}
+        }
+
+        function hasPerk(id) {
+            return state.ownedPerks.includes(id);
+        }
+
+        function vibrate(pattern) {
+            try {
+                if (navigator && typeof navigator.vibrate === 'function') {
+                    navigator.vibrate(pattern);
+                }
+            } catch (e) {}
+        }
+
+        // =========================================================================
+        // MATH, COLOR & 3D PERSPECTIVE PROJECTION ENGINE
+        // =========================================================================
+        function clamp(v, lo, hi) {
+            return v < lo ? lo : (v > hi ? hi : v);
+        }
+
+        function lerp(a, b, t) {
+            return a + (b - a) * clamp(t, 0, 1);
+        }
+
+        function damp(current, target, lambda, dt) {
+            return current + (target - current) * (1 - Math.exp(-lambda * dt));
+        }
+
+        function smoothstep(t) {
+            const x = clamp(t, 0, 1);
+            return x * x * (3 - 2 * x);
+        }
+
+        function normAngle(a) {
+            a %= TWO_PI;
+            return a < 0 ? a + TWO_PI : a;
+        }
+
+        function angleDiff(from, to) {
+            let d = normAngle(to - from);
+            if (d > Math.PI) d -= TWO_PI;
+            return d;
+        }
+
+        function isAngleInArc(angle, start, end) {
+            const a = normAngle(angle);
+            const s = normAngle(start);
+            const e = normAngle(end);
+            if (Math.abs(end - start) >= TWO_PI - 0.001) return true;
+            if (s <= e) return a >= s && a <= e;
+            return a >= s || a <= e;
+        }
+
+        function formatTime(sec) {
+            const s = Math.floor(sec);
+            const cs = Math.floor((sec - s) * 100);
+            return `${s}:${cs < 10 ? '0' : ''}${cs}`;
+        }
+
+        function rgbStr(arr, mult = 1, alpha = 1) {
+            const r = clamp(Math.round(arr[0] * mult), 0, 255);
+            const g = clamp(Math.round(arr[1] * mult), 0, 255);
+            const b = clamp(Math.round(arr[2] * mult), 0, 255);
+            return alpha < 1 ? `rgba(${r},${g},${b},${alpha})` : `rgb(${r},${g},${b})`;
+        }
+
+        function applyLevelTheme(lvlIdx) {
+            const lvl = LEVELS[lvlIdx];
+            document.documentElement.style.setProperty('--neon', rgbStr(lvl.fgRGB));
+            document.documentElement.style.setProperty('--neon-dim', rgbStr(lvl.fgRGB, 1, 0.36));
+            document.documentElement.style.setProperty('--accent', rgbStr(lvl.accentRGB));
+            document.documentElement.style.setProperty('--bg-void', rgbStr(lvl.bgDarkRGB));
+        }
+
+        // Cached per-frame 3D trig values for fast 60fps perspective projection
+        const cam3D = {
+            cx: 400, cy: 225,
+            cosY: 1, sinY: 0,
+            cosP: 1, sinP: 0,
+            cosR: 1, sinR: 0,
+            zoom: 1, fov: 680,
+            rx: 0, ry: 0
+        };
+
+        function updateCam3DMatrices() {
+            const yaw = state.worldAngle + state.camTilt;
+            cam3D.cx = state.width * 0.5;
+            cam3D.cy = state.height * 0.5;
+            cam3D.cosY = Math.cos(yaw);
+            cam3D.sinY = Math.sin(yaw);
+            cam3D.cosP = Math.cos(state.camPitch);
+            cam3D.sinP = Math.sin(state.camPitch);
+            cam3D.cosR = Math.cos(state.camRoll);
+            cam3D.sinR = Math.sin(state.camRoll);
+            cam3D.zoom = state.camZoom;
+            cam3D.fov = state.fov3D;
+            cam3D.rx = state.camRecoilX;
+            cam3D.ry = state.camRecoilY;
+        }
+
+        /**
+         * True 3D perspective projection from logical arena space (x, y, z) to 2D Canvas pixels.
+         * z > 0 extrudes monolith walls vertically toward the viewer; z < 0 recedes into the tunnel.
+         */
+        function proj3D(x, y, z) {
+            const rx = x * cam3D.cosY - y * cam3D.sinY;
+            const ry = x * cam3D.sinY + y * cam3D.cosY;
+            const x1 = rx * cam3D.cosR + z * cam3D.sinR;
+            const z1 = -rx * cam3D.sinR + z * cam3D.cosR;
+            const y2 = ry * cam3D.cosP - z1 * cam3D.sinP;
+            const z2 = ry * cam3D.sinP + z1 * cam3D.cosP;
+            const denom = Math.max(135, cam3D.fov - z2);
+            const scale = (cam3D.fov / denom) * cam3D.zoom;
+            return {
+                x: cam3D.cx + x1 * scale + cam3D.rx,
+                y: cam3D.cy + y2 * scale + cam3D.ry,
+                z: z2,
+                s: scale
+            };
+        }
+
+        // =========================================================================
+        // UI UPDATES & OVERLAY CONTROL
+        // =========================================================================
+        function showBadge(text, duration = 2.0) {
+            statusBadge.textContent = text;
+            statusBadge.classList.add('visible');
+            state.badgeTimer = duration;
+        }
+
+        function updateMetaUI() {
+            coinCountEl.textContent = state.coins;
+            for (let i = 0; i < 4; i++) {
+                const best = state.bestTimes[i] || 0;
+                const el = document.getElementById(`best-${i}`);
+                if (el) el.textContent = formatTime(best);
+                document.getElementById(`m-${i}-b`).classList.toggle('earned', best >= MEDAL_TIMES.bronze);
+                document.getElementById(`m-${i}-s`).classList.toggle('earned', best >= MEDAL_TIMES.silver);
+                document.getElementById(`m-${i}-g`).classList.toggle('earned', best >= MEDAL_TIMES.gold);
+            }
+
+            Object.keys(SKINS).forEach((id) => {
+                const card = document.querySelector(`.shop-card[data-skin="${id}"]`);
+                const statusEl = document.getElementById(`skin-status-${id}`);
+                const unlocked = state.unlockedSkins.includes(id);
+                const equipped = state.equippedSkin === id;
+                card.classList.toggle('owned', unlocked);
+                card.classList.toggle('equipped', equipped);
+                if (equipped) {
+                    statusEl.textContent = 'ACTIVE';
+                    statusEl.style.color = 'var(--neon)';
+                } else if (unlocked) {
+                    statusEl.textContent = 'EQUIP';
+                    statusEl.style.color = '#ffffff';
+                } else {
+                    statusEl.textContent = `${SKINS[id].cost} ◈`;
+                    statusEl.style.color = '#ffd60a';
+                }
+            });
+
+            Object.keys(PERKS).forEach((id) => {
+                const card = document.querySelector(`.shop-card[data-perk="${id}"]`);
+                const statusEl = document.getElementById(`perk-status-${id}`);
+                const owned = hasPerk(id);
+                card.classList.toggle('owned', owned);
+                card.classList.toggle('equipped', owned);
+                if (owned) {
+                    statusEl.textContent = 'OWNED';
+                    statusEl.style.color = 'var(--neon)';
+                } else {
+                    statusEl.textContent = `${PERKS[id].cost} ◈`;
+                    statusEl.style.color = '#ffd60a';
+                }
+            });
+        }
+
+        function showOverlay(viewName) {
+            overlay.classList.remove('fade-out');
+            menuView.classList.add('hidden');
+            shopView.classList.add('hidden');
+            pauseView.classList.add('hidden');
+            gameoverView.classList.add('hidden');
+            mainTitle.classList.add('hidden');
+
+            if (viewName === 'MENU') {
+                mainTitle.classList.remove('hidden');
+                menuView.classList.remove('hidden');
+            } else if (viewName === 'SHOP') {
+                mainTitle.classList.remove('hidden');
+                shopView.classList.remove('hidden');
+            } else if (viewName === 'PAUSE') {
+                pauseView.classList.remove('hidden');
+            } else if (viewName === 'GAMEOVER') {
+                gameoverView.classList.remove('hidden');
+            }
+        }
+
+        function hideOverlay() {
+            overlay.classList.add('fade-out');
+        }
+
+        // =========================================================================
+        // RESPONSIVE LANDSCAPE CANVAS RESIZE
+        // =========================================================================
+        function resizeCanvas() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const w = isPortrait ? window.innerHeight : window.innerWidth;
+            const h = isPortrait ? window.innerWidth : window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            canvas.width = Math.max(1, Math.floor(w * dpr));
+            canvas.height = Math.max(1, Math.floor(h * dpr));
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            state.width = w;
+            state.height = h;
+            const minDim = Math.min(w, h);
+            state.centerRadius = Math.max(22, minDim * 0.056);
+            state.orbitRadius = state.centerRadius + Math.max(12, minDim * 0.029);
+            state.basePlayerHeight = Math.max(10.5, minDim * 0.025);
+            state.spawnRadius = Math.hypot(w * 0.5, h * 0.5) + 150;
+            state.fov3D = Math.max(580, minDim * 1.48);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 90));
+        resizeCanvas();
+
+        // =========================================================================
+        // PROCEDURAL WEB AUDIO ENGINE (4 TRACKS + HYPER-TUNNEL MUSICAL DROP + SFX)
+        // =========================================================================
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.master = null;
+                this.noiseBuf = null;
+                this.phaseOsc = null;
+                this.phaseGain = null;
+                this.step = 0;
+                this.timer = 0;
+            }
+
+            init() {
+                try {
+                    if (!this.ctx) {
+                        const AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return;
+                        this.ctx = new AC();
+                        this.master = this.ctx.createGain();
+                        this.master.gain.value = 0.85;
+                        this.master.connect(this.ctx.destination);
+
+                        const sz = Math.floor(this.ctx.sampleRate * 0.35);
+                        this.noiseBuf = this.ctx.createBuffer(1, sz, this.ctx.sampleRate);
+                        const d = this.noiseBuf.getChannelData(0);
+                        for (let i = 0; i < sz; i++) d[i] = Math.random() * 2 - 1;
+
+                        // Smooth harmonic phase hum
+                        this.phaseOsc = this.ctx.createOscillator();
+                        this.phaseGain = this.ctx.createGain();
+                        this.phaseOsc.type = 'triangle';
+                        this.phaseOsc.frequency.value = 155;
+                        this.phaseGain.gain.value = 0.0;
+                        this.phaseOsc.connect(this.phaseGain);
+                        this.phaseGain.connect(this.master);
+                        this.phaseOsc.start();
+                    }
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                } catch (e) {}
+            }
+
+            updatePhaseHum(active, scale) {
+                if (!this.ctx || !this.phaseGain || !this.phaseOsc) return;
+                const now = this.ctx.currentTime;
+                const vol = active && state.soundEnabled && state.mode === 'PLAYING' ? 0.085 : 0.0;
+                this.phaseGain.gain.setTargetAtTime(vol, now, 0.05);
+                this.phaseOsc.frequency.setTargetAtTime(150 + (scale - 1.0) * 120, now, 0.06);
+            }
+
+            osc(freq, type, dur, vol, slide = null) {
+                if (!state.soundEnabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.type = type;
+                o.frequency.setValueAtTime(Math.max(24, freq), now);
+                if (slide !== null) o.frequency.exponentialRampToValueAtTime(Math.max(20, slide), now + dur);
+                g.gain.setValueAtTime(vol, now);
+                g.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+                o.connect(g);
+                g.connect(this.master);
+                o.start(now);
+                o.stop(now + dur + 0.015);
+            }
+
+            noise(dur, vol, fType, fFreq) {
+                if (!state.soundEnabled || !this.ctx || !this.noiseBuf) return;
+                const now = this.ctx.currentTime;
+                const src = this.ctx.createBufferSource();
+                src.buffer = this.noiseBuf;
+                const flt = this.ctx.createBiquadFilter();
+                flt.type = fType;
+                flt.frequency.setValueAtTime(fFreq, now);
+                const g = this.ctx.createGain();
+                g.gain.setValueAtTime(vol, now);
+                g.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+                src.connect(flt);
+                flt.connect(g);
+                g.connect(this.master);
+                src.start(now);
+                src.stop(now + dur + 0.015);
+            }
+
+            update(dt, lvl, playing, hyperBlend) {
+                this.updatePhaseHum(state.phaseActive, state.playerScale);
+                if (!playing || !state.soundEnabled || !this.ctx) return;
+
+                // Subtle energetic tempo lift during Hyper-Tunnel drop & Overdrive (never slowed!)
+                const overdriveTempo = state.elapsed >= 30.0 ? 1.04 : 1.0;
+                const effBpm = lvl.bpm * overdriveTempo * (1 + hyperBlend * 0.055);
+                const stepInt = (60 / effBpm) / 4;
+                this.timer += dt;
+                if (this.timer >= stepInt) {
+                    this.timer -= stepInt;
+                    this.triggerStep(this.step % 16, lvl.id, hyperBlend);
+                    this.step++;
+                }
+            }
+
+            triggerStep(s, id, hyper) {
+                const kicks = [
+                    [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0], // 01 Cyan
+                    [1,0,0,0, 1,0,0,1, 1,0,0,0, 1,0,1,0], // 02 Crimson
+                    [1,0,0,1, 0,0,1,0, 1,0,0,1, 0,0,1,0], // 03 Gold
+                    [1,0,0,0, 1,0,1,0, 1,0,0,0, 1,0,0,1]  // 04 Violet
+                ];
+
+                // Four-on-the-floor punchy kick during Hyper-Tunnel drop
+                const isKick = kicks[id][s] || (hyper > 0.35 && s % 4 === 0);
+                if (isKick) {
+                    this.osc(136 + hyper * 24, 'sine', 0.16, 0.25 + hyper * 0.05, 34);
+                    state.beatPulse = Math.max(state.beatPulse, 1.0);
+                }
+
+                // Crisp snare / clap
+                if (s === 4 || s === 12) {
+                    this.noise(0.11, 0.11 + hyper * 0.04, 'bandpass', 1950 + hyper * 450);
+                    this.osc(215, 'triangle', 0.075, 0.085, 92);
+                    state.beatPulse = Math.max(state.beatPulse, 0.55);
+                }
+
+                // Driving hi-hats (16th-note lift in Hyper-Tunnel)
+                if (s % 2 === 1 || hyper > 0.35) {
+                    const hatVol = s % 4 === 2 ? 0.055 : (s % 2 === 1 ? 0.036 : 0.022);
+                    this.noise(0.030, hatVol * (1 + hyper * 0.5), 'highpass', 7600);
+                }
+
+                const basses = [
+                    [110, 0, 110, 130.8, 146.8, 0, 130.8, 98],      // A minor
+                    [82.4, 82.4, 0, 98, 110, 0, 92.5, 82.4],        // E Phrygian
+                    [130.8, 0, 146.8, 0, 196, 174.6, 146.8, 130.8], // C Dorian
+                    [98, 116.5, 0, 130.8, 146.8, 0, 130.8, 116.5]   // G minor
+                ];
+                const arps = [
+                    [440, 523.2, 659.2, 523.2, 587.3, 440, 392, 440],
+                    [329.6, 349.2, 440, 349.2, 493.9, 440, 349.2, 329.6],
+                    [523.2, 659.2, 784, 659.2, 880, 784, 659.2, 587.3],
+                    [392, 466.2, 587.3, 698.5, 784, 698.5, 587.3, 466.2]
+                ];
+                const bTypes = ['sawtooth', 'square', 'sawtooth', 'sawtooth'];
+                const aTypes = ['triangle', 'sawtooth', 'sine', 'triangle'];
+
+                // Punchy bassline (adds off-beat pump during Hyper-Tunnel)
+                if (s % 2 === 0 || (hyper > 0.35 && s % 4 === 2)) {
+                    const bf = basses[id][Math.floor(s / 2) % 8] || basses[id][0];
+                    if (bf > 0) this.osc(bf, bTypes[id], 0.13, 0.068 + hyper * 0.025);
+                }
+
+                // Bright synth arpeggio + octave hyper-lead during 20:00–30:00 drop
+                if (s % 2 === 1 || id === 3 || hyper > 0.3) {
+                    const af = arps[id][s % 8];
+                    this.osc(af, aTypes[id], 0.095, 0.036 + hyper * 0.014);
+                    if (hyper > 0.35 && s % 2 === 0) {
+                        this.osc(af * 2, 'sine', 0.08, 0.024 * hyper);
+                    }
+                }
+            }
+
+            playCoin() {
+                this.osc(760, 'sine', 0.085, 0.13, 1240);
+                setTimeout(() => this.osc(1240, 'triangle', 0.105, 0.10, 1620), 42);
+            }
+            playNearMiss() {
+                this.osc(1040, 'sine', 0.07, 0.10, 1580);
+            }
+            playScrape() {
+                this.osc(410, 'triangle', 0.055, 0.075, 250);
+                this.noise(0.045, 0.05, 'bandpass', 2800);
+            }
+            playShardBounce() {
+                this.osc(540 + Math.random() * 260, 'sine', 0.042, 0.045, 290);
+            }
+            playLaserTick() {
+                this.osc(1120, 'sine', 0.045, 0.06, 900);
+            }
+            playLaserFire() {
+                this.osc(540, 'sawtooth', 0.25, 0.13, 92);
+                this.noise(0.16, 0.075, 'bandpass', 2400);
+            }
+            playHyperEnter() {
+                this.osc(140, 'sawtooth', 0.55, 0.16, 620);
+                this.osc(280, 'triangle', 0.50, 0.12, 880);
+                this.noise(0.32, 0.08, 'highpass', 1400);
+            }
+            playOverdrive() {
+                this.osc(110, 'sawtooth', 0.42, 0.15, 580);
+                this.noise(0.22, 0.07, 'highpass', 2000);
+            }
+            playDualSplit() {
+                this.osc(392, 'sine', 0.18, 0.14, 784);
+                setTimeout(() => this.osc(587.3, 'triangle', 0.24, 0.13, 1174.6), 75);
+            }
+            playCloneShatter() {
+                this.osc(240, 'sawtooth', 0.28, 0.22, 48);
+                this.noise(0.24, 0.20, 'bandpass', 1900);
+            }
+            playCrash() {
+                this.osc(150, 'sawtooth', 0.42, 0.28, 22);
+                this.osc(84, 'square', 0.34, 0.22, 18);
+                this.noise(0.36, 0.26, 'lowpass', 1500);
+            }
+        }
+        const audio = new SoundEngine();
+
+        // =========================================================================
+        // MULTI-TOUCH & KEYBOARD INPUT (ACCURATE PORTRAIT 90DEG REMAPPING)
+        // =========================================================================
+        const input = {
+            keyLeft: false,
+            keyRight: false,
+            pointers: new Map() // pointerId -> 'left' | 'right'
+        };
+
+        function getVisualSide(clientX, clientY) {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (isPortrait) {
+                // Rotated 90deg CW: visual left half = physical top half
+                return clientY < window.innerHeight * 0.5 ? 'left' : 'right';
+            }
+            return clientX < window.innerWidth * 0.5 ? 'left' : 'right';
+        }
+
+        function getControls() {
+            let left = input.keyLeft;
+            let right = input.keyRight;
+            for (const side of input.pointers.values()) {
+                if (side === 'left') left = true;
+                if (side === 'right') right = true;
+            }
+            return { left, right };
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') input.keyLeft = true;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') input.keyRight = true;
+            if (e.code === 'Escape') {
+                if (state.mode === 'PLAYING') pauseGame();
+                else if (state.mode === 'PAUSED') resumeGame();
+            }
+            if ((e.code === 'Space' || e.code === 'Enter') && state.mode === 'GAMEOVER') {
+                e.preventDefault();
+                startGame(state.levelIndex);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') input.keyLeft = false;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') input.keyRight = false;
+        });
+
+        canvas.addEventListener('pointerdown', (e) => {
+            audio.init();
+            if (state.mode !== 'PLAYING') return;
+            e.preventDefault();
+            try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+            input.pointers.set(e.pointerId, getVisualSide(e.clientX, e.clientY));
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!input.pointers.has(e.pointerId)) return;
+            e.preventDefault();
+            input.pointers.set(e.pointerId, getVisualSide(e.clientX, e.clientY));
+        });
+
+        function releasePointer(e) {
+            input.pointers.delete(e.pointerId);
+        }
+        canvas.addEventListener('pointerup', releasePointer);
+        canvas.addEventListener('pointercancel', releasePointer);
+        window.addEventListener('blur', () => {
+            input.keyLeft = false;
+            input.keyRight = false;
+            input.pointers.clear();
+        });
+
+        // Quick tap anywhere on Game Over backdrop to restart cleanly
+        overlay.addEventListener('pointerdown', (e) => {
+            if (state.mode === 'GAMEOVER' && state.gameOverGuardTimer <= 0 && e.target === overlay) {
+                startGame(state.levelIndex);
+            }
+        });
+
+        // =========================================================================
+        // OBSTACLE SPAWNER (4 UNIQUE LEVELS + 3D HYPER-TUNNEL + 100% SYMMETRIC L4)
+        // =========================================================================
+        function maybeSpawnCoin(r, gapAngle, force = false) {
+            if (force || Math.random() < 0.36) {
+                state.collectibles.push({
+                    r,
+                    angle: normAngle(gapAngle),
+                    spin: Math.random() * TWO_PI
+                });
+            }
+        }
+
+        function maybeSpawnSymmetricCoins(r, gapAngle, force = false) {
+            if (force || Math.random() < 0.42) {
+                const spin = Math.random() * TWO_PI;
+                state.collectibles.push({ r, angle: normAngle(gapAngle), spin });
+                state.collectibles.push({ r, angle: normAngle(gapAngle + Math.PI), spin });
+            }
+        }
+
+        function createWall(props) {
+            return Object.assign({
+                rInner: 300,
+                thickness: 24,
+                height3D: 28,
+                startAngle: 0,
+                arcLen: Math.PI,
+                behavior: 'normal',
+                angular: state.levelIndex === 2,
+                alpha: 1.0,
+                nearMissed: false,
+                recoil: 0,
+                recoilVel: 0,
+                hitFlash: 0,
+                hitSide: 0
+            }, props);
+        }
+
+        function spawnWave(startR) {
+            const lvl = LEVELS[state.levelIndex];
+            // Feed Hyper-Tunnel warp corridor waves ahead of 20:00–30:00 so they fill the arena right on the drop
+            const inHyperSpawn = state.elapsed >= 17.4 && state.elapsed < 27.8;
+            const pool = inHyperSpawn ? lvl.hyperPatterns : lvl.patterns;
+            const pattern = pool[Math.floor(Math.random() * pool.length)];
+
+            const baseAngle = Math.random() * TWO_PI;
+            const dir = Math.random() < 0.5 ? 1 : -1;
+            const prog = clamp(state.elapsed / 75, 0, 1);
+
+            const gapAngle = lerp(1.38, 0.96, prog);
+            const spacing = lerp(162, 122, prog);
+
+            // =====================================================================
+            // A. 3D HYPER-TUNNEL WARP CORRIDOR PATTERNS (Wider clean gaps + bonus coins)
+            // =====================================================================
+            if (pattern === 'hyper_corridor') {
+                const layers = 3;
+                const layerPitch = 78;
+                const warpGap = Math.max(1.26, gapAngle * 1.12);
+                const arcLen = TWO_PI - warpGap;
+                for (let i = 0; i < layers; i++) {
+                    const sA = baseAngle + i * 0.62 * dir;
+                    state.walls.push(createWall({
+                        rInner: startR + i * layerPitch,
+                        thickness: 24,
+                        height3D: 40 + (i % 2) * 10,
+                        startAngle: sA,
+                        arcLen
+                    }));
+                    maybeSpawnCoin(startR + i * layerPitch + 12, sA + arcLen + warpGap * 0.5, i === 1);
+                }
+                return startR + layers * layerPitch + spacing * 0.72;
+            }
+
+            if (pattern === 'hyper_snail') {
+                const steps = 4;
+                const warpGap = Math.max(1.28, gapAngle * 1.14);
+                const stepAngle = (TWO_PI - warpGap) / steps;
+                for (let i = 0; i < steps; i++) {
+                    state.walls.push(createWall({
+                        rInner: startR + i * 22,
+                        thickness: 24,
+                        height3D: 34 + i * 6,
+                        startAngle: baseAngle + dir * i * stepAngle * 0.85,
+                        arcLen: stepAngle * 1.08
+                    }));
+                }
+                maybeSpawnCoin(startR + 34, baseAngle + dir * (steps * stepAngle * 0.85 + warpGap * 0.5), true);
+                return startR + steps * 22 + spacing * 0.76;
+            }
+
+            if (pattern === 'hyper_trefoil') {
+                const subGap = Math.max(0.76, gapAngle * 0.66);
+                const segArc = (TWO_PI / 3) - subGap;
+                for (let l = 0; l < 2; l++) {
+                    const shift = l * 0.56 * dir;
+                    for (let i = 0; i < 3; i++) {
+                        state.walls.push(createWall({
+                            rInner: startR + l * 84,
+                            thickness: 24,
+                            height3D: 38 + l * 10,
+                            startAngle: baseAngle + shift + i * (TWO_PI / 3),
+                            arcLen: segArc
+                        }));
+                    }
+                    maybeSpawnCoin(startR + l * 84 + 12, baseAngle + shift + segArc + subGap * 0.5, l === 0);
+                }
+                return startR + 168 + spacing * 0.72;
+            }
+
+            if (pattern === 'hyper_phantom_corridor') {
+                const layers = 3;
+                const layerPitch = 82;
+                const warpGap = Math.max(1.28, gapAngle * 1.12);
+                const mainArc = TWO_PI - warpGap;
+                for (let i = 0; i < layers; i++) {
+                    const sA = baseAngle + i * 0.66 * dir;
+                    state.walls.push(createWall({
+                        rInner: startR + i * layerPitch,
+                        thickness: 24,
+                        height3D: 42,
+                        startAngle: sA,
+                        arcLen: mainArc
+                    }));
+                    state.walls.push(createWall({
+                        rInner: startR + i * layerPitch,
+                        thickness: 24,
+                        height3D: 42,
+                        startAngle: sA + mainArc + 0.03,
+                        arcLen: warpGap - 0.06,
+                        behavior: 'phantom',
+                        pulsePhase: 0,
+                        nearMissed: true
+                    }));
+                    maybeSpawnCoin(startR + i * layerPitch + 12, sA + mainArc + warpGap * 0.5, i === 1);
+                }
+                return startR + layers * layerPitch + spacing * 0.74;
+            }
+
+            if (pattern === 'hyper_split_run') {
+                const halfArc = (TWO_PI - 0.42) * 0.5;
+                for (let l = 0; l < 2; l++) {
+                    const sA = baseAngle + l * 0.9 * dir;
+                    state.walls.push(createWall({
+                        rInner: startR + l * 90,
+                        thickness: 24,
+                        height3D: 44,
+                        startAngle: sA,
+                        arcLen: halfArc,
+                        behavior: 'split_left',
+                        baseStart: sA
+                    }));
+                    state.walls.push(createWall({
+                        rInner: startR + l * 90,
+                        thickness: 24,
+                        height3D: 44,
+                        startAngle: sA + halfArc + 0.21,
+                        arcLen: halfArc,
+                        behavior: 'split_right',
+                        baseStart: sA + halfArc + 0.21
+                    }));
+                    maybeSpawnCoin(startR + l * 90 + 12, sA + halfArc + 0.10, l === 0);
+                }
+                return startR + 180 + spacing * 0.75;
+            }
+
+            if (pattern === 'hyper_gear_corridor') {
+                const subGap = Math.max(0.72, gapAngle * 0.62);
+                const segArc = (TWO_PI / 4) - subGap;
+                for (let l = 0; l < 2; l++) {
+                    const shift = l * 0.42 * dir;
+                    for (let i = 0; i < 4; i++) {
+                        state.walls.push(createWall({
+                            rInner: startR + l * 86,
+                            thickness: 24,
+                            height3D: 38 + (i % 2) * 12,
+                            startAngle: baseAngle + shift + i * (TWO_PI / 4),
+                            arcLen: segArc,
+                            behavior: 'gear_rot',
+                            rotVel: (l % 2 === 0 ? 1 : -1) * dir * 0.22,
+                            angular: true
+                        }));
+                    }
+                    maybeSpawnCoin(startR + l * 86 + 12, baseAngle + shift + segArc + subGap * 0.5, l === 0);
+                }
+                return startR + 172 + spacing * 0.72;
+            }
+
+            // =====================================================================
+            // B. LEVEL 4: 100% CENTRALLY SYMMETRIC (180°-MIRRORED) DUAL PATTERNS
+            // =====================================================================
+            if (pattern === 'dual_breathing' || pattern === 'hyper_dual_breathing') {
+                const isHyper = pattern === 'hyper_dual_breathing';
+                const layers = isHyper ? 2 : 1;
+                const layerPitch = 88;
+                const symGap = isHyper ? Math.max(1.26, gapAngle * 1.02) : Math.max(1.16, gapAngle * 0.94);
+                const baseArc = Math.PI - symGap;
+                for (let l = 0; l < layers; l++) {
+                    const shift = l * 0.65 * dir;
+                    for (let side = 0; side < 2; side++) {
+                        const sA = baseAngle + shift + side * Math.PI;
+                        state.walls.push(createWall({
+                            rInner: startR + l * layerPitch,
+                            thickness: 24,
+                            height3D: isHyper ? 42 : 28,
+                            startAngle: sA,
+                            arcLen: baseArc,
+                            baseStart: sA,
+                            baseArc: baseArc,
+                            breathAmp: 0.19,
+                            behavior: 'breathing',
+                            angular: false
+                        }));
+                    }
+                    maybeSpawnSymmetricCoins(startR + l * layerPitch + 12, baseAngle + shift + baseArc + symGap * 0.5, isHyper);
+                }
+                return startR + layers * layerPitch + spacing * (isHyper ? 0.76 : 0.95);
+            }
+
+            if (pattern === 'dual_spiral' || pattern === 'hyper_dual_spiral') {
+                const isHyper = pattern === 'hyper_dual_spiral';
+                const steps = 3;
+                const symGap = isHyper ? 1.28 : 1.18;
+                const stepArc = (Math.PI - symGap) / steps;
+                for (let i = 0; i < steps; i++) {
+                    const rStep = startR + i * 24;
+                    const offset = dir * i * stepArc * 0.92;
+                    for (let side = 0; side < 2; side++) {
+                        state.walls.push(createWall({
+                            rInner: rStep,
+                            thickness: 24,
+                            height3D: (isHyper ? 34 : 24) + i * 6,
+                            startAngle: baseAngle + offset + side * Math.PI,
+                            arcLen: stepArc * 1.12,
+                            angular: false
+                        }));
+                    }
+                }
+                maybeSpawnSymmetricCoins(startR + 30, baseAngle + dir * (steps * stepArc * 0.92) + symGap * 0.5, isHyper);
+                return startR + steps * 24 + spacing * (isHyper ? 0.80 : 1.0);
+            }
+
+            if (pattern === 'dual_corridor' || pattern === 'hyper_dual_slalom') {
+                const isHyper = pattern === 'hyper_dual_slalom';
+                const layers = isHyper ? 3 : 2;
+                const layerPitch = isHyper ? 84 : 96;
+                const symGap = isHyper ? 1.30 : 1.18;
+                const arcLen = Math.PI - symGap;
+                for (let l = 0; l < layers; l++) {
+                    const shift = l * 0.62 * dir;
+                    for (let side = 0; side < 2; side++) {
+                        state.walls.push(createWall({
+                            rInner: startR + l * layerPitch,
+                            thickness: 22,
+                            height3D: isHyper ? (38 + (l % 2) * 10) : 28,
+                            startAngle: baseAngle + shift + side * Math.PI,
+                            arcLen,
+                            angular: false
+                        }));
+                    }
+                    maybeSpawnSymmetricCoins(startR + l * layerPitch + 11, baseAngle + shift + arcLen + symGap * 0.5, isHyper && l === 1);
+                }
+                return startR + layers * layerPitch + spacing * (isHyper ? 0.72 : 0.92);
+            }
+
+            if (pattern === 'dual_anvil') {
+                const symGap = Math.max(1.18, gapAngle * 0.96);
+                const totalHalf = Math.PI - symGap;
+                for (let side = 0; side < 2; side++) {
+                    const sA = baseAngle + side * Math.PI;
+                    state.walls.push(createWall({
+                        rInner: startR,
+                        thickness: 20,
+                        height3D: 24,
+                        startAngle: sA,
+                        arcLen: totalHalf * 0.54,
+                        angular: false
+                    }));
+                    state.walls.push(createWall({
+                        rInner: startR,
+                        thickness: 38,
+                        height3D: 38,
+                        startAngle: sA + totalHalf * 0.52,
+                        arcLen: totalHalf * 0.48,
+                        angular: false
+                    }));
+                }
+                maybeSpawnSymmetricCoins(startR + 18, baseAngle + totalHalf + symGap * 0.5);
+                return startR + spacing + 22;
+            }
+
+            // =====================================================================
+            // C. STANDARD PATTERNS (LEVELS 1–3)
+            // =====================================================================
+            if (pattern === 'wide_gate') {
+                const arcLen = TWO_PI - gapAngle;
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 24,
+                    height3D: 28,
+                    startAngle: baseAngle,
+                    arcLen
+                }));
+                maybeSpawnCoin(startR + 12, baseAngle + arcLen + gapAngle * 0.5);
+                return startR + spacing;
+            }
+
+            if (pattern === 'snail_stair' || pattern === 'phantom_stair') {
+                const steps = 4;
+                const stepAngle = (TWO_PI - gapAngle) / steps;
+                const stepThick = 22;
+                for (let i = 0; i < steps; i++) {
+                    const isPh = pattern === 'phantom_stair' && i === steps - 1;
+                    state.walls.push(createWall({
+                        rInner: startR + i * (stepThick * 0.74),
+                        thickness: stepThick + 6,
+                        height3D: 22 + i * 5,
+                        startAngle: baseAngle + dir * i * stepAngle,
+                        arcLen: stepAngle * 1.05,
+                        behavior: isPh ? 'phantom' : 'normal',
+                        pulsePhase: 0
+                    }));
+                }
+                maybeSpawnCoin(startR + 30, baseAngle + dir * (steps * stepAngle + gapAngle * 0.5));
+                return startR + steps * (stepThick * 0.74) + spacing;
+            }
+
+            if (pattern === 'anvil_arc') {
+                const totalArc = TWO_PI - gapAngle;
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 20,
+                    height3D: 24,
+                    startAngle: baseAngle,
+                    arcLen: totalArc * 0.55
+                }));
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 42,
+                    height3D: 40,
+                    startAngle: baseAngle + totalArc * 0.53,
+                    arcLen: totalArc * 0.47
+                }));
+                maybeSpawnCoin(startR + 18, baseAngle + totalArc + gapAngle * 0.5);
+                return startR + spacing + 18;
+            }
+
+            if (pattern === 'trefoil_gate') {
+                const subGap = gapAngle * 0.56;
+                const segArc = (TWO_PI / 3) - subGap;
+                for (let i = 0; i < 3; i++) {
+                    state.walls.push(createWall({
+                        rInner: startR,
+                        thickness: 24,
+                        height3D: 30,
+                        startAngle: baseAngle + i * (TWO_PI / 3),
+                        arcLen: segArc
+                    }));
+                }
+                maybeSpawnCoin(startR + 12, baseAngle + segArc + subGap * 0.5);
+                return startR + spacing + 10;
+            }
+
+            if (pattern === 'radar_wedges') {
+                const subGap = gapAngle * 0.78;
+                const wedgeArc = (TWO_PI - subGap * 2) * 0.5;
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 52,
+                    height3D: 40,
+                    startAngle: baseAngle,
+                    arcLen: wedgeArc,
+                    angular: false
+                }));
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 52,
+                    height3D: 40,
+                    startAngle: baseAngle + wedgeArc + subGap,
+                    arcLen: wedgeArc,
+                    angular: false
+                }));
+                state.walls.push(createWall({
+                    rInner: startR + 94,
+                    thickness: 18,
+                    height3D: 24,
+                    startAngle: baseAngle + wedgeArc * 0.5,
+                    arcLen: TWO_PI - gapAngle * 1.15,
+                    angular: false
+                }));
+                maybeSpawnCoin(startR + 26, baseAngle + wedgeArc + subGap * 0.5);
+                return startR + spacing + 98;
+            }
+
+            if (pattern === 'phantom_gate') {
+                const mainArc = TWO_PI - gapAngle;
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 26,
+                    height3D: 30,
+                    startAngle: baseAngle,
+                    arcLen: mainArc
+                }));
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 26,
+                    height3D: 30,
+                    startAngle: baseAngle + mainArc + 0.03,
+                    arcLen: gapAngle - 0.06,
+                    behavior: 'phantom',
+                    pulsePhase: 0,
+                    nearMissed: true
+                }));
+                maybeSpawnCoin(startR + 13, baseAngle + mainArc + gapAngle * 0.5);
+                return startR + spacing + 10;
+            }
+
+            if (pattern === 'split_arch') {
+                const halfArc = (TWO_PI - 0.38) * 0.5;
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 24,
+                    height3D: 28,
+                    startAngle: baseAngle,
+                    arcLen: halfArc,
+                    behavior: 'split_left',
+                    baseStart: baseAngle
+                }));
+                state.walls.push(createWall({
+                    rInner: startR,
+                    thickness: 24,
+                    height3D: 28,
+                    startAngle: baseAngle + halfArc + 0.19,
+                    arcLen: halfArc,
+                    behavior: 'split_right',
+                    baseStart: baseAngle + halfArc + 0.19
+                }));
+                maybeSpawnCoin(startR + 12, baseAngle + halfArc + 0.095);
+                return startR + spacing + 12;
+            }
+
+            if (pattern === 'gear_sector') {
+                const subGap = gapAngle * 0.58;
+                const segArc = (TWO_PI / 4) - subGap;
+                const spinDir = dir * 0.24;
+                for (let i = 0; i < 4; i++) {
+                    state.walls.push(createWall({
+                        rInner: startR,
+                        thickness: i % 2 === 0 ? 22 : 34,
+                        height3D: i % 2 === 0 ? 26 : 38,
+                        startAngle: baseAngle + i * (TWO_PI / 4),
+                        arcLen: segArc,
+                        behavior: 'gear_rot',
+                        rotVel: spinDir,
+                        angular: true
+                    }));
+                }
+                maybeSpawnCoin(startR + 14, baseAngle + segArc + subGap * 0.5);
+                return startR + spacing + 16;
+            }
+
+            return startR + spacing;
+        }
+
+        // =========================================================================
+        // RIGID-BODY SHATTER BUILDER (USED FOR BOTH CLONE LOSS & FULL DEATH)
+        // =========================================================================
+        function spawnLetterShards(angle, fallSpeed, overrideColor = null) {
+            const lvl = LEVELS[state.levelIndex];
+            const primaryCol = overrideColor || rgbStr(lvl.fgRGB);
+            const h = state.basePlayerHeight * state.playerScale;
+            const wHalf = h * 0.72;
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+            const baseR = state.orbitRadius + state.playerRadOffset;
+
+            let strokes;
+            if (state.equippedSkin === 'A') {
+                strokes = [
+                    [[0, -wHalf * 0.92], [h * 1.06, 0]],
+                    [[h * 1.06, 0], [0, wHalf * 0.92]],
+                    [[h * 0.38, -wHalf * 0.54], [h * 0.38, wHalf * 0.54]]
+                ];
+            } else if (state.equippedSkin === 'X') {
+                strokes = [
+                    [[0, -wHalf * 0.86], [h, wHalf * 0.86]],
+                    [[0, wHalf * 0.86], [h, -wHalf * 0.86]]
+                ];
+            } else {
+                strokes = [
+                    [[0, -wHalf], [h, -wHalf * 0.72]],
+                    [[h, -wHalf * 0.72], [h * 0.38, 0]],
+                    [[h * 0.38, 0], [h, wHalf * 0.72]],
+                    [[h, wHalf * 0.72], [0, wHalf]]
+                ];
+            }
+
+            const inhVx = -cosA * fallSpeed * 0.62 - sinA * state.playerAngVel * baseR * 0.55;
+            const inhVy = -sinA * fallSpeed * 0.62 + cosA * state.playerAngVel * baseR * 0.55;
+
+            const targetCount = 18;
+            for (let i = 0; i < targetCount; i++) {
+                const seg = strokes[i % strokes.length];
+                const t = (Math.floor(i / strokes.length) + 0.5) / Math.ceil(targetCount / strokes.length);
+                const lx = lerp(seg[0][0], seg[1][0], t) + (Math.random() - 0.5) * 3;
+                const ly = lerp(seg[0][1], seg[1][1], t) + (Math.random() - 0.5) * 3;
+
+                const wx = cosA * (baseR + lx) - sinA * ly;
+                const wy = sinA * (baseR + lx) + cosA * ly;
+
+                const burstAngle = Math.random() * TWO_PI;
+                const burstSpd = 95 + Math.random() * 205;
+                const sz = (3.4 + Math.random() * 4.2) * (0.82 + 0.18 * state.playerScale);
+
+                const isQuad = i % 3 === 0;
+                const pts = isQuad
+                    ? [[-sz, -sz * 0.45], [sz, -sz * 0.3], [sz * 0.8, sz * 0.45], [-sz * 0.7, sz * 0.35]]
+                    : [[sz * 1.15, 0], [-sz * 0.75, -sz * 0.75], [-sz * 0.55, sz * 0.85]];
+
+                state.shards.push({
+                    x: wx,
+                    y: wy,
+                    vx: inhVx + Math.cos(burstAngle) * burstSpd,
+                    vy: inhVy + Math.sin(burstAngle) * burstSpd,
+                    rot: angle + Math.random() * TWO_PI,
+                    vRot: (Math.random() - 0.5) * 18,
+                    pts,
+                    color: i % 4 === 0 ? '#ffffff' : primaryCol,
+                    life: 1.0
+                });
+            }
+        }
+
+        function spawnSparks(x, y, count, color, baseVx = 0, baseVy = 0, spread = 135) {
+            for (let i = 0; i < count; i++) {
+                const a = Math.random() * TWO_PI;
+                const spd = spread * (0.35 + Math.random() * 0.75);
+                state.sparks.push({
+                    x, y,
+                    vx: baseVx + Math.cos(a) * spd,
+                    vy: baseVy + Math.sin(a) * spd,
+                    life: 0.55 + Math.random() * 0.45,
+                    color
+                });
+            }
+        }
+
+        function getActiveCharacters() {
+            const list = [{ idx: 0, angle: state.playerAngle }];
+            if (state.splitState === 'DUAL') {
+                const sep = smoothstep(state.splitAnim) * Math.PI;
+                list.push({ idx: 1, angle: normAngle(state.playerAngle + sep) });
+            }
+            return list;
+        }
+
+        // =========================================================================
+        // GAME FLOW: START, PAUSE, CLONE SHATTER, NEAR MISS & GAME OVER
+        // =========================================================================
+        function startGame(lvlIdx) {
+            audio.init();
+            state.levelIndex = lvlIdx;
+            applyLevelTheme(lvlIdx);
+
+            const lvl = LEVELS[lvlIdx];
+            state.mode = 'PLAYING';
+            state.elapsed = 0;
+            state.speedMult = 1.0;
+            state.runCoins = 0;
+            state.gameOverGuardTimer = 0;
+
+            // Player reset (irreversible growth resets strictly on restart)
+            state.playerAngle = -Math.PI / 2;
+            state.playerAngVel = 0;
+            state.playerRadOffset = 0;
+            state.playerRadVel = 0;
+            state.playerScale = 1.0;
+
+            // Level 4 Dual Split initialization (5.0s solo warm-up -> DUAL)
+            state.splitState = lvl.id === 3 ? 'SOLO_WARMUP' : 'NONE';
+            state.splitAnim = 0;
+            state.resplitTimer = 0;
+            state.splitInvulnTimer = 0;
+
+            // Phase shield
+            state.phaseMax = hasPerk('PHASE_PLUS') ? 4.0 : 3.0;
+            state.phaseCharge = state.phaseMax;
+            state.phaseActive = false;
+            state.phaseHeldTotal = 0;
+            state.phaseCooldownLock = false;
+
+            state.nearMissCooldown = 0;
+            state.scrapeSfxTimer = 0;
+            state.badgeActive3D = false;
+
+            // 3D Hyper-Tunnel & 3D Camera reset
+            state.isHyperTunnel = false;
+            state.hyperBlend = 0;
+            state.overdriveFlash = 0;
+            state.chromaFlash = 0;
+            state.depth3D = 0;
+            state.camPitch = 0;
+            state.camRoll = 0;
+            state.camRecoilX = 0;
+            state.camRecoilY = 0;
+            state.camRecoilVx = 0;
+            state.camRecoilVy = 0;
+
+            // World rotation & harmonic phase
+            state.worldAngle = 0;
+            state.worldRotTarget = lvl.rotSpeed;
+            state.worldRotVel = lvl.rotSpeed;
+            state.rotSwitchTimer = 5.4;
+            state.camZoom = 1.0;
+            state.camTilt = 0;
+            state.beatPulse = 0;
+            state.harmonicPhase = 0;
+
+            // Entities
+            state.hitStopTimer = 0;
+            state.deathTimer = 0;
+            state.impactFlashes = [];
+            state.shards = [];
+            state.corePulses = [];
+            state.walls = [];
+            state.lasers = [];
+            state.laserTimer = 2.6;
+            state.collectibles = [];
+            state.sparks = [];
+            state.popups = [];
+            input.pointers.clear();
+
+            // Seed initial waves
+            let r = Math.max(275, state.orbitRadius + 230);
+            for (let i = 0; i < 5; i++) {
+                r = spawnWave(r);
+            }
+
+            // HUD reset
+            hideOverlay();
+            btnPause.classList.remove('hidden');
+            btnShop.classList.add('hidden');
+            sizePill.classList.add('hidden');
+            dualPill.classList.add('hidden');
+            timerBox.classList.remove('glow');
+            statusBadge.classList.remove('visible');
+            edgeVignette.style.opacity = '0';
+        }
+
+        function pauseGame() {
+            if (state.mode !== 'PLAYING') return;
+            state.mode = 'PAUSED';
+            state.phaseActive = false;
+            audio.updatePhaseHum(false, 1.0);
+            input.pointers.clear();
+            showOverlay('PAUSE');
+        }
+
+        function resumeGame() {
+            if (state.mode !== 'PAUSED') return;
+            state.mode = 'PLAYING';
+            state.lastTime = performance.now();
+            hideOverlay();
+        }
+
+        function returnToMenu() {
+            state.mode = 'MENU';
+            state.phaseActive = false;
+            audio.updatePhaseHum(false, 1.0);
+            btnPause.classList.add('hidden');
+            btnShop.classList.remove('hidden');
+            sizePill.classList.add('hidden');
+            dualPill.classList.add('hidden');
+            timerBox.classList.remove('glow');
+            statusBadge.classList.remove('visible');
+            edgeVignette.style.opacity = '0';
+            showOverlay('MENU');
+        }
+
+        function triggerNearMiss(angle) {
+            if (state.nearMissCooldown > 0) return;
+            state.nearMissCooldown = 0.72;
+            state.coins += 1;
+            state.runCoins += 1;
+            state.chromaFlash = 0.65;
+            saveProgress();
+            updateMetaUI();
+            audio.playNearMiss();
+            vibrate(12);
+
+            const r = state.orbitRadius + 10;
+            const px = Math.cos(angle) * r;
+            const py = Math.sin(angle) * r;
+            spawnSparks(px, py, 9, '#ffffff', 0, 0, 118);
+            state.popups.push({ x: px * 1.48, y: py * 1.48, text: '+1', color: '#ffd60a', life: 0.9 });
+        }
+
+        function triggerDualSplit(isResplit = false) {
+            state.splitState = 'DUAL';
+            state.splitAnim = 0;
+            state.splitInvulnTimer = 0.85;
+            state.corePulses.push({ r: state.centerRadius, alpha: 0.95, color: '#38f9d7' });
+            audio.playDualSplit();
+            vibrate([20, 25, 25]);
+            showBadge(isResplit ? 'RE-SPLIT' : 'DUAL SPLIT', 1.7);
+            dualPill.textContent = 'DUAL x2';
+            dualPill.classList.remove('hidden');
+        }
+
+        function triggerCloneShatter(hitCharIdx, hitAngle, fallSpeed) {
+            // Shatter ONLY the struck clone; survivor keeps running!
+            const r = state.orbitRadius + state.playerRadOffset + state.basePlayerHeight * state.playerScale * 0.5;
+            const px = Math.cos(hitAngle) * r;
+            const py = Math.sin(hitAngle) * r;
+
+            state.impactFlashes.push({ x: px, y: py, life: 1.0, color: '#38f9d7' });
+            spawnLetterShards(hitAngle, fallSpeed, hitCharIdx === 1 ? '#38f9d7' : null);
+            spawnSparks(px, py, 20, '#38f9d7', 0, 0, 195);
+            spawnSparks(px, py, 14, '#ffffff', 0, 0, 175);
+
+            // Mini hit-stop + subtle recoil + invulnerability
+            state.hitStopTimer = 0.065;
+            state.splitInvulnTimer = 0.75;
+            state.chromaFlash = 0.85;
+            const screenA = hitAngle + state.worldAngle + state.camTilt;
+            state.camRecoilVx = -Math.cos(screenA) * 185;
+            state.camRecoilVy = -Math.sin(screenA) * 185;
+
+            // If primary (idx 0) shattered, survivor at +180deg becomes primary
+            if (hitCharIdx === 0) {
+                state.playerAngle = normAngle(state.playerAngle + Math.PI);
+            }
+
+            state.splitState = 'SOLO_RECOVERY';
+            state.splitAnim = 0;
+            state.resplitTimer = 9.0;
+
+            audio.playCloneShatter();
+            vibrate([35, 25, 40]);
+            dualPill.textContent = 'SOLO';
+            state.popups.push({ x: px * 1.4, y: py * 1.4, text: 'CLONE LOST', color: '#38f9d7', life: 1.0 });
+        }
+
+        function triggerDeath(hitAngle, fallSpeed) {
+            state.mode = 'DYING';
+            state.phaseActive = false;
+            audio.updatePhaseHum(false, 1.0);
+            audio.playCrash();
+            vibrate([50, 30, 85]);
+
+            // 80ms hit-stop + ~0.9s ricocheting shard physics before Game Over overlay
+            state.hitStopTimer = 0.08;
+            state.deathTimer = 0.92;
+
+            const r = state.orbitRadius + state.playerRadOffset + state.basePlayerHeight * state.playerScale * 0.5;
+            const px = Math.cos(hitAngle) * r;
+            const py = Math.sin(hitAngle) * r;
+            state.impactFlashes.push({ x: px, y: py, life: 1.0, color: '#ffffff' });
+
+            const screenA = hitAngle + state.worldAngle + state.camTilt;
+            state.camRecoilVx = -Math.cos(screenA) * 265;
+            state.camRecoilVy = -Math.sin(screenA) * 265;
+
+            spawnLetterShards(hitAngle, fallSpeed);
+            spawnSparks(px, py, 24, '#ffffff', 0, 0, 215);
+            spawnSparks(px, py, 16, rgbStr(LEVELS[state.levelIndex].fgRGB), 0, 0, 180);
+
+            const isNewRecord = state.elapsed > state.bestTimes[state.levelIndex];
+            if (isNewRecord) {
+                state.bestTimes[state.levelIndex] = state.elapsed;
+                saveProgress();
+            }
+            updateMetaUI();
+
+            goLevelName.textContent = LEVELS[state.levelIndex].code;
+            goTime.textContent = formatTime(state.elapsed);
+            goCoins.textContent = state.runCoins;
+            goRecordBadge.classList.toggle('hidden', !isNewRecord);
+
+            if (state.elapsed >= MEDAL_TIMES.gold) {
+                goMedalLabel.textContent = '★ GOLD';
+                goMedalLabel.style.color = '#ffd60a';
+                goMedalLabel.classList.remove('hidden');
+            } else if (state.elapsed >= MEDAL_TIMES.silver) {
+                goMedalLabel.textContent = '★ SILVER';
+                goMedalLabel.style.color = '#d8e2ec';
+                goMedalLabel.classList.remove('hidden');
+            } else if (state.elapsed >= MEDAL_TIMES.bronze) {
+                goMedalLabel.textContent = '★ BRONZE';
+                goMedalLabel.style.color = '#cd7f32';
+                goMedalLabel.classList.remove('hidden');
+            } else {
+                goMedalLabel.classList.add('hidden');
+            }
+        }
+
+        function finishDeathSequence() {
+            state.mode = 'GAMEOVER';
+            state.gameOverGuardTimer = 0.35;
+            btnPause.classList.add('hidden');
+            btnShop.classList.remove('hidden');
+            sizePill.classList.add('hidden');
+            dualPill.classList.add('hidden');
+            timerBox.classList.remove('glow');
+            statusBadge.classList.remove('visible');
+            edgeVignette.style.opacity = '0';
+            showOverlay('GAMEOVER');
+        }
+
+        // =========================================================================
+        // UI BUTTON LISTENERS
+        // =========================================================================
+        document.querySelectorAll('.level-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                startGame(parseInt(card.getAttribute('data-level'), 10));
+            });
+        });
+
+        btnPause.addEventListener('click', pauseGame);
+        btnResume.addEventListener('click', resumeGame);
+        btnPauseRetry.addEventListener('click', () => startGame(state.levelIndex));
+        btnPauseMenu.addEventListener('click', returnToMenu);
+        btnRetry.addEventListener('click', () => startGame(state.levelIndex));
+        btnGoMenu.addEventListener('click', returnToMenu);
+
+        btnShop.addEventListener('click', () => {
+            audio.init();
+            updateMetaUI();
+            showOverlay('SHOP');
+        });
+        btnShopBack.addEventListener('click', () => showOverlay('MENU'));
+
+        tabSkins.addEventListener('click', () => {
+            tabSkins.classList.add('active');
+            tabPerks.classList.remove('active');
+            shopSkinsGrid.classList.remove('hidden');
+            shopPerksGrid.classList.add('hidden');
+        });
+        tabPerks.addEventListener('click', () => {
+            tabPerks.classList.add('active');
+            tabSkins.classList.remove('active');
+            shopPerksGrid.classList.remove('hidden');
+            shopSkinsGrid.classList.add('hidden');
+        });
+
+        document.querySelectorAll('.shop-card[data-skin]').forEach((card) => {
+            card.addEventListener('click', () => {
+                audio.init();
+                const id = card.getAttribute('data-skin');
+                const skin = SKINS[id];
+                if (!skin) return;
+                if (state.unlockedSkins.includes(id)) {
+                    state.equippedSkin = id;
+                    audio.playCoin();
+                    saveProgress();
+                    updateMetaUI();
+                } else if (state.coins >= skin.cost) {
+                    state.coins -= skin.cost;
+                    state.unlockedSkins.push(id);
+                    state.equippedSkin = id;
+                    audio.playDualSplit();
+                    vibrate(22);
+                    saveProgress();
+                    updateMetaUI();
+                }
+            });
+        });
+
+        document.querySelectorAll('.shop-card[data-perk]').forEach((card) => {
+            card.addEventListener('click', () => {
+                audio.init();
+                const id = card.getAttribute('data-perk');
+                const perk = PERKS[id];
+                if (!perk || hasPerk(id)) return;
+                if (state.coins >= perk.cost) {
+                    state.coins -= perk.cost;
+                    state.ownedPerks.push(id);
+                    audio.playDualSplit();
+                    vibrate(25);
+                    saveProgress();
+                    updateMetaUI();
+                }
+            });
+        });
+
+        btnSound.addEventListener('click', () => {
+            state.soundEnabled = !state.soundEnabled;
+            iconSoundOn.classList.toggle('hidden', !state.soundEnabled);
+            iconSoundOff.classList.toggle('hidden', state.soundEnabled);
+            if (state.soundEnabled) audio.init();
+            else audio.updatePhaseHum(false, 1.0);
+        });
+
+        // =========================================================================
+        // PHYSICS: SPARKS, RIGID-BODY SHARDS, 3D CAMERA & HYPER-TUNNEL
+        // =========================================================================
+        function updateSparksAndEffects(dt) {
+            const coreR = state.centerRadius;
+
+            // Directional neon sparks with drag + elastic ricochet off central ring
+            for (let i = state.sparks.length - 1; i >= 0; i--) {
+                const sp = state.sparks[i];
+                sp.x += sp.vx * dt;
+                sp.y += sp.vy * dt;
+                const drag = Math.exp(-3.4 * dt);
+                sp.vx *= drag;
+                sp.vy *= drag;
+
+                const dist = Math.hypot(sp.x, sp.y);
+                if (dist < coreR + 2 && dist > 0.001) {
+                    const nx = sp.x / dist;
+                    const ny = sp.y / dist;
+                    const vn = sp.vx * nx + sp.vy * ny;
+                    if (vn < 0) {
+                        sp.vx -= 1.78 * vn * nx;
+                        sp.vy -= 1.78 * vn * ny;
+                    }
+                    sp.x = nx * (coreR + 2.5);
+                    sp.y = ny * (coreR + 2.5);
+                }
+
+                sp.life -= dt * 2.15;
+                if (sp.life <= 0) state.sparks.splice(i, 1);
+            }
+
+            // Floating popups
+            for (let i = state.popups.length - 1; i >= 0; i--) {
+                state.popups[i].life -= dt * 1.25;
+                if (state.popups[i].life <= 0) state.popups.splice(i, 1);
+            }
+
+            // Expanding core pulse rings (Dual Split / Hyper-Tunnel)
+            for (let i = state.corePulses.length - 1; i >= 0; i--) {
+                const cp = state.corePulses[i];
+                cp.r += dt * 360;
+                cp.alpha -= dt * 1.35;
+                if (cp.alpha <= 0) state.corePulses.splice(i, 1);
+            }
+
+            // Impact ring flashes
+            for (let i = state.impactFlashes.length - 1; i >= 0; i--) {
+                state.impactFlashes[i].life -= dt * 3.4;
+                if (state.impactFlashes[i].life <= 0) state.impactFlashes.splice(i, 1);
+            }
+
+            // High-speed 3D radial warp streaks during Hyper-Tunnel
+            if (state.hyperBlend > 0.03) {
+                const streakBoost = 0.65 + state.hyperBlend * 1.5;
+                for (let i = 0; i < state.warpStreaks.length; i++) {
+                    const ws = state.warpStreaks[i];
+                    ws.z += ws.speed * streakBoost * dt;
+                    if (ws.z > 140) {
+                        ws.z = -580 - Math.random() * 140;
+                        ws.angle = Math.random() * TWO_PI;
+                        ws.radius = 75 + Math.random() * 440;
+                    }
+                }
+            }
+
+            // Damped spring camera recoil
+            const kCam = 195, dCam = 15.5;
+            state.camRecoilVx += (-kCam * state.camRecoilX - dCam * state.camRecoilVx) * dt;
+            state.camRecoilVy += (-kCam * state.camRecoilY - dCam * state.camRecoilVy) * dt;
+            state.camRecoilX += state.camRecoilVx * dt;
+            state.camRecoilY += state.camRecoilVy * dt;
+        }
+
+        function updateRigidShards(dt) {
+            if (state.shards.length === 0) return;
+            const coreR = state.centerRadius;
+            for (let i = state.shards.length - 1; i >= 0; i--) {
+                const sh = state.shards[i];
+                sh.x += sh.vx * dt;
+                sh.y += sh.vy * dt;
+                sh.rot += sh.vRot * dt;
+
+                const drag = Math.exp(-1.15 * dt);
+                sh.vx *= drag;
+                sh.vy *= drag;
+                sh.vRot *= Math.exp(-0.9 * dt);
+                sh.life -= dt * 0.85;
+
+                const dist = Math.hypot(sh.x, sh.y);
+                const ang = normAngle(Math.atan2(sh.y, sh.x));
+
+                // 1. Elastic ricochet off central core ring
+                if (dist < coreR + 4.5 && dist > 0.001) {
+                    const nx = sh.x / dist;
+                    const ny = sh.y / dist;
+                    const vn = sh.vx * nx + sh.vy * ny;
+                    if (vn < 0) {
+                        sh.vx -= 1.78 * vn * nx;
+                        sh.vy -= 1.78 * vn * ny;
+                        sh.vRot += (Math.random() - 0.5) * 14;
+                        spawnSparks(sh.x, sh.y, 3, '#ffffff', 0, 0, 80);
+                        if (Math.random() < 0.35) audio.playShardBounce();
+                    }
+                    sh.x = nx * (coreR + 5);
+                    sh.y = ny * (coreR + 5);
+                }
+
+                // 2. Elastic ricochet off nearby obstacle walls
+                for (let j = 0; j < state.walls.length; j++) {
+                    const w = state.walls[j];
+                    if (w.alpha < 0.2) continue;
+                    const rIn = w.rInner;
+                    const rOut = w.rInner + w.thickness;
+                    if (dist >= rIn - 3 && dist <= rOut + 3 && isAngleInArc(ang, w.startAngle, w.startAngle + w.arcLen)) {
+                        const nx = Math.cos(ang);
+                        const ny = Math.sin(ang);
+                        const toInner = Math.abs(dist - rIn);
+                        const toOuter = Math.abs(dist - rOut);
+
+                        if (toInner <= toOuter) {
+                            const vn = sh.vx * nx + sh.vy * ny;
+                            if (vn > 0) {
+                                sh.vx -= 1.72 * vn * nx;
+                                sh.vy -= 1.72 * vn * ny;
+                            }
+                            sh.x = nx * (rIn - 3.5);
+                            sh.y = ny * (rIn - 3.5);
+                        } else {
+                            const vn = sh.vx * nx + sh.vy * ny;
+                            if (vn < 0) {
+                                sh.vx -= 1.72 * vn * nx;
+                                sh.vy -= 1.72 * vn * ny;
+                            }
+                            sh.x = nx * (rOut + 3.5);
+                            sh.y = ny * (rOut + 3.5);
+                        }
+                        sh.vRot += (Math.random() - 0.5) * 16;
+                        w.hitFlash = Math.max(w.hitFlash, 0.55);
+                        spawnSparks(sh.x, sh.y, 2, sh.color, 0, 0, 68);
+                        if (Math.random() < 0.28) audio.playShardBounce();
+                        break;
+                    }
+                }
+
+                if (sh.life <= 0) state.shards.splice(i, 1);
+            }
+        }
+
+        function update3DCamera(dt, lvl, smoothHyper) {
+            const t = state.elapsed;
+            // Scheduled smooth 3D phases:
+            //  - 10.0s–18.0s: Smooth 3D tilt (0.82)
+            //  - 20.0s–30.0s: Deep 3D Hyper-Tunnel (1.0 + extra pitch)
+            //  - 32.0s+: Rhythmic 3D waves (11s on / 7s off)
+            let targetDepth = 0.0;
+            let inNormal3D = false;
+
+            if (t >= 10.0 && t < 18.0) {
+                targetDepth = 0.82;
+                inNormal3D = true;
+            } else if (t >= 20.0 && t < 30.0) {
+                targetDepth = 1.0;
+            } else if (t >= 32.0) {
+                const cycle = (t - 32.0) % 18.0;
+                if (cycle < 11.0) {
+                    targetDepth = 0.90;
+                    inNormal3D = true;
+                }
+            }
+
+            if (inNormal3D && !state.badgeActive3D) {
+                state.badgeActive3D = true;
+                if (!state.isHyperTunnel) showBadge('3D DEPTH', 1.7);
+            } else if (!inNormal3D) {
+                state.badgeActive3D = false;
+            }
+
+            const rampRate = dt / 1.4;
+            if (state.depth3D < targetDepth) state.depth3D = Math.min(targetDepth, state.depth3D + rampRate);
+            else if (state.depth3D > targetDepth) state.depth3D = Math.max(targetDepth, state.depth3D - rampRate);
+            const d3 = smoothstep(state.depth3D);
+
+            // Base per-level 3D camera choreography + deeper pitch boost in 3D Hyper-Tunnel
+            let targetPitch = 0;
+            let targetRoll = 0;
+            if (lvl.style3D === 'tunnel_dive') {
+                targetPitch = d3 * (0.48 + smoothHyper * 0.24 + Math.sin(t * 0.6) * 0.04);
+                targetRoll = d3 * Math.sin(t * 0.48) * (0.10 + smoothHyper * 0.08);
+            } else if (lvl.style3D === 'cinematic_bank') {
+                targetPitch = d3 * (0.42 + smoothHyper * 0.24);
+                targetRoll = d3 * Math.sin(t * 0.70) * (0.30 + smoothHyper * 0.10);
+            } else if (lvl.style3D === 'iso_orbital') {
+                targetPitch = d3 * (0.48 + smoothHyper * 0.22);
+                targetRoll = d3 * Math.cos(t * 0.56) * (0.22 + smoothHyper * 0.08);
+            } else {
+                targetPitch = d3 * (0.40 + smoothHyper * 0.24 + Math.sin(t * 0.72) * 0.12);
+                targetRoll = d3 * Math.sin(t * 0.58 + 1.1) * (0.24 + smoothHyper * 0.08);
+            }
+
+            state.camPitch = damp(state.camPitch, targetPitch, 4.0, dt);
+            state.camRoll = damp(state.camRoll, targetRoll, 4.0, dt);
+        }
+
+        function update(dt) {
+            const lvl = LEVELS[state.levelIndex];
+
+            if (state.badgeTimer > 0) {
+                state.badgeTimer -= dt;
+                if (state.badgeTimer <= 0) statusBadge.classList.remove('visible');
+            }
+            if (state.gameOverGuardTimer > 0) {
+                state.gameOverGuardTimer = Math.max(0, state.gameOverGuardTimer - dt);
+            }
+
+            state.beatPulse = damp(state.beatPulse, 0, 7.6, dt);
+            state.chromaFlash = damp(state.chromaFlash, 0, 4.8, dt);
+            state.overdriveFlash = damp(state.overdriveFlash, 0, 2.4, dt);
+
+            if (state.mode === 'PAUSED') return;
+
+            // IDLE MENU / GAMEOVER BACKGROUND
+            if (state.mode === 'MENU' || state.mode === 'GAMEOVER') {
+                updateSparksAndEffects(dt);
+                updateRigidShards(dt);
+                state.worldAngle += 0.20 * dt;
+                state.tunnelPhase += 0.30 * dt;
+                state.depth3D = damp(state.depth3D, 0.32, 1.5, dt);
+                state.camPitch = damp(state.camPitch, 0.20, 2.0, dt);
+                state.camRoll = damp(state.camRoll, Math.sin(performance.now() * 0.0005) * 0.08, 2.0, dt);
+                state.camZoom = damp(state.camZoom, 1.0, 4.0, dt);
+                state.camTilt = damp(state.camTilt, 0, 4.0, dt);
+                return;
+            }
+
+            // DEATH HIT-STOP & RIGID-BODY SHATTER SEQUENCE
+            if (state.mode === 'DYING') {
+                if (state.hitStopTimer > 0) {
+                    state.hitStopTimer -= dt;
+                    return;
+                }
+                updateSparksAndEffects(dt);
+                updateRigidShards(dt);
+                for (let i = 0; i < state.walls.length; i++) {
+                    state.walls[i].hitFlash = damp(state.walls[i].hitFlash, 0, 6, dt);
+                }
+                state.deathTimer -= dt;
+                if (state.deathTimer <= 0) finishDeathSequence();
+                return;
+            }
+
+            // MINI HIT-STOP ON CLONE SHATTER (LEVEL 4)
+            if (state.hitStopTimer > 0) {
+                state.hitStopTimer -= dt;
+                return;
+            }
+
+            // =====================================================================
+            // ACTIVE GAMEPLAY UPDATE (FULL 1.0x RESPONSIVE PACE — ZERO SLOW-MO)
+            // =====================================================================
+            updateSparksAndEffects(dt);
+            updateRigidShards(dt);
+
+            state.elapsed += dt;
+            timerVal.textContent = formatTime(state.elapsed);
+
+            // 1. EPIC "3D HYPER-TUNNEL" EVENT (20:00 – 30:00) -> OVERDRIVE (30:00+)
+            const inHyperWindow = state.elapsed >= 20.0 && state.elapsed < 30.0;
+            if (inHyperWindow && !state.isHyperTunnel) {
+                state.isHyperTunnel = true;
+                timerBox.classList.add('glow');
+                showBadge('3D HYPER-TUNNEL', 2.2);
+                state.corePulses.push({ r: state.centerRadius, alpha: 0.9, color: rgbStr(lvl.fgRGB) });
+                audio.playHyperEnter();
+                vibrate([22, 20, 35]);
+            } else if (!inHyperWindow && state.isHyperTunnel) {
+                state.isHyperTunnel = false;
+                state.overdriveFlash = 1.0;
+                showBadge('OVERDRIVE', 1.9);
+                audio.playOverdrive();
+                vibrate([40, 22, 40]);
+                setTimeout(() => {
+                    if (state.mode === 'PLAYING' && !state.isHyperTunnel) {
+                        timerBox.classList.remove('glow');
+                    }
+                }, 2000);
+            }
+
+            // Smooth 1.4s easeInOut blend in (20.0–21.4) and out (28.6–30.0)
+            let rawHyper = 0;
+            if (state.elapsed >= 20.0 && state.elapsed < 21.4) {
+                rawHyper = (state.elapsed - 20.0) / 1.4;
+            } else if (state.elapsed >= 21.4 && state.elapsed < 28.6) {
+                rawHyper = 1.0;
+            } else if (state.elapsed >= 28.6 && state.elapsed < 30.0) {
+                rawHyper = 1.0 - (state.elapsed - 28.6) / 1.4;
+            }
+            state.hyperBlend = damp(state.hyperBlend, rawHyper, 12, dt);
+            const smoothHyper = smoothstep(state.hyperBlend);
+
+            const vigAmt = clamp(smoothHyper * 0.72 + state.overdriveFlash * 0.70 + state.chromaFlash * 0.55, 0, 0.94);
+            edgeVignette.style.opacity = vigAmt.toFixed(3);
+
+            // 2. 3D CAMERA CHOREOGRAPHY & BEAT-SYNCED ZOOM PULSE
+            update3DCamera(dt, lvl, smoothHyper);
+            const targetZoom = 1.0 + smoothHyper * 0.13 + state.beatPulse * (0.025 + smoothHyper * 0.015);
+            state.camZoom = damp(state.camZoom, targetZoom, 9.5, dt);
+
+            // Progressive speed every 10s (+6%), slight exhilarating Hyper-Tunnel pace (+10%), Overdrive (+12%)
+            const step10 = Math.floor(state.elapsed / 10);
+            const overdriveBoost = state.elapsed >= 30.0 ? 0.12 : 0.0;
+            const targetSpeedMult = Math.min(2.0, 1.0 + step10 * 0.06 + smoothHyper * 0.10 + overdriveBoost);
+            state.speedMult = damp(state.speedMult, targetSpeedMult, 1.8, dt);
+            state.tunnelPhase += dt * (0.75 + state.speedMult * 0.55 + smoothHyper * 1.9);
+
+            // 3. AUDIO & WORLD ROTATION
+            audio.update(dt, lvl, true, smoothHyper);
+
+            if (lvl.id === 3) {
+                // Level 4: Smooth harmonic sine-wave rotation
+                state.harmonicPhase += dt * 0.85;
+                const harmonicTarget = Math.sin(state.harmonicPhase) * lvl.rotSpeed * 1.45;
+                state.worldRotVel = damp(state.worldRotVel, harmonicTarget, 3.2, dt);
+            } else {
+                state.rotSwitchTimer -= dt;
+                if (state.rotSwitchTimer <= 0) {
+                    state.rotSwitchTimer = 4.6 + Math.random() * 3.4;
+                    state.worldRotTarget = -state.worldRotTarget;
+                }
+                const rotScale = 0.94 + (state.speedMult - 1) * 0.25;
+                state.worldRotVel = damp(state.worldRotVel, state.worldRotTarget * rotScale, 2.2, dt);
+            }
+            state.worldAngle += state.worldRotVel * dt;
+
+            const targetTilt = Math.sin(state.elapsed * (lvl.bpm / 60) * Math.PI) * lvl.tiltAmp;
+            state.camTilt = damp(state.camTilt, targetTilt, 5.2, dt);
+
+            // 4. LEVEL 4 DUAL SPLIT TIMELINE (5.0s solo warm-up -> DUAL -> 9.0s recovery -> RE-SPLIT)
+            if (lvl.id === 3) {
+                if (state.splitState === 'SOLO_WARMUP' && state.elapsed >= 5.0) {
+                    triggerDualSplit(false);
+                } else if (state.splitState === 'DUAL') {
+                    state.splitAnim = Math.min(1, state.splitAnim + dt / 0.65);
+                } else if (state.splitState === 'SOLO_RECOVERY') {
+                    state.resplitTimer -= dt;
+                    dualPill.textContent = `RE-SPLIT ${Math.ceil(Math.max(0, state.resplitTimer))}s`;
+                    if (state.resplitTimer <= 0) {
+                        triggerDualSplit(true);
+                    }
+                }
+            }
+
+            if (state.splitInvulnTimer > 0) state.splitInvulnTimer = Math.max(0, state.splitInvulnTimer - dt);
+            if (state.nearMissCooldown > 0) state.nearMissCooldown = Math.max(0, state.nearMissCooldown - dt);
+            if (state.scrapeSfxTimer > 0) state.scrapeSfxTimer = Math.max(0, state.scrapeSfxTimer - dt);
+
+            // 5. PLAYER STEERING, PHASE SHIELD & IRREVERSIBLE GROWTH
+            const { left, right } = getControls();
+            const bothHeld = left && right;
+            if (!bothHeld) state.phaseCooldownLock = false;
+
+            if (bothHeld && !state.phaseCooldownLock && state.phaseCharge > 0.02) {
+                state.phaseActive = true;
+                state.phaseCharge = Math.max(0, state.phaseCharge - dt);
+                state.phaseHeldTotal = Math.min(state.phaseMax, state.phaseHeldTotal + dt);
+                if (state.phaseCharge <= 0.02) {
+                    state.phaseActive = false;
+                    state.phaseCooldownLock = true;
+                }
+            } else {
+                state.phaseActive = false;
+                state.phaseCharge = Math.min(state.phaseMax, state.phaseCharge + dt * 0.34);
+            }
+
+            // IRREVERSIBLE GROWTH: monotonically increases from 1.0x up to 2.0x (1.55x w/ STABILIZER) until death
+            const maxCap = hasPerk('STABILIZER') ? 1.55 : 2.0;
+            const targetScale = 1.0 + (state.phaseHeldTotal / state.phaseMax) * (maxCap - 1.0);
+            state.playerScale = Math.max(state.playerScale, damp(state.playerScale, targetScale, 16, dt));
+
+            if (state.playerScale > 1.02) {
+                sizePill.classList.remove('hidden');
+                sizePill.textContent = `${state.playerScale.toFixed(2)}x`;
+            }
+
+            const turnSpeed = 5.75;
+            let turnDir = 0;
+            if (left && !right) turnDir = -1;
+            if (right && !left) turnDir = 1;
+
+            state.playerAngVel = damp(state.playerAngVel, turnDir * turnSpeed, 26, dt);
+            const prevPrimaryAngle = state.playerAngle;
+            let nextPrimaryAngle = normAngle(state.playerAngle + state.playerAngVel * dt);
+
+            // Radial spring recoil from side-wall contacts
+            state.playerRadVel += (-285 * state.playerRadOffset - 19 * state.playerRadVel) * dt;
+            state.playerRadOffset += state.playerRadVel * dt;
+
+            // 6. LEVEL 3 ORBITAL CORE LASERS (1.25s telegraph + 3 crisp ticks -> beam)
+            if (lvl.id === 2) {
+                state.laserTimer -= dt;
+                if (state.laserTimer <= 0) {
+                    state.laserTimer = Math.max(2.6, 4.1 - state.elapsed * 0.014);
+                    const count = state.elapsed > 35 ? 2 : 1;
+                    const baseA = nextPrimaryAngle + (Math.random() - 0.5) * 1.45;
+                    for (let k = 0; k < count; k++) {
+                        state.lasers.push({
+                            angle: normAngle(baseA + k * Math.PI),
+                            rotVel: (Math.random() < 0.5 ? 1 : -1) * 0.30,
+                            timer: 0,
+                            warnDur: 1.25,
+                            fireDur: 0.72,
+                            ticksPlayed: 0,
+                            firedSound: false,
+                            nearMissed: false
+                        });
+                    }
+                }
+            }
+
+            const fallSpeed = lvl.baseSpeed * state.speedMult;
+
+            for (let i = state.lasers.length - 1; i >= 0; i--) {
+                const lz = state.lasers[i];
+                lz.timer += dt;
+                lz.angle = normAngle(lz.angle + lz.rotVel * dt);
+
+                if (lz.timer < lz.warnDur) {
+                    const tickIdx = Math.floor((lz.timer / lz.warnDur) * 3) + 1;
+                    if (tickIdx > lz.ticksPlayed && lz.ticksPlayed < 3) {
+                        lz.ticksPlayed++;
+                        audio.playLaserTick();
+                    }
+                } else if (lz.timer < lz.warnDur + lz.fireDur) {
+                    if (!lz.firedSound) {
+                        lz.firedSound = true;
+                        audio.playLaserFire();
+                    }
+                    if (!state.phaseActive && state.splitInvulnTimer <= 0) {
+                        const dist = Math.abs(angleDiff(nextPrimaryAngle, lz.angle));
+                        const beamHalf = 0.068 * (0.82 + 0.18 * state.playerScale);
+                        if (dist < beamHalf) {
+                            triggerDeath(nextPrimaryAngle, fallSpeed);
+                            return;
+                        } else if (!lz.nearMissed && dist < beamHalf + 0.145) {
+                            lz.nearMissed = true;
+                            triggerNearMiss(nextPrimaryAngle);
+                        }
+                    }
+                }
+
+                if (lz.timer >= lz.warnDur + lz.fireDur) {
+                    state.lasers.splice(i, 1);
+                }
+            }
+
+            // 7. COINS (COLLECTIBLE BY EITHER CLONE + MAGNET PERK)
+            const playerInnerR = state.orbitRadius;
+            const playerOuterR = state.orbitRadius + state.basePlayerHeight * state.playerScale;
+            const halfAngWidth = state.basePlayerHalfArc * (0.82 + 0.18 * state.playerScale);
+            const magnet = hasPerk('MAGNET');
+            const isDual = state.splitState === 'DUAL';
+            const dualSep = isDual ? smoothstep(state.splitAnim) * Math.PI : 0;
+
+            for (let i = state.collectibles.length - 1; i >= 0; i--) {
+                const c = state.collectibles[i];
+                c.r -= fallSpeed * dt;
+                c.spin += dt * 4.6;
+
+                // Determine closest active character for magnet & pickup
+                let targetA = nextPrimaryAngle;
+                let bestDiff = Math.abs(angleDiff(c.angle, nextPrimaryAngle));
+                if (isDual) {
+                    const cloneA = normAngle(nextPrimaryAngle + dualSep);
+                    const d2 = Math.abs(angleDiff(c.angle, cloneA));
+                    if (d2 < bestDiff) {
+                        bestDiff = d2;
+                        targetA = cloneA;
+                    }
+                }
+
+                if (magnet && c.r < playerOuterR + 155 && bestDiff < 1.25) {
+                    const aDiff = angleDiff(c.angle, targetA);
+                    c.angle = normAngle(c.angle + aDiff * Math.min(1, dt * 5.8));
+                    c.r = damp(c.r, playerInnerR + 6, 3.6, dt);
+                }
+
+                if (c.r <= state.centerRadius) {
+                    state.collectibles.splice(i, 1);
+                    continue;
+                }
+
+                if (Math.abs(c.r - (playerInnerR + 7)) < 21 && bestDiff < 0.27) {
+                    state.coins += 1;
+                    state.runCoins += 1;
+                    saveProgress();
+                    updateMetaUI();
+                    audio.playCoin();
+                    vibrate(10);
+                    spawnSparks(Math.cos(c.angle) * c.r, Math.sin(c.angle) * c.r, 10, '#ffd60a', 0, 0, 112);
+                    state.collectibles.splice(i, 1);
+                }
+            }
+
+            // 8. OBSTACLE MOVEMENT, FAIR SIDE-WALL CONTACT PHYSICS & DUAL-SPLIT COLLISION
+            let sideScrapedThisFrame = false;
+
+            for (let i = state.walls.length - 1; i >= 0; i--) {
+                const w = state.walls[i];
+                const prevRInner = w.rInner;
+                w.rInner -= fallSpeed * dt;
+
+                // Spring wall recoil & flash decay
+                w.recoilVel += (-265 * w.recoil - 16 * w.recoilVel) * dt;
+                w.recoil += w.recoilVel * dt;
+                w.hitFlash = damp(w.hitFlash, 0, 8.5, dt);
+
+                // Special obstacle behaviors
+                if (w.behavior === 'split_left' || w.behavior === 'split_right') {
+                    const wave = (Math.sin(state.elapsed * 2.8 + w.rInner * 0.012) + 1) * 0.5;
+                    const shift = wave * 0.45;
+                    w.startAngle = w.behavior === 'split_left' ? w.baseStart - shift : w.baseStart + shift;
+                } else if (w.behavior === 'gear_rot') {
+                    w.startAngle = normAngle(w.startAngle + w.rotVel * dt);
+                } else if (w.behavior === 'phantom') {
+                    const distToOrbit = w.rInner - playerOuterR;
+                    if (distToOrbit < 215 && distToOrbit > 74) {
+                        w.pulsePhase = (w.pulsePhase || 0) + dt * 18;
+                        w.alpha = 0.28 + 0.72 * Math.abs(Math.sin(w.pulsePhase));
+                    } else if (distToOrbit <= 74) {
+                        w.alpha = Math.max(0, w.alpha - dt * 6.5);
+                    }
+                } else if (w.behavior === 'breathing') {
+                    const breath = Math.sin(state.elapsed * (lvl.bpm / 60) * Math.PI + w.rInner * 0.01) * w.breathAmp;
+                    w.arcLen = Math.max(0.45, w.baseArc - breath);
+                    w.startAngle = w.baseStart + breath * 0.5;
+                }
+
+                if (w.rInner + w.thickness <= state.centerRadius) {
+                    state.walls.splice(i, 1);
+                    continue;
+                }
+
+                if (state.phaseActive || state.splitInvulnTimer > 0 || w.alpha <= 0.16) {
+                    continue;
+                }
+
+                const wallEnd = w.startAngle + w.arcLen;
+                const radialOverlap = w.rInner < playerOuterR && (w.rInner + w.thickness) > playerInnerR;
+                if (!radialOverlap) continue;
+
+                // Evaluate all active characters (1 normally, 2 on Level 4 when DUAL)
+                const charCount = isDual ? 2 : 1;
+                for (let cIdx = 0; cIdx < charCount; cIdx++) {
+                    const angOffset = cIdx === 1 ? dualSep : 0;
+                    const prevCharA = normAngle(prevPrimaryAngle + angOffset);
+                    const currCharA = normAngle(nextPrimaryAngle + angOffset);
+
+                    const inArcNow =
+                        isAngleInArc(currCharA, w.startAngle, wallEnd) ||
+                        isAngleInArc(currCharA - halfAngWidth * 0.68, w.startAngle, wallEnd) ||
+                        isAngleInArc(currCharA + halfAngWidth * 0.68, w.startAngle, wallEnd);
+
+                    if (inArcNow) {
+                        const hitFromFront = prevRInner >= playerOuterR - 3.8;
+                        if (hitFromFront) {
+                            if (isDual) {
+                                // TACTICAL CLONE SURVIVAL: shatter struck clone, survivor continues!
+                                state.playerAngle = nextPrimaryAngle;
+                                triggerCloneShatter(cIdx, currCharA, fallSpeed);
+                                return;
+                            } else {
+                                triggerDeath(currCharA, fallSpeed);
+                                return;
+                            }
+                        } else {
+                            // SIDE CONTACT => SAFE + ELASTIC MICRO-BOUNCE & WALL VIBRATION
+                            const dStart = Math.abs(angleDiff(prevCharA, w.startAngle));
+                            const dEnd = Math.abs(angleDiff(prevCharA, wallEnd));
+                            const sideSign = dStart < dEnd ? -1 : 1;
+
+                            const pushedCharA = sideSign < 0
+                                ? normAngle(w.startAngle - halfAngWidth * 0.72)
+                                : normAngle(wallEnd + halfAngWidth * 0.72);
+                            nextPrimaryAngle = normAngle(pushedCharA - angOffset);
+
+                            // Wall visually vibrates & flashes on touched edge
+                            w.recoilVel = -sideSign * 0.115;
+                            w.hitFlash = 1.0;
+                            w.hitSide = sideSign;
+
+                            // Directional neon sparks bouncing off central ring
+                            const sx = Math.cos(pushedCharA) * (playerInnerR + 6);
+                            const sy = Math.sin(pushedCharA) * (playerInnerR + 6);
+                            const tanVx = -Math.sin(pushedCharA) * sideSign * 78;
+                            const tanVy = Math.cos(pushedCharA) * sideSign * 78;
+                            spawnSparks(sx, sy, 3, '#ffffff', tanVx, tanVy, 98);
+
+                            if (!sideScrapedThisFrame) {
+                                sideScrapedThisFrame = true;
+                                const impactVel = Math.abs(state.playerAngVel);
+                                state.playerAngVel = sideSign * Math.max(0.95, impactVel * 0.36);
+                                state.playerRadVel = -24;
+
+                                if (state.scrapeSfxTimer <= 0) {
+                                    state.scrapeSfxTimer = 0.095;
+                                    audio.playScrape();
+                                    vibrate(8);
+                                }
+                            }
+                        }
+                    } else if (!w.nearMissed && prevRInner >= playerOuterR - 4 && w.rInner < playerOuterR) {
+                        const dStart = Math.abs(angleDiff(currCharA, w.startAngle));
+                        const dEnd = Math.abs(angleDiff(currCharA, wallEnd));
+                        const edgeMargin = halfAngWidth * 0.68 + 0.125;
+                        if (dStart < edgeMargin || dEnd < edgeMargin) {
+                            w.nearMissed = true;
+                            triggerNearMiss(currCharA);
+                        }
+                    }
+                }
+            }
+
+            state.playerAngle = nextPrimaryAngle;
+
+            // 9. INFINITE WAVE SPAWNER
+            let maxR = 0;
+            for (let i = 0; i < state.walls.length; i++) {
+                const top = state.walls[i].rInner + state.walls[i].thickness;
+                if (top > maxR) maxR = top;
+            }
+            const nextMargin = (state.elapsed >= 17.4 && state.elapsed < 27.8) ? 92 : 126;
+            if (maxR < state.spawnRadius) {
+                spawnWave(Math.max(state.spawnRadius, maxR + nextMargin));
+            }
+        }
+
+        // =========================================================================
+        // 3D EXTRUDED RENDERING PIPELINE (PAINTER-SORTED MONOLITHS + HYPER-TUNNEL)
+        // =========================================================================
+        function drawPoly(pts) {
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            ctx.closePath();
+        }
+
+        function draw3DTunnelBackground(lvl, d3, smoothHyper) {
+            const fgCol = rgbStr(lvl.fgRGB);
+            const accCol = rgbStr(lvl.accentRGB);
+            const maxR = Math.hypot(state.width * 0.5, state.height * 0.5) * 1.18;
+            const depthSpan = lerp(180, 620, clamp(d3 + smoothHyper * 0.35, 0, 1));
+
+            ctx.save();
+            ctx.strokeStyle = fgCol;
+
+            // 12 radial depth ribs receding into -z vortex space
+            ctx.globalAlpha = 0.055 + d3 * 0.075 + smoothHyper * 0.10;
+            ctx.lineWidth = 1.1 + smoothHyper * 0.6;
+            for (let i = 0; i < 12; i++) {
+                const a = (i * TWO_PI) / 12;
+                const pNear = proj3D(Math.cos(a) * state.centerRadius, Math.sin(a) * state.centerRadius, 0);
+                const pMid = proj3D(Math.cos(a) * maxR, Math.sin(a) * maxR, 0);
+                const pDeep = proj3D(Math.cos(a) * (state.centerRadius * 1.5), Math.sin(a) * (state.centerRadius * 1.5), -depthSpan);
+                ctx.beginPath();
+                ctx.moveTo(pDeep.x, pDeep.y);
+                ctx.lineTo(pNear.x, pNear.y);
+                ctx.lineTo(pMid.x, pMid.y);
+                ctx.stroke();
+            }
+
+            // Receding 3D neon tunnel rings (extra dense & bright during Hyper-Tunnel)
+            const ringCount = smoothHyper > 0.15 ? 9 : 6;
+            const segs = 28;
+            for (let rIdx = 0; rIdx < ringCount; rIdx++) {
+                const frac = ((rIdx / ringCount) + (state.tunnelPhase * 0.24) % 1) % 1;
+                const zPos = -frac * depthSpan;
+                const radius = lerp(state.centerRadius * 1.15, maxR * 0.90, Math.pow(1 - frac, 1.32));
+                ctx.globalAlpha = (1 - frac) * (0.07 + d3 * 0.12 + smoothHyper * 0.18);
+                ctx.lineWidth = 1.0 + (1 - frac) * (1.2 + smoothHyper * 1.4);
+                ctx.strokeStyle = (smoothHyper > 0.35 && rIdx % 2 === 0) ? accCol : fgCol;
+                ctx.beginPath();
+                for (let s = 0; s <= segs; s++) {
+                    const a = (s * TWO_PI) / segs;
+                    const p = proj3D(Math.cos(a) * radius, Math.sin(a) * radius, zPos);
+                    if (s === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            // High-speed 3D radial warp streaks during 20:00–30:00 Hyper-Tunnel
+            if (smoothHyper > 0.04) {
+                for (let i = 0; i < state.warpStreaks.length; i++) {
+                    const ws = state.warpStreaks[i];
+                    const ca = Math.cos(ws.angle);
+                    const sa = Math.sin(ws.angle);
+                    const pHead = proj3D(ca * ws.radius, sa * ws.radius, ws.z);
+                    const pTail = proj3D(ca * ws.radius, sa * ws.radius, ws.z - ws.len);
+                    ctx.strokeStyle = i % 3 === 0 ? '#ffffff' : accCol;
+                    ctx.globalAlpha = clamp((1 - Math.abs(ws.z) / 620) * smoothHyper * 0.85, 0, 0.88);
+                    ctx.lineWidth = 1.4 + smoothHyper * 1.3;
+                    ctx.beginPath();
+                    ctx.moveTo(pTail.x, pTail.y);
+                    ctx.lineTo(pHead.x, pHead.y);
+                    ctx.stroke();
+                }
+            }
+
+            // Level 3 special: rotating volumetric light shafts during 3D phases
+            if (lvl.id === 2 && d3 > 0.08) {
+                ctx.globalAlpha = 0.08 * d3;
+                ctx.fillStyle = fgCol;
+                for (let i = 0; i < 4; i++) {
+                    const a = state.elapsed * 0.36 + i * (Math.PI * 0.5);
+                    const p0 = proj3D(Math.cos(a - 0.06) * state.centerRadius, Math.sin(a - 0.06) * state.centerRadius, 28 * d3);
+                    const p1 = proj3D(Math.cos(a + 0.06) * state.centerRadius, Math.sin(a + 0.06) * state.centerRadius, 28 * d3);
+                    const p2 = proj3D(Math.cos(a + 0.12) * maxR, Math.sin(a + 0.12) * maxR, -190 * d3);
+                    const p3 = proj3D(Math.cos(a - 0.12) * maxR, Math.sin(a - 0.12) * maxR, -190 * d3);
+                    drawPoly([p0, p1, p2, p3]);
+                    ctx.fill();
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawWallChunk3D(chunk, lvl) {
+            const { w, a0, a1, rIn, rOut, hTop, isFirst, isLast } = chunk;
+            const steps = w.angular ? 2 : 3;
+            const baseOuter = [];
+            const baseInner = [];
+            const topOuter = [];
+            const topInner = [];
+
+            for (let s = 0; s <= steps; s++) {
+                const frac = s / steps;
+                const a = lerp(a0, a1, frac);
+                const tooth = (w.angular && s === 1) ? 4.5 : 0;
+                const c = Math.cos(a);
+                const sn = Math.sin(a);
+                const rO = rOut + tooth;
+                baseOuter.push(proj3D(c * rO, sn * rO, 0));
+                baseInner.push(proj3D(c * rIn, sn * rIn, 0));
+                if (hTop > 0.4) {
+                    topOuter.push(proj3D(c * rO, sn * rO, hTop));
+                    topInner.push(proj3D(c * rIn, sn * rIn, hTop));
+                }
+            }
+
+            ctx.save();
+            ctx.globalAlpha = w.alpha;
+            const isPhantomWarn = w.behavior === 'phantom' && w.alpha < 0.99;
+
+            if (hTop > 0.4) {
+                const sideOuterCol = rgbStr(lvl.fgRGB, 0.34);
+                const sideInnerCol = rgbStr(lvl.fgRGB, 0.56);
+                const capCol = rgbStr(lvl.fgRGB, 0.48);
+                const faces = [];
+
+                for (let s = 0; s < steps; s++) {
+                    const q = [baseOuter[s], baseOuter[s + 1], topOuter[s + 1], topOuter[s]];
+                    faces.push({ q, z: (q[0].z + q[1].z + q[2].z + q[3].z) * 0.25, col: sideOuterCol, flash: 0 });
+                }
+                for (let s = 0; s < steps; s++) {
+                    const q = [baseInner[s], baseInner[s + 1], topInner[s + 1], topInner[s]];
+                    faces.push({ q, z: (q[0].z + q[1].z + q[2].z + q[3].z) * 0.25, col: sideInnerCol, flash: 0 });
+                }
+                if (isFirst) {
+                    const q = [baseInner[0], baseOuter[0], topOuter[0], topInner[0]];
+                    const fl = (w.hitSide <= 0) ? w.hitFlash : 0;
+                    faces.push({ q, z: (q[0].z + q[1].z + q[2].z + q[3].z) * 0.25, col: capCol, flash: fl });
+                }
+                if (isLast) {
+                    const q = [baseInner[steps], baseOuter[steps], topOuter[steps], topInner[steps]];
+                    const fl = (w.hitSide >= 0) ? w.hitFlash : 0;
+                    faces.push({ q, z: (q[0].z + q[1].z + q[2].z + q[3].z) * 0.25, col: capCol, flash: fl });
+                }
+
+                faces.sort((a, b) => a.z - b.z);
+                for (let f = 0; f < faces.length; f++) {
+                    const fc = faces[f];
+                    drawPoly(fc.q);
+                    ctx.fillStyle = fc.flash > 0.15
+                        ? `rgba(255,255,255,${clamp(0.45 + fc.flash * 0.55, 0, 1)})`
+                        : fc.col;
+                    ctx.fill();
+                }
+
+                // Bright top bevel face at z = hTop
+                const topPts = topOuter.concat(topInner.slice().reverse());
+                drawPoly(topPts);
+                ctx.fillStyle = w.hitFlash > 0.22
+                    ? rgbStr([
+                        lerp(lvl.fgRGB[0], 255, w.hitFlash * 0.55),
+                        lerp(lvl.fgRGB[1], 255, w.hitFlash * 0.55),
+                        lerp(lvl.fgRGB[2], 255, w.hitFlash * 0.55)
+                    ])
+                    : rgbStr(lvl.fgRGB);
+                if (isPhantomWarn) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 15;
+                }
+                ctx.fill();
+
+                // Luminous top edge rim (dashed white warning outline on phantom segments)
+                ctx.strokeStyle = isPhantomWarn ? '#ffffff' : 'rgba(255,255,255,0.48)';
+                ctx.lineWidth = isPhantomWarn ? 2.0 : 1.15;
+                if (isPhantomWarn) ctx.setLineDash([6, 4]);
+                ctx.beginPath();
+                ctx.moveTo(topOuter[0].x, topOuter[0].y);
+                for (let s = 1; s <= steps; s++) ctx.lineTo(topOuter[s].x, topOuter[s].y);
+                ctx.moveTo(topInner[0].x, topInner[0].y);
+                for (let s = 1; s <= steps; s++) ctx.lineTo(topInner[s].x, topInner[s].y);
+                ctx.stroke();
+            } else {
+                // Crisp pure 2D mode when depth3D === 0
+                const pts = baseOuter.concat(baseInner.slice().reverse());
+                drawPoly(pts);
+                ctx.fillStyle = w.hitFlash > 0.2
+                    ? rgbStr([
+                        lerp(lvl.fgRGB[0], 255, w.hitFlash * 0.55),
+                        lerp(lvl.fgRGB[1], 255, w.hitFlash * 0.55),
+                        lerp(lvl.fgRGB[2], 255, w.hitFlash * 0.55)
+                    ])
+                    : rgbStr(lvl.fgRGB);
+                if (isPhantomWarn) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 14;
+                }
+                ctx.fill();
+
+                if (isPhantomWarn) {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.8;
+                    ctx.setLineDash([6, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                if (w.hitFlash > 0.1) {
+                    ctx.strokeStyle = `rgba(255,255,255,${w.hitFlash})`;
+                    ctx.lineWidth = 3.2;
+                    ctx.beginPath();
+                    if (isFirst && w.hitSide <= 0) {
+                        ctx.moveTo(baseInner[0].x, baseInner[0].y);
+                        ctx.lineTo(baseOuter[0].x, baseOuter[0].y);
+                    } else if (isLast && w.hitSide >= 0) {
+                        ctx.moveTo(baseInner[steps].x, baseInner[steps].y);
+                        ctx.lineTo(baseOuter[steps].x, baseOuter[steps].y);
+                    }
+                    ctx.stroke();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        function draw3DCorePedestal(lvl, d3, smoothHyper) {
+            const fgCol = rgbStr(lvl.fgRGB);
+            const darkCol = rgbStr(lvl.bgDarkRGB);
+            const r = state.centerRadius;
+            const hTop = (20 + smoothHyper * 12) * d3;
+            const segs = 32;
+
+            const basePts = [];
+            const topPts = [];
+            for (let i = 0; i <= segs; i++) {
+                const a = (i * TWO_PI) / segs;
+                const c = Math.cos(a), s = Math.sin(a);
+                basePts.push(proj3D(c * r, s * r, 0));
+                if (hTop > 0.4) topPts.push(proj3D(c * r, s * r, hTop));
+            }
+
+            if (hTop > 0.4) {
+                const wallQuads = [];
+                for (let i = 0; i < segs; i++) {
+                    const q = [basePts[i], basePts[i + 1], topPts[i + 1], topPts[i]];
+                    wallQuads.push({ q, z: (q[0].z + q[1].z + q[2].z + q[3].z) * 0.25 });
+                }
+                wallQuads.sort((a, b) => a.z - b.z);
+                for (let i = 0; i < wallQuads.length; i++) {
+                    drawPoly(wallQuads[i].q);
+                    ctx.fillStyle = rgbStr(lvl.fgRGB, 0.34);
+                    ctx.fill();
+                }
+            }
+
+            const rim = hTop > 0.4 ? topPts : basePts;
+            drawPoly(rim);
+            ctx.fillStyle = darkCol;
+            ctx.fill();
+            ctx.lineWidth = 3.4;
+            ctx.strokeStyle = fgCol;
+            ctx.stroke();
+
+            // Level 4: Sleek directional harmonic vector arc + solo re-split recharge ring
+            if (state.mode === 'PLAYING' && lvl.id === 3) {
+                const dirSign = Math.sign(state.worldRotVel);
+                const arcSpan = Math.min(1.65, Math.abs(state.worldRotVel) * 2.3);
+                const vecR = r + 5;
+                const aStart = dirSign >= 0 ? -Math.PI * 0.5 : -Math.PI * 0.5 - arcSpan;
+                const aEnd = dirSign >= 0 ? -Math.PI * 0.5 + arcSpan : -Math.PI * 0.5;
+                ctx.save();
+                ctx.strokeStyle = '#38f9d7';
+                ctx.globalAlpha = 0.85;
+                ctx.lineWidth = 2.4;
+                ctx.beginPath();
+                for (let s = 0; s <= 14; s++) {
+                    const a = lerp(aStart, aEnd, s / 14);
+                    const p = proj3D(Math.cos(a) * vecR, Math.sin(a) * vecR, hTop);
+                    if (s === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+
+                // Re-split recharge ring while recovering solo
+                if (state.splitState === 'SOLO_RECOVERY') {
+                    const prog = clamp(1 - state.resplitTimer / 9.0, 0, 1);
+                    const recR = r + 8.5;
+                    const steps = Math.max(4, Math.round(28 * prog));
+                    ctx.globalAlpha = 0.55;
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    for (let s = 0; s <= steps; s++) {
+                        const a = -Math.PI * 0.5 + TWO_PI * prog * (s / steps);
+                        const p = proj3D(Math.cos(a) * recR, Math.sin(a) * recR, hTop);
+                        if (s === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            // Thin circular Phase Shield gauge inside central core
+            if (state.mode === 'PLAYING' || state.mode === 'PAUSED') {
+                const frac = clamp(state.phaseCharge / state.phaseMax, 0, 1);
+                if (frac > 0.01) {
+                    const arcR = Math.max(8, r - 6.2);
+                    const steps = Math.max(4, Math.round(28 * frac));
+                    ctx.save();
+                    ctx.lineWidth = 2.4;
+                    ctx.strokeStyle = state.phaseActive ? '#ffffff' : fgCol;
+                    ctx.globalAlpha = state.phaseActive ? 1.0 : 0.68;
+                    if (state.phaseActive) {
+                        ctx.shadowColor = '#00ffff';
+                        ctx.shadowBlur = 12;
+                    }
+                    ctx.beginPath();
+                    for (let s = 0; s <= steps; s++) {
+                        const a = -Math.PI * 0.5 + TWO_PI * frac * (s / steps);
+                        const p = proj3D(Math.cos(a) * arcR, Math.sin(a) * arcR, hTop);
+                        if (s === 0) ctx.moveTo(p.x, p.y);
+                        else ctx.lineTo(p.x, p.y);
+                    }
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function drawPlayerLetter3D(angle, scale, zHeight, strokeCol, fillCol, lineW, alpha, isShielded) {
+            const h = state.basePlayerHeight * scale;
+            const wHalf = h * 0.72;
+            const rBase = state.orbitRadius + state.playerRadOffset;
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+
+            function lp(lx, ly) {
+                const wx = cosA * (rBase + lx) - sinA * ly;
+                const wy = sinA * (rBase + lx) + cosA * ly;
+                return proj3D(wx, wy, zHeight);
+            }
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = strokeCol;
+            ctx.fillStyle = fillCol;
+            ctx.lineWidth = lineW;
+            ctx.lineJoin = 'miter';
+            ctx.lineCap = 'round';
+
+            if (isShielded) {
+                ctx.shadowColor = '#00ffff';
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                for (let s = 0; s <= 12; s++) {
+                    const sa = lerp(-Math.PI * 0.58, Math.PI * 0.58, s / 12);
+                    const p = lp(h * 0.45 + Math.cos(sa) * h * 1.15, Math.sin(sa) * h * 1.15);
+                    if (s === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            if (state.equippedSkin === 'A') {
+                const p0 = lp(0, -wHalf * 0.92);
+                const p1 = lp(h * 1.06, 0);
+                const p2 = lp(0, wHalf * 0.92);
+                const p3 = lp(h * 0.38, -wHalf * 0.54);
+                const p4 = lp(h * 0.38, wHalf * 0.54);
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.moveTo(p3.x, p3.y);
+                ctx.lineTo(p4.x, p4.y);
+            } else if (state.equippedSkin === 'X') {
+                const p0 = lp(0, -wHalf * 0.86);
+                const p1 = lp(h, wHalf * 0.86);
+                const p2 = lp(0, wHalf * 0.86);
+                const p3 = lp(h, -wHalf * 0.86);
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.moveTo(p2.x, p2.y);
+                ctx.lineTo(p3.x, p3.y);
+            } else {
+                const p0 = lp(0, -wHalf);
+                const p1 = lp(h, -wHalf * 0.72);
+                const p2 = lp(h * 0.38, 0);
+                const p3 = lp(h, wHalf * 0.72);
+                const p4 = lp(0, wHalf);
+                ctx.moveTo(p0.x, p0.y);
+                ctx.lineTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.lineTo(p3.x, p3.y);
+                ctx.lineTo(p4.x, p4.y);
+            }
+            ctx.stroke();
+            if (isShielded && state.equippedSkin !== 'X') ctx.fill();
+            ctx.restore();
+        }
+
+        function draw() {
+            const lvl = LEVELS[state.levelIndex];
+            const fgCol = rgbStr(lvl.fgRGB);
+            const d3 = smoothstep(state.depth3D);
+            const smoothHyper = smoothstep(state.hyperBlend);
+
+            updateCam3DMatrices();
+
+            // 1. Solid deep level background
+            ctx.fillStyle = rgbStr(lvl.bgRGB);
+            ctx.fillRect(0, 0, state.width, state.height);
+
+            // 2. Receding 3D neon vortex tunnel + radial Hyper-Tunnel warp streaks
+            draw3DTunnelBackground(lvl, d3, smoothHyper);
+
+            // 3. Expanding core pulse rings (Dual Split / Hyper-Tunnel drop)
+            for (let i = 0; i < state.corePulses.length; i++) {
+                const cp = state.corePulses[i];
+                ctx.save();
+                ctx.strokeStyle = cp.color;
+                ctx.globalAlpha = clamp(cp.alpha, 0, 1);
+                ctx.lineWidth = 3.0;
+                ctx.beginPath();
+                const segs = 32;
+                for (let s = 0; s <= segs; s++) {
+                    const a = (s * TWO_PI) / segs;
+                    const p = proj3D(Math.cos(a) * cp.r, Math.sin(a) * cp.r, 0);
+                    if (s === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 4. Radial depth vignette
+            const vigAlpha = 0.30 + smoothHyper * 0.18;
+            const grad = ctx.createRadialGradient(cam3D.cx, cam3D.cy, state.centerRadius, cam3D.cx, cam3D.cy, Math.max(cam3D.cx, cam3D.cy) * 1.16);
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, `rgba(0,0,0,${vigAlpha})`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, state.width, state.height);
+
+            // 5. Painter-sorted render queue of extruded 3D monolith wall chunks + 3D core pedestal
+            const renderItems = [];
+            const coreMidZ = proj3D(0, 0, 10 * d3).z;
+            renderItems.push({ kind: 'core', z: coreMidZ });
+
+            const monolithMult = 1.0 + smoothHyper * 0.72;
+            for (let i = 0; i < state.walls.length; i++) {
+                const w = state.walls[i];
+                if (w.alpha <= 0.01) continue;
+                const rIn = Math.max(state.centerRadius, w.rInner);
+                const rOut = w.rInner + w.thickness;
+                if (rOut <= rIn) continue;
+
+                const hTop = w.height3D * monolithMult * d3;
+                const sA = w.startAngle + w.recoil;
+                const chunkCount = Math.max(1, Math.ceil(w.arcLen / 0.44));
+                const step = w.arcLen / chunkCount;
+
+                for (let c = 0; c < chunkCount; c++) {
+                    const a0 = sA + c * step;
+                    const a1 = sA + (c + 1) * step + (c < chunkCount - 1 ? 0.008 : 0);
+                    const midA = (a0 + a1) * 0.5;
+                    const midR = (rIn + rOut) * 0.5;
+                    const cz = proj3D(Math.cos(midA) * midR, Math.sin(midA) * midR, hTop * 0.5).z;
+
+                    renderItems.push({
+                        kind: 'wall',
+                        z: cz,
+                        w, a0, a1, rIn, rOut, hTop,
+                        isFirst: c === 0,
+                        isLast: c === chunkCount - 1
+                    });
+                }
+            }
+
+            renderItems.sort((a, b) => a.z - b.z);
+            for (let i = 0; i < renderItems.length; i++) {
+                const item = renderItems[i];
+                if (item.kind === 'core') {
+                    draw3DCorePedestal(lvl, d3, smoothHyper);
+                } else {
+                    drawWallChunk3D(item, lvl);
+                }
+            }
+
+            // 6. Diamond Coins (projected at mid-extrusion height)
+            const midZ = (14 + smoothHyper * 8) * d3;
+            for (let i = 0; i < state.collectibles.length; i++) {
+                const c = state.collectibles[i];
+                const p = proj3D(Math.cos(c.angle) * c.r, Math.sin(c.angle) * c.r, midZ);
+                const spinX = Math.max(0.32, Math.abs(Math.cos(c.spin)));
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.scale(p.s * spinX, p.s);
+                ctx.shadowColor = '#ffd60a';
+                ctx.shadowBlur = 12;
+                ctx.strokeStyle = '#ffd60a';
+                ctx.fillStyle = 'rgba(255, 240, 150, 0.36)';
+                ctx.lineWidth = 2.2;
+                ctx.beginPath();
+                ctx.moveTo(0, -8.5); ctx.lineTo(7, 0); ctx.lineTo(0, 8.5); ctx.lineTo(-7, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 7. Level 3 Orbital Core Lasers (projected in 3D)
+            for (let i = 0; i < state.lasers.length; i++) {
+                const lz = state.lasers[i];
+                const isFiring = lz.timer >= lz.warnDur;
+                const ca = Math.cos(lz.angle);
+                const sa = Math.sin(lz.angle);
+                const maxLen = state.spawnRadius + 140;
+                const pStart = proj3D(ca * state.centerRadius, sa * state.centerRadius, midZ);
+                const pEnd = proj3D(ca * maxLen, sa * maxLen, midZ);
+
+                ctx.save();
+                if (!isFiring) {
+                    const prog = lz.timer / lz.warnDur;
+                    ctx.strokeStyle = fgCol;
+                    ctx.globalAlpha = 0.25 + 0.60 * Math.abs(Math.sin(lz.timer * (15 + prog * 15)));
+                    ctx.lineWidth = 1.8 + prog * 1.6;
+                    ctx.setLineDash([9, 7]);
+                    ctx.beginPath();
+                    ctx.moveTo(pStart.x, pStart.y);
+                    ctx.lineTo(pEnd.x, pEnd.y);
+                    ctx.stroke();
+                } else {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 22;
+                    ctx.strokeStyle = fgCol;
+                    ctx.lineWidth = 15 * pStart.s;
+                    ctx.lineCap = 'butt';
+                    ctx.beginPath();
+                    ctx.moveTo(pStart.x, pStart.y);
+                    ctx.lineTo(pEnd.x, pEnd.y);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 6.5 * pStart.s;
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            // 8. Active Player(s) + Level 4 Dual Energy Tether + 3D Ground Drop Shadow
+            if (state.mode === 'PLAYING' || state.mode === 'PAUSED' || state.mode === 'MENU') {
+                const chars = getActiveCharacters();
+                const isShielded = state.phaseActive || state.splitInvulnTimer > 0;
+
+                // Faint pulsing #38f9d7 energy tether linking the 180°-opposite pair across center
+                if (chars.length === 2) {
+                    const rTether = state.orbitRadius + state.playerRadOffset + 2;
+                    const pA = proj3D(Math.cos(chars[0].angle) * rTether, Math.sin(chars[0].angle) * rTether, midZ);
+                    const pB = proj3D(Math.cos(chars[1].angle) * rTether, Math.sin(chars[1].angle) * rTether, midZ);
+                    ctx.save();
+                    ctx.strokeStyle = '#38f9d7';
+                    ctx.globalAlpha = 0.26 + 0.22 * Math.sin(state.elapsed * 9) + state.beatPulse * 0.18;
+                    ctx.lineWidth = 2.0;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(pA.x, pA.y);
+                    ctx.lineTo(pB.x, pB.y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                for (let c = 0; c < chars.length; c++) {
+                    const ch = chars[c];
+                    // Ground drop shadow on z = 0 when in 3D mode
+                    if (d3 > 0.05) {
+                        drawPlayerLetter3D(ch.angle, state.playerScale, 0, 'rgba(0,0,0,0.52)', 'rgba(0,0,0,0.45)', 3.2, 0.55 * d3, false);
+                    }
+                    const baseStroke = (c === 1 && !isShielded) ? '#38f9d7' : (isShielded ? '#ffffff' : fgCol);
+                    const baseFill = isShielded ? 'rgba(255,255,255,0.34)' : baseStroke;
+                    drawPlayerLetter3D(
+                        ch.angle,
+                        state.playerScale,
+                        midZ,
+                        baseStroke,
+                        baseFill,
+                        2.5,
+                        1.0,
+                        isShielded
+                    );
+                }
+            }
+
+            // 9. Impact Flash Rings & Rigid-Body Shatter Shards (active for both Clone Loss & Death)
+            for (let i = 0; i < state.impactFlashes.length; i++) {
+                const fl = state.impactFlashes[i];
+                const p = proj3D(fl.x, fl.y, midZ);
+                ctx.save();
+                ctx.globalAlpha = clamp(fl.life, 0, 1);
+                ctx.strokeStyle = fl.color;
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, (1.25 - fl.life) * 44 * p.s, 0, TWO_PI);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            for (let i = 0; i < state.shards.length; i++) {
+                const sh = state.shards[i];
+                const p = proj3D(sh.x, sh.y, midZ);
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.scale(p.s, p.s);
+                ctx.rotate(sh.rot + state.worldAngle + state.camTilt);
+                ctx.globalAlpha = clamp(sh.life, 0, 1);
+                ctx.fillStyle = sh.color;
+                ctx.shadowColor = sh.color;
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.moveTo(sh.pts[0][0], sh.pts[0][1]);
+                for (let k = 1; k < sh.pts.length; k++) ctx.lineTo(sh.pts[k][0], sh.pts[k][1]);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // 10. Physics Sparks
+            for (let i = 0; i < state.sparks.length; i++) {
+                const sp = state.sparks[i];
+                const p = proj3D(sp.x, sp.y, midZ);
+                ctx.save();
+                ctx.globalAlpha = clamp(sp.life, 0, 1);
+                ctx.fillStyle = sp.color;
+                const sz = 3.8 * p.s;
+                ctx.fillRect(p.x - sz * 0.5, p.y - sz * 0.5, sz, sz);
+                ctx.restore();
+            }
+
+            // 11. Floating Popups (+1 Near Miss, CLONE LOST)
+            for (let i = 0; i < state.popups.length; i++) {
+                const fp = state.popups[i];
+                const p = proj3D(fp.x, fp.y, midZ + 8);
+                ctx.save();
+                ctx.globalAlpha = clamp(fp.life, 0, 1);
+                ctx.font = '900 11px Orbitron, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = fp.color || '#ffd60a';
+                ctx.fillText(fp.text, p.x, p.y - (1 - fp.life) * 20);
+                ctx.restore();
+            }
+        }
+
+        // =========================================================================
+        // MAIN 60FPS LOOP (CLAMPED DELTA-TIME)
+        // =========================================================================
+        function gameLoop(timestamp) {
+            if (!state.lastTime) state.lastTime = timestamp;
+            const dt = clamp((timestamp - state.lastTime) / 1000, 0.001, 0.05);
+            state.lastTime = timestamp;
+
+            update(dt);
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = function () {
+            loadProgress();
+            updateMetaUI();
+            applyLevelTheme(0);
+            showOverlay('MENU');
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>
